@@ -1,0 +1,37 @@
+.container{
+    margin: 40px 10vw;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+.filter_header_container{
+    display: flex;
+}
+
+.filter_header_left{
+    font-size: 16px;
+}
+.filter_header_left_bold{
+    font-family: 'Montserrat Bold';
+}
+
+.filter_container{
+    display: flex;
+    gap: 20px;
+}
+
+.filter_left{
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filter_right{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

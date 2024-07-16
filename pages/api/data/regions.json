@@ -1,0 +1,17 @@
+[
+    {
+        "id":1,
+        "nom":"Antananarivo",
+        "imageLink":"/images/region/antananarivo.jpg"
+    },
+    {
+        "id":2,
+        "nom":"Toliara",
+        "imageLink":"/images/region/toliara.jpg"
+    },
+    {
+        "id":3,
+        "nom":"Fianarantsoa",
+        "imageLink":"/images/region/fianarantsoa.jpg"
+    }
+]
