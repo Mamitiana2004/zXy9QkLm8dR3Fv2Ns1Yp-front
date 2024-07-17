@@ -25,10 +25,10 @@ import { Menu } from 'primereact/menu';
                 }
             },
             { 
-                label: 'Settings',
-                icon: 'pi pi-fw pi-cog',
+                label: 'Cart',
+                icon: 'pi pi-fw pi-shopping-cart',
                 command:()=>{
-                    router.push("/users/setting");
+                    router.push("/users/cart");
                 }
             },
             { 
@@ -36,6 +36,13 @@ import { Menu } from 'primereact/menu';
                 icon: 'pi pi-fw pi-user-edit',
                 command:()=>{
                     router.push("/responsable");
+                }
+            },
+            { 
+                label: 'Settings',
+                icon: 'pi pi-fw pi-cog',
+                command:()=>{
+                    router.push("/users/setting");
                 }
             },
             { 

@@ -5,6 +5,7 @@ import CardSuggestion from "@/components/card/CardSuggestion";
 import { useRouter } from "next/router";
 import { Button } from "primereact/button";
 import Review from "@/components/Review";
+import Filter from "@/components/Filter";
 export default function Home() {
 
     const router=useRouter();
@@ -55,6 +56,8 @@ export default function Home() {
 
             
             <div className={style.container}>
+
+                <Filter/>
 
                 <div className={style.suggestion_container}>
                     <span className={style.suggestion_title}>Suggestions for you</span>

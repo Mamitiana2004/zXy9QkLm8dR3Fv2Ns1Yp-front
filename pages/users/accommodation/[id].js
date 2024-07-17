@@ -9,11 +9,17 @@ import { Rating } from "primereact/rating";
 import NoteBar from "@/components/rating/NoteBar";
 import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
+import BookingModal from "../../../components/modal/BookingModal";
+import { useState } from "react";
+import DetailChambre from "@/components/modal/DetailChambre";
 
 
 const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
+
+    const [bookingVisible,setBookingVisible]=useState(false);
+    const [availability,setAvailability]=useState(false);
 
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
@@ -590,7 +596,7 @@ export default function HotelInfos() {
                                     <span className={style.check_detail_price_total_value}>$150</span>
                                 </div>
                             </div>
-                            <Button className="button-primary" label="Book now"/>
+                            <Button onClick={()=>setBookingVisible(true)} className="button-primary" label="Book now"/>
                         </div>
                         
                         <div className={style.accommodation_card}>
@@ -615,7 +621,7 @@ export default function HotelInfos() {
                                                 <span><i className="pi"/> Balcon</span>
                                             </div>
                                         </div>
-                                        <Button className="button-primary" label="Details"/>
+                                        <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
                                     </div>
                                     <div className={style.separateur}></div>
                                     <div className={style.chambre_container}>
@@ -635,7 +641,7 @@ export default function HotelInfos() {
                                                 <span><i className="pi"/> Balcon</span>
                                             </div>
                                         </div>
-                                        <Button className="button-primary" label="Details"/>
+                                        <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
                                     </div>
                                     <div className={style.separateur}></div>
                                     <div className={style.chambre_container}>
@@ -655,7 +661,7 @@ export default function HotelInfos() {
                                                 <span><i className="pi"/> Balcon</span>
                                             </div>
                                         </div>
-                                        <Button className="button-primary" label="Details"/>
+                                        <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
                                     </div>
                                     <div className={style.separateur}></div>
                                 </div>
@@ -666,6 +672,9 @@ export default function HotelInfos() {
                 </div>
             </div>
 
+
+            <BookingModal visible={bookingVisible} onHide={()=>setBookingVisible(false)} />
+            <DetailChambre visible={availability} onHide={()=>setAvailability(false)}/>
         </>
     )
 }

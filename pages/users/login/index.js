@@ -94,7 +94,11 @@ export default function Login() {
         <>
             <div className={style.container}>
 
-                <div className={style.login_left}></div>
+                <div className={style.login_left}>
+                    <Link href={"/users"}>
+                        <Image src='/images/logo-aftrip.png' alt='logo' style={{width:"250px"}}/>
+                    </Link>
+                </div>
                 <div className={style.login_right}>
                     <div className={style.login_title_container}>
                         <span className={style.login_title}>Login</span>

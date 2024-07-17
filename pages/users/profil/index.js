@@ -22,6 +22,12 @@ export default function Profile() {
                 <Link style={{textDecoration:"none"}} href={"/users/profil"}>
                     <span className={style.menu_active}>Profil</span>
                 </Link>
+                <Link style={{textDecoration:"none"}} href={"/users/cart"}>
+                    <span className={style.menu_item}>Shopping cart</span>
+                </Link>
+                <Link style={{textDecoration:"none"}} href={"/responsable"}>
+                    <span className={style.menu_item}>Responsable</span>
+                </Link>
                 <Link style={{textDecoration:"none"}} href={"/users/setting"}>
                     <span className={style.menu_item}>Setting</span>
                 </Link>

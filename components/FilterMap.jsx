@@ -1,9 +1,14 @@
 import { Button } from 'primereact/button';
 import style from './../style/components/FilterMap.module.css';
 import { MapContainer, TileLayer } from "react-leaflet";
+import { useRouter } from 'next/router';
 export default function FilterMap(props) {
 
-   
+    const router = useRouter();
+
+    const openMap = () =>{
+        router.push(`https://www.google.com/maps/@${props.lat},${props.lng},13.66?entry=ttu`);
+    }
 
     return(
         <div className={style.container}>
@@ -14,7 +19,7 @@ export default function FilterMap(props) {
                     />
                 </MapContainer>
             </div>
-            <Button iconPos='right' className={style.button} icon="pi pi-map-marker" label='Explore map'/>
+            <Button onClick={openMap} iconPos='right' className={style.button} icon="pi pi-map-marker" label='Explore map'/>
         </div>
     );
 }
