@@ -1,6 +1,5 @@
 import GoogleButton from '@/components/button/GoogleButton';
-import style from '@/style/pages/login.module.css'
-import UrlConfig from '@/util/config';
+import style from '@/style/pages/login.module.css';
 import { getCsrfTokenDirect } from '@/util/csrf';
 import { emailValid } from '@/util/verify';
 import Cookies from 'js-cookie';
@@ -10,16 +9,97 @@ import { useRouter } from 'next/router';
 import { Image } from 'primereact/image';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
+import GoogleSignupButton from '@/components/button/GoogleSignupButton';
+import { UrlConfig } from '@/util/config';
+
 export default function Register() {
 
     const router= useRouter();
     const toast = useRef(null);
 
-
     const [email,setEmail]=useState("");
     const emailInput = useRef(null);
 
-    const [emailErreur,setEmailErreur]=useState(null);
+    const [emailErreur, setEmailErreur] = useState(null);
+    
+    const sendVerificationEmail = async (email) => {
+    try {
+      const csrfToken = await getCsrfTokenDirect();
+      const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/send-verification-code/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'X-CSRFToken': csrfToken,
+
+        },
+        body: JSON.stringify({ email }),
+      });
+      // const data = response.json()
+
+
+      if (!response.ok) {
+        throw new Error("Failed to send verification email.");
+      }
+
+        router.push("/users/register/verify-email");
+        
+    } catch (error) {
+        toast.current.show({
+                    severity:"error",
+                    summary:"Error",
+                    detail:"Failed to send verification email. Please try again later.",
+                    life:5000
+        });
+    }
+  };
+
+  const checkEmailExists = async (e) => {
+    // e.preventDefault();
+    const csrfToken = await getCsrfTokenDirect();
+    // localStorage.setItem("email_user", email);
+
+
+    try {
+      const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/check-email/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({ email }),
+      });
+
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok.");
+      }
+
+      const result = await response.json();
+
+        if (result.exists) {
+             toast.current.show({
+                    severity:"info",
+                    summary:"Info",
+                    detail:<>
+                            Email already exists. <Link href="/users/login">Login here</Link>.
+                        </>,
+                    life:5000
+            });
+      } else {
+        await sendVerificationEmail(email);
+      }
+    } catch (error) {
+        toast.current.show({
+                    severity:"error",
+                    summary:"Error",
+                    detail:"An error occurred. Please try again later.",
+                    life:5000
+        });
+        console.log(error)
+    }
+  };
+
+
 
     const register=async (e)=>{
         e.preventDefault();
@@ -31,7 +111,7 @@ export default function Register() {
         }
         if (canSendData) {
             sessionStorage.setItem("email_in_signup",email);
-            router.push("/users/register/verify-email");
+            const request = await checkEmailExists();
         }
 
     }
@@ -51,7 +131,7 @@ export default function Register() {
                         <span className={style.login_title}>Sign up</span>
                         <span className={style.login_title_label}>Welcome ! Please enter your details</span>
                     </div>
-                    <GoogleButton/>
+                    <GoogleSignupButton/>
 
                     <div className={style.separateur_container}>
                         <div className={style.separateur}></div>

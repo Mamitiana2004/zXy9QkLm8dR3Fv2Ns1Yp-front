@@ -3,4 +3,4 @@ const UrlConfig = {
     adminUrl: '/admin',
 }
 
-export default UrlConfig;
+export  {UrlConfig};
