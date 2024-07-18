@@ -1,12 +1,19 @@
+import ProductCard from '@/components/card/ProductCard';
 import Loader from '@/layouts/Loader';
 import dynamic from 'next/dynamic';
 
+import { InputOtp } from 'primereact/inputotp';
+        
 const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
 
 
 
 export default function Test() {
-    return <Loader/>
+    return (
+        <div>
+            <InputOtp length={6}/>
+        </div>
+    )
 }
 
 

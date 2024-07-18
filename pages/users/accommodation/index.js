@@ -6,6 +6,7 @@ import HotelCard from "@/components/card/HotelCard";
 import React, { useState, useEffect } from 'react';
 import UrlConfig from "@/util/config";
 import { getCsrfTokenDirect } from "@/util/csrf";
+import Filter from "@/components/Filter";
 
 const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
 
@@ -47,6 +48,15 @@ export default function Accommodation() {
             </Head>
 
             <div className={style.container}>
+                <div className={style.filter_header_top}>
+                    <div className={style.filter_header_top_title_container}>
+                        <span className={style.filter_header_top_title}>Find your best accommodation on Hotello</span>
+                        <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
+                    </div>
+                    <div className={style.filter_parent}>
+                        <Filter/>
+                    </div>
+                </div>
                 <div className={style.filter_header_container}>
                     <span className={style.filter_header_left}>
                         Properties in Antananarivo :    
