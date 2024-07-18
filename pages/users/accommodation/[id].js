@@ -10,16 +10,24 @@ import NoteBar from "@/components/rating/NoteBar";
 import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
 import BookingModal from "../../../components/modal/BookingModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DetailChambre from "@/components/modal/DetailChambre";
+import Filter from "@/components/Filter";
 
 
 const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
+    const router = useRouter();
+    const { id } = router.query;
+
     const [bookingVisible,setBookingVisible]=useState(false);
-    const [availability,setAvailability]=useState(false);
+    const [availability, setAvailability] = useState(false);
+    
+    useEffect(() => {
+        
+    },[router,id])
 
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
@@ -34,6 +42,15 @@ export default function HotelInfos() {
             </Head>
 
             <div className={style.container}>
+                <div className={style.filter_header_top}>
+                    <div className={style.filter_header_top_title_container}>
+                        <span className={style.filter_header_top_title}>Find your best accommodation on Hotello</span>
+                        <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
+                    </div>
+                    <div className={style.filter_parent}>
+                        <Filter/>
+                    </div>
+                </div>
                 <div className={style.header_container}>
                     <div className={style.header_left}>
                         <span className={style.header_left_title}>Le Louvre Hotel & Spa</span>

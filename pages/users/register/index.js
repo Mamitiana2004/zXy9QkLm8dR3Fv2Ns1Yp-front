@@ -30,7 +30,8 @@ export default function Register() {
             canSendData=false;
         }
         if (canSendData) {
-            
+            sessionStorage.setItem("email_in_signup",email);
+            router.push("/users/register/verify-email");
         }
 
     }

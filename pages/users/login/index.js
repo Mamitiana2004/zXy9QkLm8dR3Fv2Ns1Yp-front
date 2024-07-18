@@ -1,4 +1,6 @@
+/* eslint-disable react/jsx-no-comment-textnodes */
 import GoogleButton from '@/components/button/GoogleButton';
+import GoogleLoginButton from '@/components/button/GoogleLoginButton';
 import style from '@/style/pages/login.module.css'
 import UrlConfig from '@/util/config';
 import { getCsrfTokenDirect } from '@/util/csrf';
@@ -104,7 +106,7 @@ export default function Login() {
                         <span className={style.login_title}>Login</span>
                         <span className={style.login_title_label}>Welcome back! Please enter your details</span>
                     </div>
-                    <GoogleButton/>
+                    <GoogleLoginButton/>
 
                     <div className={style.separateur_container}>
                         <div className={style.separateur}></div>
@@ -166,7 +168,8 @@ export default function Login() {
                             </div>
                         </form>
                         <div className={style.register_component}>
-                            <span className={style.register_label}>Don't have an account ?</span>
+                            // eslint-disable-next-line react/no-unescaped-entities, react/no-unescaped-entities
+                            <span className={style.register_label}>Don&apos;t have an account ?</span>
                             <Link className={style.register_link} href={"/users/register"}>Sign up</Link>
                         </div>
                     </div>
