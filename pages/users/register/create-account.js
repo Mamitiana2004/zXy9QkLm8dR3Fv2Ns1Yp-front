@@ -5,9 +5,12 @@ import { useRouter } from 'next/router';
 import { Image } from 'primereact/image';
 import { Password } from 'primereact/password';
 import { Toast } from 'primereact/toast';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import stylePassword from '@/style/components/PasswordInput.module.css';
 import { Divider } from 'primereact/divider';
+import { UrlConfig } from '@/util/config';
+import { custom_login, getCsrfTokenDirect } from '@/util/csrf';
+import LayoutContext from '@/layouts/context/layoutContext';
 export default function CreateAccount() {
 
     const router= useRouter();
@@ -32,7 +35,7 @@ export default function CreateAccount() {
     const [checkLowercase,setCheckLowercase]=useState(false);
     const [checkNumber,setCheckNumber]=useState(false);
     const [checkSpecial,setCheckSpecial]=useState(false);
-
+    const { user, setUser } = useContext(LayoutContext);
     const checkChacun = (password) =>{
         setCheckLenght(password.length > 8);
         setCheckSpecial(/[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password));
@@ -40,6 +43,60 @@ export default function CreateAccount() {
         setCheckUppercase(/[A-Z]/.test(password));
         setCheckLowercase(/[a-z]/.test(password));
     }
+    const createClient = async (password) => {
+        const csrfToken = await getCsrfTokenDirect();
+        const email = sessionStorage.getItem("email_in_signup")
+            try {
+                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/create-with-username/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({ email, username, password }),
+                });
+
+                const waiting = await custom_login(username, password);
+                if (!waiting) {
+                    throw new Error('Failed to login after client creation');
+                } if (!response.ok) {
+                    throw new Error('Failed to create client');
+                } else {
+                    fetch(`${UrlConfig.apiBaseUrl}/api/accounts/welcome-mail/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: JSON.stringify({ email }),
+                    })
+                    .then((res) => res.json())
+                    .then(data => {
+                        
+                        setUser({
+                            'id': data.id,
+                            'username': username,
+                            
+                        })
+                        sessionStorage.removeItem("email_in_signup");
+                        router.push('/');
+                    })
+                    .catch((error) => {
+                        console.log(error);    
+                    })    
+                    
+                }
+
+
+            } catch (error) {
+                toast.current.show({
+                    severity:"error",
+                    summary:"Error",
+                    detail:'An error occurred: ' + error.message,
+                    life:5000
+            });
+            }
+        };
 
     const handleSubmit=async (e)=>{
         e.preventDefault();
@@ -60,7 +117,7 @@ export default function CreateAccount() {
             canSendData=false;
         }
         if (canSendData) {
-            
+            const creat = await createClient(password)
         }
 
     }

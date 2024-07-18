@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
 import GoogleButton from '@/components/button/GoogleButton';
 import GoogleLoginButton from '@/components/button/GoogleLoginButton';
+import LayoutContext from '@/layouts/context/layoutContext';
 import style from '@/style/pages/login.module.css'
 import UrlConfig from '@/util/config';
 import { getCsrfTokenDirect } from '@/util/csrf';
@@ -11,11 +12,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Image } from 'primereact/image';
 import { Toast } from 'primereact/toast';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 export default function Login() {
 
     const router= useRouter();
     const toast = useRef(null);
+
+    const { user, setUser } = useContext(LayoutContext);
+
+
 
 
     const [email,setEmail]=useState("");
@@ -87,6 +92,12 @@ export default function Login() {
                 });
                 console.log(error);
             })
+            // setUser({
+            //     id:1,
+            //     username:"Test",
+            //     userImage:"/images/users/user.jpg"
+            // })
+            // router.push("/users");
         }
 
     }

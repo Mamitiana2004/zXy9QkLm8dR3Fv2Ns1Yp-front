@@ -1,9 +1,9 @@
-import config from "./config";
 import Cookies from "js-cookie";
+import { UrlConfig } from "./config";
 
 export const getCsrfToken = async () => {
 
-    const response = await fetch(`${config.apiBaseUrl}/api/get-csrf-token/`, {
+    const response = await fetch(`${UrlConfig.apiBaseUrl}/api/get-csrf-token/`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export const getCsrfToken = async () => {
 export const fetch_new_access = async () => {
     try {
         const refresh = Cookies.get('refresh_token');
-        const response = await fetch(`${config.apiBaseUrl}/api/token/refresh/`, {
+        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/token/refresh/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -42,7 +42,7 @@ export const fetch_new_access = async () => {
 
 export const getCsrfFromToken = async () => {
     try {
-        const response = await fetch(`${config.apiBaseUrl}/api/get-csrf-token-direct/`, {
+        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/get-csrf-token-direct/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export const getCsrfFromToken = async () => {
 
 
 export const custom_login = async (username, password) => {
-    const url = `${config.apiBaseUrl}/api/token/`;
+    const url = `${UrlConfig.apiBaseUrl}/api/token/`;
     const csrfToken = await getCsrfTokenDirect();
     const data = {
         username: username,
@@ -106,7 +106,7 @@ export const custom_login = async (username, password) => {
 
 export const getCsrfTokenDirect = async () => {
     try {
-        const response = await fetch(`${config.apiBaseUrl}/api/get-csrf-token-direct/`, {
+        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/get-csrf-token-direct/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
