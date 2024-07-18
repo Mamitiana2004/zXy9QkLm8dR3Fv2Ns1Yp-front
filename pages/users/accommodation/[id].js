@@ -13,6 +13,7 @@ import BookingModal from "../../../components/modal/BookingModal";
 import { useEffect, useState } from "react";
 import DetailChambre from "@/components/modal/DetailChambre";
 import Filter from "@/components/Filter";
+import { useRouter } from "next/router";
 
 
 const Map = dynamic(()=> import('@/components/Map'),{ssr:false});

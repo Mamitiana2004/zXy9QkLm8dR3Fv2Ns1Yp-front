@@ -4,9 +4,9 @@ import dynamic from "next/dynamic";
 import ListCheckbox from "@/components/ListCheckbox";
 import HotelCard from "@/components/card/HotelCard";
 import React, { useState, useEffect } from 'react';
-import UrlConfig from "@/util/config";
 import { getCsrfTokenDirect } from "@/util/csrf";
 import Filter from "@/components/Filter";
+import { UrlConfig } from "@/util/config";
 
 const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
 
