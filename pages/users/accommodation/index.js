@@ -3,10 +3,43 @@ import style from './../../../style/pages/users/accommodation/accommodation.modu
 import dynamic from "next/dynamic";
 import ListCheckbox from "@/components/ListCheckbox";
 import HotelCard from "@/components/card/HotelCard";
+import React, { useState, useEffect } from 'react';
+import UrlConfig from "@/util/config";
+import { getCsrfTokenDirect } from "@/util/csrf";
 
 const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
 
 export default function Accommodation() {
+    const [hotels, setHotels] = useState([]);
+    
+
+
+    useEffect(() => {
+        const fetchHotels = async () => {
+            try {
+                const csrfToken = await getCsrfTokenDirect();
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': csrfToken,
+                    },
+                })
+                .then(res => res.json())
+                .then(data => {
+                        setHotels(data.hebergements);
+                    }
+                )
+                .catch(error => console.log(error))
+                
+                
+            } catch (error) {
+                console.error('Error fetching hotel data:', error);
+            }
+        };
+
+        fetchHotels();
+    }, []);
     return(
         <>
             <Head>
@@ -33,6 +66,22 @@ export default function Accommodation() {
                         <ListCheckbox/>
                     </div>
                     <div className={style.filter_right}>
+                       
+                        {
+                            hotels.map((hotel) => { { console.log('image ', hotel.images[0].images)}
+                                return <HotelCard
+                                    key={hotel.id}
+                                    href={`/users/accommodation/${hotel.id}`}
+                                    rate={hotel.nombre_etoile_hebergement}
+                                    img={`${UrlConfig.apiBaseUrl}${hotel.images[0].images}`}
+                                    price={hotel.min_prix_nuit_chambre}
+                                    name={hotel.nom_hebergement}
+                                    localisation={`Localisation information here`}
+                                    description={hotel.description_hebergement}
+                                />
+                            })
+                        }
+{/*                         
                         <HotelCard
                             href="/users/accommodation/1"
                             rate="3"
@@ -59,16 +108,7 @@ export default function Accommodation() {
                             name="Hote le Louvre & Span"
                             localisation="Antaninarenina, Antananarivo 101 - 0,5 km from center"
                             description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporiLorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporis totam dolores dolor voluptatem voluptate quisquam sit animi fugit sapiente"
-                        />
-                        <HotelCard
-                            href="/users/accommodation/1"
-                            rate="3"
-                            view="360"
-                            price="29.5"
-                            name="Hote le Louvre & Span"
-                            localisation="Antaninarenina, Antananarivo 101 - 0,5 km from center"
-                            description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporiLorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporis totam dolores dolor voluptatem voluptate quisquam sit animi fugit sapiente"
-                        />
+                        /> */}
                     </div>
                 </div>
             </div>

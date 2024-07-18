@@ -4,13 +4,14 @@ import { Rating } from 'primereact/rating';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
+
 export default function HotelCard(props) {
 
     const router = useRouter();
 
     return(
         <div className={style.container}>
-            <Image alt='Hotel' src='/images/hotel/chambre.jpg' imageClassName={style.image_container} />
+            <Image alt='Hotel' src={props.img} imageClassName={style.image_container} />
             <div className={style.hotel_container}>
                 <div className={style.hotel_container_top}>
                     <div className={style.hotel_container_top_left}>
@@ -30,7 +31,7 @@ export default function HotelCard(props) {
                         <span className={style.view}>{props.view} View{props.view>1 ? "s":""}</span>
                     </div>
                     <span className={style.hotel_container_top_right}>
-                        from {props.price}/night
+                        from {props.price}$/night
                     </span>
                 </div>
                 <div className={style.hotel_title_container}>

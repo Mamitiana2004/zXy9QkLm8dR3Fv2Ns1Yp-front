@@ -10,16 +10,24 @@ import NoteBar from "@/components/rating/NoteBar";
 import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
 import BookingModal from "../../../components/modal/BookingModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DetailChambre from "@/components/modal/DetailChambre";
+import { useRouter } from "next/router";
 
 
 const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
+    const router = useRouter();
+    const { id } = router.query;
+
     const [bookingVisible,setBookingVisible]=useState(false);
-    const [availability,setAvailability]=useState(false);
+    const [availability, setAvailability] = useState(false);
+    
+    useEffect(() => {
+        
+    },[router,id])
 
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
