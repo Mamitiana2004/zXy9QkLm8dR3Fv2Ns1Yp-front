@@ -118,7 +118,7 @@ export default function HotelInfos() {
                         <div className={style.header_left_detail}>
                             <Image alt="star" src="/images/star_filled.svg"/>
                             <span>{data.nombre_etoile_hebergement}</span>
-                            <span className={style.header_left_review}>(1.5k reviews)</span>
+                            <span className={style.header_left_review}> ( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                             <span className={style.header_left_localisation}>
                                 <i className='pi pi-map-marker'/>
                                 {data.description_hebergement}
@@ -162,22 +162,7 @@ export default function HotelInfos() {
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Description</span>
                                 <div className={style.paragraphe}>
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error possimus quas explicabo delectus 
-                                velit veritatis sapiente magni cumque cum incidunt, alias harum modi ea pariatur debitis deleniti 
-                                culpa quae fuga ad, rerum natus. Quibusdam cumque veniam saepe nesciunt, fuga perspiciatis 
-                                possimus odit iste ipsam! Ex ad labore impedit incidunt tempora sed aliquid qui totam ducimus 
-                                distinctio, quos minus aliquam tempore officiis dolorem quidem amet mollitia, est fugiat. 
-                                Numquam nihil dolor corrupti, repellat temporibus facilis quisquam odio quam nobis doloribus 
-                                harum earum quod nostrum voluptatum quia enim iure? Quae molestias magni sint aliquid rerum, 
-                                veniam aperiam? Voluptas molestias fugiat doloremque dolorum? Lorem ipsum dolor sit amet, 
-                                consectetur adipisicing elit. Error possimus quas explicabo delectus velit veritatis sapiente magni 
-                                cumque cum incidunt, alias harum modi ea pariatur debitis deleniti culpa quae fuga ad, rerum 
-                                natus. Quibusdam cumque veniam saepe nesciunt, fuga perspiciatis possimus odit iste ipsam! Ex 
-                                ad labore impedit incidunt tempora sed aliquid qui totam ducimus distinctio, quos minus aliquam 
-                                tempore officiis dolorem quidem amet mollitia, est fugiat. Numquam nihil dolor corrupti, repellat 
-                                temporibus facilis quisquam odio quam nobis doloribus harum earum quod nostrum voluptatum 
-                                quia enim iure? Quae molestias magni sint aliquid rerum, veniam aperiam? Voluptas molestias 
-                                fugiat doloremque dolorum?
+                                {data.description_hebergement}
                                 </div>
                             </div>
                             <div className={style.accommodation_detail}>
@@ -334,7 +319,7 @@ export default function HotelInfos() {
                                 <div className={style.review_container}>
                                     <div className={style.note_container_header}>
                                         <div className={style.note_container_header_left}>
-                                            <span className={style.note_container_header_label}>4</span>
+                                            <span className={style.note_container_header_label}>{data.nombre_etoile_hebergement}</span>
                                             <div className={style.note_container_header_value}>
                                                 <Rating
                                                     value={4}
@@ -348,7 +333,7 @@ export default function HotelInfos() {
                                                         })
                                                     }}
                                                 />
-                                                <span className={style.note_container_header_left_review}>1.5k reviews</span>
+                                                <span className={style.note_container_header_left_review}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                                             </div>
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
@@ -561,7 +546,7 @@ export default function HotelInfos() {
                                 <div className={style.review_container}>
                                     <div className={style.note_container_header}>
                                         <div className={style.note_container_header_left}>
-                                            <span className={style.note_container_header_label}>4</span>
+                                            <span className={style.note_container_header_label}>{ data.nombre_etoile_hebergement}</span>
                                             <div className={style.note_container_header_value}>
                                                 <Rating
                                                     value={4}
@@ -575,7 +560,7 @@ export default function HotelInfos() {
                                                         })
                                                     }}
                                                 />
-                                                <span className={style.note_container_header_left_review}>1.5k reviews</span>
+                                                <span className={style.note_container_header_left_review}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                                             </div>
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
