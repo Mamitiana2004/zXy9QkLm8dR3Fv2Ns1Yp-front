@@ -13,18 +13,21 @@ export default function Review(props) {
 
     return(
         <div className={style.container}>
-            <Rating 
-                value={props.rate} 
-                disabled 
-                cancel={false}
-                pt={{
-                    onIcon:()=>({
-                        style:{
-                            "color":"#FFD700"
-                        }
-                    })
-                }}
-            />
+            <div className={style.head}>
+                <b>{props.nom}</b>
+                <Rating 
+                    value={props.rate} 
+                    disabled 
+                    cancel={false}
+                    pt={{
+                        onIcon:()=>({
+                            style:{
+                                "color":"#FFD700"
+                            }
+                        })
+                    }}
+                />
+            </div>
             <ScrollPanel style={{ width: '100%', height: '175px' }}>
                 <span className={style.review_label}>
                     {props.review}
