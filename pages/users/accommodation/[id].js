@@ -21,40 +21,40 @@ const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
-    let images = [
-        {
-            id:1,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:2,
-            imageLink:"/images/hotel/hotel2.jpg"
-        },
-        {
-            id:3,
-            imageLink:"/images/hotel/hotel3.jpg"
-        },
-        {
-            id:4,
-            imageLink:"/images/hotel/hotel4.jpg"
-        },
-        {
-            id:5,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:6,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:7,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:8,
-            imageLink:"/images/hotel/hotel.jpg"
-        }
-    ]
+        // let images = [
+        //     {
+        //         id:1,
+        //         imageLink:"/images/hotel/chambre.jpg"
+        //     },
+        //     {
+        //         id:2,
+        //         imageLink:"/images/hotel/hotel2.jpg"
+        //     },
+        //     {
+        //         id:3,
+        //         imageLink:"/images/hotel/hotel3.jpg"
+        //     },
+        //     {
+        //         id:4,
+        //         imageLink:"/images/hotel/hotel4.jpg"
+        //     },
+        //     {
+        //         id:5,
+        //         imageLink:"/images/hotel/hotel.jpg"
+        //     },
+        //     {
+        //         id:6,
+        //         imageLink:"/images/hotel/chambre.jpg"
+        //     },
+        //     {
+        //         id:7,
+        //         imageLink:"/images/hotel/hotel.jpg"
+        //     },
+        //     {
+        //         id:8,
+        //         imageLink:"/images/hotel/hotel.jpg"
+        //     }
+        // ]
 
     const router = useRouter();
     const { id } = router.query;
@@ -369,7 +369,8 @@ export default function HotelInfos() {
                                     <Map 
                                         style={{ width: "100%", height: 500 }}
                                         lat={data.localisation.latitude}
-                                        lng={data.localisation.longitude}
+                                            lng={data.localisation.longitude}
+                                            name = {data.nom_hebergement}
                                     />
                                 ) : (
                                     <p>Loading map...</p>
@@ -570,7 +571,7 @@ export default function HotelInfos() {
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
                                     </div>
-                                    <div className={style.note_content_container}>
+                                    {/* <div className={style.note_content_container}>
                                         <NoteBar
                                             label="Value for money"
                                             value={4}
@@ -591,7 +592,7 @@ export default function HotelInfos() {
                                             value={2.1}
                                             valueMax={5}
                                         />
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
                             </div>  
@@ -616,17 +617,22 @@ export default function HotelInfos() {
                             }}
                             header="Map"
                         >
-                            <Map 
-                                style={{width:"100%",height:500}}
-                                lat={-18.9433924}
-                                lng={47.5288271}
-                            />
+                            {data.localisation?.latitude && data.localisation?.longitude ? (
+                                    <Map 
+                                        style={{ width: "100%", height: 500 }}
+                                        lat={data.localisation.latitude}
+                                    lng={data.localisation.longitude}
+                                    name = {data.nom_hebergement}
+                                    />
+                                ) : (
+                                    <p>Loading map...</p>
+                                )}
                         </TabPanel>
                     </TabView>
                     <div className={style.accommodation_card_container}>
                         <div className={style.accommodation_card}>
                             <div className={style.card_check_header}>
-                                <span className={style.check_price_container}><span className={style.check_price}>$85</span>/night</span>
+                                <span className={style.check_price_container}><span className={style.check_price}>${data.min_prix_nuit_chambre}</span>/night</span>
                                 <div className={style.card_check_header_right}>
                                     <Image src="/images/star_filled.svg" alt="star" />
                                     <span>4</span>
