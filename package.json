@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.20.0",
     "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "next": "14.2.5",
@@ -16,7 +17,8 @@
     "primereact": "^10.7.0",
     "react": "^18",
     "react-dom": "^18",
-    "react-leaflet": "^4.2.1"
+    "react-leaflet": "^4.2.1",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "eslint": "^8",
