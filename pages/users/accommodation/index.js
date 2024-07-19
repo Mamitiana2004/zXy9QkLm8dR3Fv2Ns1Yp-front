@@ -92,7 +92,7 @@ export default function Accommodation() {
                                 key={hotel.id}
                                 href={`/users/accommodation/${hotel.id}`}
                                 rate={hotel.nombre_etoile_hebergement}
-                                img={hotel.images && hotel.images[0] ? `${UrlConfig.apiBaseUrl}${hotel.images[0].images}` : 'default-image.jpg'}
+                                img={hotel.images && hotel.images[0] ? `${UrlConfig.apiBaseUrl}${hotel.images[0].image}` : 'default-image.jpg'}
                                 price={hotel.min_prix_nuit_chambre}
                                 name={hotel.nom_hebergement}
                                 localisation={`Localisation information here`}
