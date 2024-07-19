@@ -11,6 +11,8 @@ export default function Home() {
     const router=useRouter();
 
     const [regions,setRegions] = useState([]);
+    const [ville,setVille] = useState([]);
+    const [adresse,setAdresse] = useState([]);
     const getAllRegion = () =>{
         fetch("/api/region/getAll")
         .then(res=>res.json())
@@ -33,7 +35,7 @@ export default function Home() {
         fetch("http://192.168.88.37:8000/api/hebergement/avis-clients/")
         .then(res=>res.json())
         .then(data=>setReviews(data))
-        .catch(error=>console.log(error));
+        .catch(error => console.log(error));
     }
 
     useEffect(()=>{
@@ -41,11 +43,11 @@ export default function Home() {
             getAllRegion();
             getSuggestion();
             getReview();
+            
         }
     },[]);
 
-    
-    
+        
     
 
     return(
@@ -92,15 +94,22 @@ export default function Home() {
                     </div>
                     <div className={style.review_item_container}>
                         {
-                            reviews.map((review,index)=>{
-                                return  <Review
+                            reviews.map((review, index) => {
+                                // try{
+                                //     setAdresse(review.hebergement.localisation.adresse)
+                                //     setVille(review.hebergement.localisation.ville)
+                                // } catch {
+                                    
+                                // }
+                                return <Review
+
                                             key={index}
                                             rate={review.note}
                                             review={review.commentaire}
-                                            hebergement={review.hebergement.nom_hebergement}
+                                            nom ={review.hebergement.nom_hebergement}
                                             username={review.client.username==null ? "Guest":review.client.username}
                                             userPhoto={review.client.profilPic}
-                                            localisation={`${review.hebergement.localisation.adresse} - ${review.hebergement.localisation.ville}`}
+                                            localisation={`${review.hebergement.localisation==null ? "" :review.hebergement.localisation.adresse} - ${review.hebergement.localisation==null ? "" :review.hebergement.localisation.ville}`}
                                         />
                             })
                         }
