@@ -65,6 +65,8 @@ export default function HotelInfos() {
     const [imageHotel, setImageHotels] = useState(false);
     const [chambre, setChambre] = useState([]);
     const [chambre_id, setChambre_id] = useState(false);
+    const [accessoires, setAccessoires] = useState({});
+    const [accessoiresHaves, setAccessoiresHaves] = useState([]);
     
     useEffect(() => {
         const fetchData = async () => {
@@ -88,6 +90,12 @@ export default function HotelInfos() {
                     console.log(result.chambres[0].images_chambre[0].images);
               
                 }
+                if (result.accessoires) {
+                    setAccessoires(result.accessoires);
+                }
+                if (result.accessoires_haves) {
+                    setAccessoiresHaves(result.accessoires_haves);
+                }
             } catch (error) {
                 console.error('Erreur:', error);
             }
@@ -102,6 +110,25 @@ export default function HotelInfos() {
         else 
             return style.tab;
     }
+
+    const renderAmenities = () => {
+        return Object.keys(accessoires).map((category, index) => (
+            <div key={index} className={style.amenties}>
+                <span className={style.amenties_title}>
+                    <i className="pi pi-lock" />
+                    {category}
+                </span>
+                <div className={style.amenties_detail_container}>
+                    {accessoires[category].map((item, i) => (
+                        <span key={i} className={style.amenties_detail}>
+                            <i className="pi pi-check" />
+                            {item.nom_accessoire}
+                        </span>
+                    ))}
+                </div>
+            </div>
+        ));
+    };
     return(
         <>
             <Head>
@@ -171,155 +198,12 @@ export default function HotelInfos() {
                                 {data.description_hebergement}
                                 </div>
                             </div>
-                            <div className={style.accommodation_detail}>
+                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
                                 <div className={style.amenties_container}>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {renderAmenities()}
                                 </div>
-                            </div>  
+                            </div>
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Reviews & ratings</span>
                                 <div className={style.review_container}>
@@ -387,162 +271,19 @@ export default function HotelInfos() {
                         </TabPanel>
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,1)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 1)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header="Amenities"
                         >
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
                                 <div className={style.amenties_container}>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            {data.accessoires}
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {renderAmenities()}
                                 </div>
-                            </div>   
+                            </div>
                         </TabPanel>
                         <TabPanel
                             pt={{
