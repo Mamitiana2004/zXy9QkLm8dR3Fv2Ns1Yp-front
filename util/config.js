@@ -1,5 +1,5 @@
 const UrlConfig = {
-    apiBaseUrl: 'http://localhost:8000',
+    apiBaseUrl: 'http://192.168.88.37:8000',
     adminUrl: '/admin',
 }
 

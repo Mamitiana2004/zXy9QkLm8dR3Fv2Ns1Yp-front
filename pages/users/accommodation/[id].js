@@ -74,12 +74,13 @@ export default function HotelInfos() {
                     throw new Error('Erreur lors de la récupération des données');
                 }
                 const result = await response.json();
-                console.log(result);
+                // console.log(result);
 
                 // Mettre à jour les données et les images ici
                 setData(result);
-                if (result.imageHotel) { // Suppose que les images sont dans `result.images`
-                    setImageHotels(result.imageHotel);
+                if (result.images) { // Suppose que les images sont dans `result.images`
+                    setImageHotels(result.images);
+                    console.log(result.images);
                 }
             } catch (error) {
                 console.error('Erreur:', error);
