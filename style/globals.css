@@ -60,3 +60,45 @@ body{
 .nprogress-busy{
     display: none;
 }
+
+.p-paginator{
+    background-color: transparent;
+    color: #000;
+    display: flex;
+    gap: 30px;
+}
+
+.p-paginator-pages{
+    display: flex;
+    gap: 30px;
+}
+
+.p-paginator-page{
+    border-radius: 0px;
+    border: 1px solid #305555;
+    font-weight: 700; 
+}
+
+.p-paginator-page-start{
+    background-color: #305555;
+    color: #fff;
+}
+
+.p-paginator-next{
+    border-radius: 0px;
+    border: 1px solid #305555;
+    font-weight: 700;   
+}
+
+.p-paginator-prev{
+    border-radius: 0px;
+    border: 1px solid #305555;
+    font-weight: 700;   
+}
+
+.p-paginator-first{
+    display: none;
+}
+.p-paginator-last{
+    display: none;
+}
