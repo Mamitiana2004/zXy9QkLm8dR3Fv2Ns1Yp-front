@@ -63,6 +63,7 @@ export default function HotelInfos() {
     const [availability, setAvailability] = useState(false);
     const [data, setData] = useState(false);
     const [imageHotel, setImageHotels] = useState(false);
+    const [chambre, setChambre] = useState([]);
     
     useEffect(() => {
         const fetchData = async () => {
@@ -76,11 +77,15 @@ export default function HotelInfos() {
                 const result = await response.json();
                 // console.log(result);
 
-                // Mettre à jour les données et les images ici
                 setData(result);
-                if (result.images) { // Suppose que les images sont dans `result.images`
+                if (result.images) {
                     setImageHotels(result.images);
-                    console.log(result.images);
+                    // console.log(result.images);
+                }
+                if (result.chambres) {
+                    setChambre(result.chambres);
+                    console.log(result.chambres[0].images_chambre[0].images);
+             
                 }
             } catch (error) {
                 console.error('Erreur:', error);
@@ -632,7 +637,7 @@ export default function HotelInfos() {
                     <div className={style.accommodation_card_container}>
                         <div className={style.accommodation_card}>
                             <div className={style.card_check_header}>
-                                <span className={style.check_price_container}><span className={style.check_price}>${data.min_prix_nuit_chambre}</span>/night</span>
+                                <span className={style.check_price_container}><span className={style.check_price}>$10000</span>/night</span>
                                 <div className={style.card_check_header_right}>
                                     <Image src="/images/star_filled.svg" alt="star" />
                                     <span>4</span>
@@ -673,8 +678,8 @@ export default function HotelInfos() {
                             <Button onClick={()=>setBookingVisible(true)} className="button-primary" label="Book now"/>
                         </div>
                         
-                        <div className={style.accommodation_card}>
-                            <span className={style.card_availability_title}>Availability (2)</span>
+                        {/* <div className={style.accommodation_card}>
+                            <span className={style.card_availability_title}>Availability (0)</span>
                             <div className={style.separateur}></div>
                             <ScrollPanel className={style.card_availability_parent}>
                                 <div className={style.chambre_list}>
@@ -682,7 +687,7 @@ export default function HotelInfos() {
                                         <div className={style.chambre_top}>
                                             <div className={style.checkbox_container}>
                                                 <input type='checkbox' className={style.checkbox}/>
-                                                <span className={style.checkbox_label}>Luxury room - A03</span>
+                                                <span className={style.checkbox_label}></span>
                                             </div>
                                             <span className={style.chambre_price}>$85</span>
                                         </div>
@@ -738,6 +743,38 @@ export default function HotelInfos() {
                                         <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
                                     </div>
                                     <div className={style.separateur}></div>
+                                </div>
+                            </ScrollPanel>
+                        </div> */}
+                         <div className={style.accommodation_card}>
+                            <span className={style.card_availability_title}>Availability ({chambre.length})</span>
+                            <div className={style.separateur}></div>
+                            <ScrollPanel className={style.card_availability_parent}>
+                                <div className={style.chambre_list}>
+                                    {chambre.map((roomData, index) => (
+                                        <div key={index}>
+                                            <div className={style.chambre_container}>
+                                                <div className={style.chambre_top}>
+                                                    <div className={style.checkbox_container}>
+                                                        <input type='checkbox' className={style.checkbox}/>
+                                                        <span className={style.checkbox_label}>{roomData.chambre.type_chambre}</span>
+                                                    </div>
+                                                    <span className={style.chambre_price}>${roomData.prix_nuit_chambre}</span>
+                                                </div>
+                                                <div className={style.chambre_body}>
+                                                    <Image imageClassName={style.chambre_image} alt="chambre" src={roomData.images_chambre[0] != null ? UrlConfig.apiBaseUrl+roomData.images_chambre[0].images : "/images/hotel/chambre.jpg"} />
+                                                    <div className={style.chambre_detail}>
+                                                        <span><i className="pi pi-home" /> {roomData.chambre.nombre_min_personnes} - {roomData.chambre.nombre_max_personnes} Personnes</span>
+                                                        {roomData.accessoires.map(accessoire => (
+                                                            <span key={accessoire.id}><i className="pi pi-tv" /> {accessoire.nom_accessoire}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <Button onClick={() => setAvailability(true)} className="button-primary" label="Details" />
+                                            </div>
+                                            <div className={style.separateur}></div>
+                                        </div>
+                                    ))}
                                 </div>
                             </ScrollPanel>
                         </div>
