@@ -1,0 +1,28 @@
+.container{
+    margin: 40px 10vw;
+    display: flex;
+    flex-direction: column;
+    gap: 100px;
+}
+
+.suggestion_container{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.suggestion_title{
+    font-size: 30px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: oblique;
+    letter-spacing: -2px;
+    font-weight: 100;
+}
+
+.suggestion_body{
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
