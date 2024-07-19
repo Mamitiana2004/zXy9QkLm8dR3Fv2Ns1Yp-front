@@ -1,9 +1,9 @@
-import ProductCard from '@/components/card/ProductCard';
-import Loader from '@/layouts/Loader';
+import DetailProduct from '@/components/card/DetailProduct';
+import DetailTravel from '@/components/card/DetailTravel';
+import PopularTripCard from '@/components/card/PopularTripCard';
+import TripCard from '@/components/card/TripCard';
+import TimelineEvent from '@/layouts/users/tour/TimelineEvent';
 import dynamic from 'next/dynamic';
-
-import { InputOtp } from 'primereact/inputotp';
-        
 const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
 
 
@@ -11,7 +11,7 @@ const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
 export default function Test() {
     return (
         <div>
-            <InputOtp length={6}/>
+            <TimelineEvent/>
         </div>
     )
 }
