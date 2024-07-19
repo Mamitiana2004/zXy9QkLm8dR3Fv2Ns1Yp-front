@@ -4,44 +4,55 @@ import dynamic from "next/dynamic";
 import ListCheckbox from "@/components/ListCheckbox";
 import HotelCard from "@/components/card/HotelCard";
 import React, { useState, useEffect } from 'react';
-import UrlConfig from "@/util/config";
 import { getCsrfTokenDirect } from "@/util/csrf";
 import Filter from "@/components/Filter";
+import { UrlConfig } from "@/util/config";
 
-const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
+const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false });
 
 export default function Accommodation() {
     const [hotels, setHotels] = useState([]);
-    
-
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchHotels = async () => {
             try {
                 const csrfToken = await getCsrfTokenDirect();
-                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`, {
+                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
                         'X-CSRFToken': csrfToken,
                     },
-                })
-                .then(res => res.json())
-                .then(data => {
-                        setHotels(data.hebergements);
-                    }
-                )
-                .catch(error => console.log(error))
-                
-                
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch hotels');
+                }
+
+                const data = await response.json();
+                setHotels(data.hebergements);
+                setLoading(false);
             } catch (error) {
                 console.error('Error fetching hotel data:', error);
+                setError(error);
+                setLoading(false);
             }
         };
 
         fetchHotels();
     }, []);
-    return(
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+    return (
         <>
             <Head>
                 <title>Accommodation</title>
@@ -54,13 +65,13 @@ export default function Accommodation() {
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
-                        <Filter/>
+                        <Filter />
                     </div>
                 </div>
                 <div className={style.filter_header_container}>
                     <span className={style.filter_header_left}>
                         Properties in Antananarivo :    
-                        <span className={style.filter_header_left_bold}> 252 properties found</span>
+                        <span className={style.filter_header_left_bold}> {hotels.length} properties found</span>
                     </span>
                     <div></div>
                 </div>
@@ -70,59 +81,27 @@ export default function Accommodation() {
                             lat={-18.9433924}
                             lng={47.5288271}
                         />
-                        <ListCheckbox/>
-                        <ListCheckbox/>
-                        <ListCheckbox/>
-                        <ListCheckbox/>
+                        <ListCheckbox />
+                        <ListCheckbox />
+                        <ListCheckbox />
+                        <ListCheckbox />
                     </div>
                     <div className={style.filter_right}>
-                       
-                        {
-                            hotels.map((hotel) => { { console.log('image ', hotel.images[0].images)}
-                                return <HotelCard
-                                    key={hotel.id}
-                                    href={`/users/accommodation/${hotel.id}`}
-                                    rate={hotel.nombre_etoile_hebergement}
-                                    img={`${UrlConfig.apiBaseUrl}${hotel.images[0].images}`}
-                                    price={hotel.min_prix_nuit_chambre}
-                                    name={hotel.nom_hebergement}
-                                    localisation={`Localisation information here`}
-                                    description={hotel.description_hebergement}
-                                />
-                            })
-                        }
-{/*                         
-                        <HotelCard
-                            href="/users/accommodation/1"
-                            rate="3"
-                            view="360"
-                            price="29.5"
-                            name="Hote le Louvre & Span"
-                            localisation="Antaninarenina, Antananarivo 101 - 0,5 km from center"
-                            description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporiLorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporis totam dolores dolor voluptatem voluptate quisquam sit animi fugit sapiente"
-                        />
-                        <HotelCard
-                            href="/users/accommodation/1"
-                            rate="3"
-                            view="360"
-                            price="29.5"
-                            name="Hote le Louvre & Span"
-                            localisation="Antaninarenina, Antananarivo 101 - 0,5 km from center"
-                            description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporiLorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporis totam dolores dolor voluptatem voluptate quisquam sit animi fugit sapiente"
-                        />
-                        <HotelCard
-                            href="/users/accommodation/1"
-                            rate="3"
-                            view="360"
-                            price="29.5"
-                            name="Hote le Louvre & Span"
-                            localisation="Antaninarenina, Antananarivo 101 - 0,5 km from center"
-                            description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporiLorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita, vero dolore esse hic alias corporis totam dolores dolor voluptatem voluptate quisquam sit animi fugit sapiente"
-                        /> */}
+                        {hotels.map((hotel) => (
+                            <HotelCard
+                                key={hotel.id}
+                                href={`/users/accommodation/${hotel.id}`}
+                                rate={hotel.nombre_etoile_hebergement}
+                                img={hotel.images && hotel.images[0] ? `${UrlConfig.apiBaseUrl}${hotel.images[0].image}` : 'default-image.jpg'}
+                                price={hotel.min_prix_nuit_chambre}
+                                name={hotel.nom_hebergement}
+                                localisation={`Localisation information here`}
+                                description={hotel.description_hebergement}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
-
         </>
-    )
+    );
 }
