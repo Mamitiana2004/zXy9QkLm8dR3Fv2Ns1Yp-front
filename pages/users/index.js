@@ -30,7 +30,7 @@ export default function Home() {
     //review
     const [reviews,setReviews] = useState([]);
     const getReview = () =>{
-        fetch("/api/hotel/getReview")
+        fetch("http://192.168.88.37:8000/api/hebergement/avis-clients/")
         .then(res=>res.json())
         .then(data=>setReviews(data))
         .catch(error=>console.log(error));
@@ -97,9 +97,10 @@ export default function Home() {
                                             key={index}
                                             rate={review.note}
                                             review={review.commentaire}
-                                            username={review.username}
-                                            userPhoto={review.userPhoto}
-                                            localisation={review.userAdresse}
+                                            hebergement={review.hebergement.nom_hebergement}
+                                            username={review.client.username==null ? "Guest":review.client.username}
+                                            userPhoto={review.client.profilPic}
+                                            localisation={`${review.hebergement.localisation.adresse} - ${review.hebergement.localisation.ville}`}
                                         />
                             })
                         }

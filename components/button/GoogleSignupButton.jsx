@@ -54,7 +54,7 @@ const GoogleSignupButton = () => {
     };
 
     return (
-        <Button className={style.button_container} onclick={handleSignUp}>
+        <Button className={style.button_container} onClick={handleSignUp}>
             <Image imageClassName={style.image_google} width={25} height={25}  alt="G" src="/images/google.png"/>
             Signup with Google
         </Button>
