@@ -20,6 +20,41 @@ const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
+    let images = [
+        {
+            id:1,
+            imageLink:"/images/hotel/chambre.jpg"
+        },
+        {
+            id:2,
+            imageLink:"/images/hotel/hotel2.jpg"
+        },
+        {
+            id:3,
+            imageLink:"/images/hotel/hotel3.jpg"
+        },
+        {
+            id:4,
+            imageLink:"/images/hotel/hotel4.jpg"
+        },
+        {
+            id:5,
+            imageLink:"/images/hotel/hotel.jpg"
+        },
+        {
+            id:6,
+            imageLink:"/images/hotel/chambre.jpg"
+        },
+        {
+            id:7,
+            imageLink:"/images/hotel/hotel.jpg"
+        },
+        {
+            id:8,
+            imageLink:"/images/hotel/hotel.jpg"
+        }
+    ]
+
     const router = useRouter();
     const { id } = router.query;
 
@@ -80,7 +115,7 @@ export default function HotelInfos() {
                         </div>
                     </div>
                 </div>
-                <GallerieHotel/>
+                <GallerieHotel images={images} />
                 <div className={style.body_accommodation}>
                     <TabView
                         pt={{

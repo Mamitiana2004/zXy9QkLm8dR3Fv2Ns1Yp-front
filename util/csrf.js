@@ -18,26 +18,37 @@ export const getCsrfToken = async () => {
     }
 };
 
+// import Cookies from 'js-cookie';
+
 export const fetch_new_access = async () => {
     try {
-        const refresh = Cookies.get('refresh_token');
-        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/token/refresh/`, {
-            method: "POST",
+        const refreshToken = Cookies.get('refresh_token'); // Assurez-vous que le token de rafraîchissement est stocké dans les cookies
+        if (!refreshToken) {
+            throw new Error("No refresh token available");
+        }
+        
+        const response = await fetch('http://localhost:8000/api/token/refresh/', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ refresh: refresh }),
+            body: JSON.stringify({ refresh: refreshToken })
         });
-
-
+        
         const data = await response.json();
-        // console.log("CSRF token set:", data);
-        return data.access;
+        if (response.ok) {
+            Cookies.set('access_token', data.access); // Stocker le nouveau token d'accès
+            return data.access;
+        } else {
+            console.error('Error refreshing token:', data);
+            throw new Error(data.detail);
+        }
     } catch (error) {
-        // console.error("Error fetching CSRF token:", error.message);
+        console.error('Error:', error);
         throw error;
     }
 };
+
 
 
 export const getCsrfFromToken = async () => {
