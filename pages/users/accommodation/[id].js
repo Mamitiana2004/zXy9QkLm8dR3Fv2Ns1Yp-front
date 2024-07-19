@@ -121,7 +121,7 @@ export default function HotelInfos() {
                             <span className={style.header_left_review}> ( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                             <span className={style.header_left_localisation}>
                                 <i className='pi pi-map-marker'/>
-                                {data.description_hebergement}
+                                {data.localisation?.adresse}, {data.localisation?.ville}
                             </span>
                         </div>  
                     </div>
@@ -338,7 +338,7 @@ export default function HotelInfos() {
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
                                     </div>
-                                    <div className={style.note_content_container}>
+                                    {/* <div className={style.note_content_container}>
                                         <NoteBar
                                             label="Value for money"
                                             value={4}
@@ -359,18 +359,23 @@ export default function HotelInfos() {
                                             value={2.1}
                                             valueMax={5}
                                         />
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
                             </div> 
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Map</span>
-                                <Map 
-                                    style={{width:"100%",height:500}}
-                                    lat={-18.9433924}
-                                    lng={47.5288271}
-                                />
+                                {data.localisation?.latitude && data.localisation?.longitude ? (
+                                    <Map 
+                                        style={{ width: "100%", height: 500 }}
+                                        lat={data.localisation.latitude}
+                                        lng={data.localisation.longitude}
+                                    />
+                                ) : (
+                                    <p>Loading map...</p>
+                                )}
                             </div>
+
                         </div>
                         </TabPanel>
                         <TabPanel

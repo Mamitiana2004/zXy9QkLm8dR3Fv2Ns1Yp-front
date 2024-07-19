@@ -95,7 +95,7 @@ export default function Accommodation() {
                                 img={hotel.images && hotel.images[0] ? `${UrlConfig.apiBaseUrl}${hotel.images[0].image}` : 'default-image.jpg'}
                                 price={hotel.min_prix_nuit_chambre}
                                 name={hotel.nom_hebergement}
-                                localisation={`Localisation information here`}
+                                localisation={hotel.localisation ? `${hotel.localisation.adresse}, ${hotel.localisation.ville}` : 'Location not available'}
                                 description={hotel.description_hebergement}
                             />
                         ))}
