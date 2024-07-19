@@ -3,6 +3,7 @@ import style from './../style/components/GallerieHotel.module.css';
 import { Galleria } from "primereact/galleria";
 import { Image } from "primereact/image";
 import { useEffect, useRef, useState } from "react";
+import { UrlConfig } from '@/util/config';
 
 export default function GallerieHotel(props) {
  
@@ -19,10 +20,10 @@ export default function GallerieHotel(props) {
 
 
     const itemTemplate =(item)=>{
-        return <Image alt='image' style={{ width: '100%', display: 'block' }} src={item.imageLink}/>;
+        return <Image alt='image' style={{ width: '100%', display: 'block' }} src={UrlConfig.apiBaseUrl+item.image}/>;
     }
     const thumbnails =(item)=>{
-        return <Image alt='image' style={{ display: 'block' }} src={item.imageLink}/>;
+        return <Image alt='image' style={{ display: 'block' }} src={UrlConfig.apiBaseUrl+item.image}/>;
     }
 
 
@@ -52,7 +53,7 @@ export default function GallerieHotel(props) {
                                         key={index}
                                         style={{ cursor: 'pointer' }} 
                                         onClick={() => {setActiveIndex(index); gallerie.current.show()}}
-                                        src={image.imageLink} 
+                                        src={UrlConfig.apiBaseUrl+image.image} 
                                         imageClassName={style.firstImage}
                                         alt='image'
                                     />;   
@@ -67,7 +68,7 @@ export default function GallerieHotel(props) {
                                             key={index}
                                             style={{ cursor: 'pointer' }} 
                                             onClick={() => {setActiveIndex(index); gallerie.current.show()}}
-                                            src={image.imageLink} 
+                                            src={UrlConfig.apiBaseUrl+image.image} 
                                             imageClassName={style.otherImage}
                                             alt='image'
                                         />;   
@@ -82,7 +83,7 @@ export default function GallerieHotel(props) {
                                             <Image 
                                                 key={index}
                                                 style={{ cursor: 'pointer' }} 
-                                                src={image.imageLink} 
+                                                src={UrlConfig.apiBaseUrl+image.image} 
                                                 imageClassName={style.otherImage}
                                                 alt='image'
                                             /> 
@@ -105,7 +106,7 @@ export default function GallerieHotel(props) {
                                     key={index}
                                     style={{ cursor: 'pointer' }} 
                                     onClick={() => {setActiveIndex(index); gallerie.current.show()}}
-                                    src={image.imageLink} 
+                                    src={UrlConfig.apiBaseUrl+image.image} 
                                     imageClassName={style.list_image_item}
                                     alt='image'
                                 />;  
