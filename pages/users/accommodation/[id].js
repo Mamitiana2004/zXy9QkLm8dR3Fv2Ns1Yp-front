@@ -344,7 +344,7 @@ export default function HotelInfos() {
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
                                     </div>
-                                    {/* <div className={style.note_content_container}>
+                                    <div className={style.note_content_container}>
                                         <NoteBar
                                             label="Value for money"
                                             value={4}
@@ -365,7 +365,7 @@ export default function HotelInfos() {
                                             value={2.1}
                                             valueMax={5}
                                         />
-                                    </div> */}
+                                    </div>
                                 </div>
                                 <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
                             </div> 
@@ -400,7 +400,7 @@ export default function HotelInfos() {
                                     <div className={style.amenties}>
                                         <span className={style.amenties_title}>
                                             <i className="pi pi-lock" />
-                                            Security
+                                            {data.accessoires}
                                         </span>
                                         <div className={style.amenties_detail_container}>
                                             <span className={style.amenties_detail}>
@@ -638,7 +638,7 @@ export default function HotelInfos() {
                     <div className={style.accommodation_card_container}>
                         <div className={style.accommodation_card}>
                             <div className={style.card_check_header}>
-                                <span className={style.check_price_container}><span className={style.check_price}>$10000</span>/night</span>
+                                <span className={style.check_price_container}><span className={style.check_price}>$90</span>/night</span>
                                 <div className={style.card_check_header_right}>
                                     <Image src="/images/star_filled.svg" alt="star" />
                                     <span>4</span>
