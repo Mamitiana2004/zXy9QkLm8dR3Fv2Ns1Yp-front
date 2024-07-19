@@ -79,9 +79,9 @@
     display: flex;
     gap: 40px;
     align-items: center;
-    -webkit-overflow-scrolling: touch;
+    /* -webkit-overflow-scrolling: touch; */
 }
 
-.review_item_container::-webkit-scrollbar{
+/* .review_item_container::-webkit-scrollbar{
     display: none;
-}
+} */
