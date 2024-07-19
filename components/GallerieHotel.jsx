@@ -10,43 +10,10 @@ export default function GallerieHotel(props) {
     const [activeIndex,setActiveIndex] = useState(0);
     const [allPhotoVisible,setAllPhotoVisible] = useState(false);
 
-    let images = [
-        {
-            id:1,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:2,
-            imageLink:"/images/hotel/hotel2.jpg"
-        },
-        {
-            id:3,
-            imageLink:"/images/hotel/hotel3.jpg"
-        },
-        {
-            id:4,
-            imageLink:"/images/hotel/hotel4.jpg"
-        },
-        {
-            id:5,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:6,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:7,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:8,
-            imageLink:"/images/hotel/hotel.jpg"
-        }
-    ]
+    
 
     const nombreImageNonAffiche = () =>{
-        let nombreImage = images.length;
+        let nombreImage = props.images.length;
         return nombreImage - 5;
     }
 
@@ -66,7 +33,7 @@ export default function GallerieHotel(props) {
         <>
             <Galleria 
                 ref={gallerie} 
-                value={images} 
+                value={props.images} 
                 numVisible={7}
                 activeIndex={activeIndex}
                 onItemChange={(e) => setActiveIndex(e.index)}
@@ -79,7 +46,7 @@ export default function GallerieHotel(props) {
             />
             <div className={style.container}>
                     {
-                        images && images.map((image, index) => {
+                        props.images && props.images.map((image, index) => {
                             if (index==0) {
                                 return <Image 
                                         key={index}
@@ -94,7 +61,7 @@ export default function GallerieHotel(props) {
                     }
                     <div className={style.other_image_container}>
                         {
-                            images && images.map((image, index) => {
+                            props.images && props.images.map((image, index) => {
                                 if (index!=0 && index<4) {
                                     return <Image 
                                             key={index}
@@ -108,7 +75,7 @@ export default function GallerieHotel(props) {
                             })
                         }
                         {
-                            images && images.map((image, index) => {
+                            props.images && props.images.map((image, index) => {
                                 if (index==4) {
                                     return (
                                         <div key={index} onClick={()=>setAllPhotoVisible(true)} className={style.all_otherImage_container}>
@@ -133,7 +100,7 @@ export default function GallerieHotel(props) {
             <Dialog onHide={() => setAllPhotoVisible(false)} visible={allPhotoVisible} maximizable style={{ width: '70vw' }}>
                 <div className={style.listePhoto}>
                     {
-                        images && images.map((image, index) => {
+                        props.images && props.images.map((image, index) => {
                             return <Image 
                                     key={index}
                                     style={{ cursor: 'pointer' }} 
