@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import DetailChambre from "@/components/modal/DetailChambre";
 import Filter from "@/components/Filter";
 import { useRouter } from "next/router";
+import { UrlConfig } from "@/util/config";
 
 
 const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
@@ -60,11 +61,34 @@ export default function HotelInfos() {
 
     const [bookingVisible,setBookingVisible]=useState(false);
     const [availability, setAvailability] = useState(false);
+    const [data, setData] = useState(false);
+    const [imageHotel, setImageHotels] = useState(false);
     
     useEffect(() => {
-        
-    },[router,id])
+        const fetchData = async () => {
+            if (!id) return; 
 
+            try {
+                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la récupération des données');
+                }
+                const result = await response.json();
+                console.log(result);
+
+                // Mettre à jour les données et les images ici
+                setData(result);
+                if (result.imageHotel) { // Suppose que les images sont dans `result.images`
+                    setImageHotels(result.imageHotel);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        };
+
+        fetchData();
+    }, [id]);
+    
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
             return style.tab_active;
@@ -89,14 +113,14 @@ export default function HotelInfos() {
                 </div>
                 <div className={style.header_container}>
                     <div className={style.header_left}>
-                        <span className={style.header_left_title}>Le Louvre Hotel & Spa</span>
+                        <span className={style.header_left_title}>{data.nom_hebergement}</span>
                         <div className={style.header_left_detail}>
                             <Image alt="star" src="/images/star_filled.svg"/>
-                            <span>4</span>
+                            <span>{data.nombre_etoile_hebergement}</span>
                             <span className={style.header_left_review}>(1.5k reviews)</span>
                             <span className={style.header_left_localisation}>
                                 <i className='pi pi-map-marker'/>
-                                4 Kianina Philibert Tsiranana, Antaninarenina, Antananarivo 101
+                                {data.description_hebergement}
                             </span>
                         </div>  
                     </div>
@@ -115,7 +139,7 @@ export default function HotelInfos() {
                         </div>
                     </div>
                 </div>
-                <GallerieHotel images={images} />
+                {imageHotel.length > 0 && <GallerieHotel images={imageHotel} />}
                 <div className={style.body_accommodation}>
                     <TabView
                         pt={{
