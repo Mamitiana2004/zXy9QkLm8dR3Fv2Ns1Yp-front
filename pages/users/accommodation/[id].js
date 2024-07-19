@@ -64,6 +64,7 @@ export default function HotelInfos() {
     const [data, setData] = useState(false);
     const [imageHotel, setImageHotels] = useState(false);
     const [chambre, setChambre] = useState([]);
+    const [chambre_id, setChambre_id] = useState(false);
     
     useEffect(() => {
         const fetchData = async () => {
@@ -85,7 +86,7 @@ export default function HotelInfos() {
                 if (result.chambres) {
                     setChambre(result.chambres);
                     console.log(result.chambres[0].images_chambre[0].images);
-             
+              
                 }
             } catch (error) {
                 console.error('Erreur:', error);
@@ -770,7 +771,8 @@ export default function HotelInfos() {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <Button onClick={() => setAvailability(true)} className="button-primary" label="Details" />
+                                                <Button onClick={() => { setChambre_id(roomData.id) ,setAvailability(true) }} className="button-primary" label="Details" />
+
                                             </div>
                                             <div className={style.separateur}></div>
                                         </div>
@@ -785,7 +787,8 @@ export default function HotelInfos() {
 
 
             <BookingModal visible={bookingVisible} onHide={()=>setBookingVisible(false)} />
-            <DetailChambre visible={availability} onHide={()=>setAvailability(false)}/>
+            <DetailChambre visible={availability} id={chambre_id} onHide={()=>setAvailability(false)}/>
+
         </>
     )
 }
