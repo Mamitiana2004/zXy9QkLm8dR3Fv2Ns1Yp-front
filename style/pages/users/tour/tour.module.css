@@ -44,6 +44,174 @@
 }
 
 
+.categorie_container{
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    justify-content: center;
+    align-items: center;
+}
+
+.categorie_top{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.categorie_title{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: oblique;
+    font-size: 32px;
+    letter-spacing: -2px;
+}
+
+
+.categorie_subtitle{
+    font-size: 16px;
+    text-align: center;
+    width: 80%;
+}
+
+
+.image_categorie_container{
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
+.image_categorie{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image_categorie{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image_middle{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 10px;
+}
+
+.image_categorie_content:first-child{
+    grid-row: 1 / -1;
+    grid-column: 1 / 2;
+    position: relative;
+    cursor: pointer;
+    max-width: 400px;
+}
+
+.image_categorie_content:last-child{
+    grid-row: 1 / -1;
+    grid-column: 3 / 4;
+    position: relative;
+    cursor: pointer;
+    max-width: 400px;
+}
+.image_categorie_content:not(:first-child):not(:last-child)  {
+    position: relative;
+}
+
+.image_categorie_detail{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#0000,#0009);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    color: #fff;
+    padding: 50px 10px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+
+
+.top_value_container{
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+}
+
+.top_value_top{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.top_value_title{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: oblique;
+    font-size: 32px;
+    letter-spacing: -2px;
+}
+
+
+.top_value_subtitle{
+    font-size: 16px;
+    text-align: center;
+    width: 80%;
+}
+
+.top_value_body{
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+.top_value_body_left{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+
+.top_value_left_detail_container{
+    display: flex;
+    align-items: center;
+    gap: 70px;
+    padding: 40px;
+}
+
+
+
+.top_value_left_detail_image{
+    width: 40px;
+    height: 40px;
+}
+
+.top_value_left_detail{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 600px;
+}
+
+.top_value_left_detail_title{
+    font-size: 26px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: oblique;
+    letter-spacing: -2px;
+    font-weight: 100;
+}
+
 
 .suggestion_container{
     width: 100%;
@@ -82,3 +250,88 @@
     align-items: center;
 }
 
+.group_trip_container{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 50px;
+}
+
+
+.image_group_trip{
+    height: 400px;
+    width: auto;
+    object-fit: cover;
+}
+
+.group_trip_detail{
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.group_trip_title{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: oblique;
+    font-size: 32px;
+    letter-spacing: -2px;
+}
+
+.group_trip_subtitle{
+    font-size: 15px;
+    width: 600px;
+}
+
+.list_operator_container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.list_operator_title{
+    width: 100%;
+    text-align: center;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-style: oblique;
+    font-size: 32px;
+    letter-spacing: -2px;
+}
+.list_operator{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.operator{
+    width: 400px;
+    height: 250px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.image_operator{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.operator_detail{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: linear-gradient(#0000,#0009);
+    padding: 30px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 24px;
+    font-weight: 700;
+}

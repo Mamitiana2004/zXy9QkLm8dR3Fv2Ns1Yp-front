@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import style from './../style/components/FilterMap.module.css';
-import { MapContainer, TileLayer } from "react-leaflet";
 import { useRouter } from 'next/router';
+import { GoogleMap, LoadScript } from '@react-google-maps/api';
 export default function FilterMap(props) {
 
     const router = useRouter();
@@ -13,11 +13,16 @@ export default function FilterMap(props) {
     return(
         <div className={style.container}>
             <div className={style.container} style={{zIndex:2}}>
-                <MapContainer className={style.map} center={[props.lat, props.lng]} zoom={11} zoomControl={false}>
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                <LoadScript
+                    googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API}
+                >
+                    <GoogleMap
+                        mapContainerClassName={style.map}
+                        center={{lat:props.lat,lng:props.lng}}
+                        zoom={16}
+                        options={{ mapTypeId: 'satellite' }}
                     />
-                </MapContainer>
+                </LoadScript>
             </div>
             <Button onClick={openMap} iconPos='right' className={style.button} icon="pi pi-map-marker" label='Explore map'/>
         </div>

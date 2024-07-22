@@ -2,8 +2,12 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 import style from './../../style/components/card/TripCard.module.css';
 import { Button } from 'primereact/button';
 import { Image } from 'primereact/image';
+import { useRouter } from 'next/router';
 
 export default function TripCard(props) {
+
+    const router = useRouter();
+
     return(
         <div className={style.container}>
             <Image alt='Hotel' src='/images/hotel/chambre.jpg' imageClassName={style.image_container} />

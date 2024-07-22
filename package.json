@@ -9,16 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^4.20.0",
+    "@react-google-maps/api": "^2.19.3",
+    "firebase": "^10.12.3",
+    "firebase-auth": "^0.1.2",
+    "i18next": "^23.12.2",
     "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "next": "14.2.5",
+    "next-i18next": "^15.3.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.7.0",
     "react": "^18",
     "react-dom": "^18",
-    "react-leaflet": "^4.2.1",
-    "sqlite3": "^5.1.7"
+    "react-i18next": "^15.0.0",
+    "react-leaflet": "^4.2.1"
   },
   "devDependencies": {
     "eslint": "^8",
