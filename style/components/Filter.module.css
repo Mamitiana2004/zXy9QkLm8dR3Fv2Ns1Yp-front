@@ -16,6 +16,12 @@
     color: #000;
 }
 
+.dropdown_large{
+    background-color: transparent;
+    width: 250px;
+    color: #000;
+}
+
 .dropdown_trigger{
     display: none;
 }
@@ -29,9 +35,9 @@
     color: #000;
 }
 
-.calendar{
+.calendar_check{
     background-color: transparent;
-    width: 200px;
+    width: 300px;
 }
 
 .input_number{

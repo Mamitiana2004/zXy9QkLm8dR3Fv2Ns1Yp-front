@@ -4,8 +4,9 @@ import { Dropdown } from 'primereact/dropdown';
 import { useEffect, useState } from 'react';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
+import { useRouter } from 'next/router';
 export default function FilterTour(props) {
-
+    const router = useRouter();
     const [operatorTourSelected,setOperatorTourSelected]=useState();
     let operator=[
         {
@@ -28,6 +29,7 @@ export default function FilterTour(props) {
     const [periode,setPeriode]=useState(null);
 
     const search = () =>{
+        router.push("/users/tour/filter")
     }
 
     useEffect(()=>{

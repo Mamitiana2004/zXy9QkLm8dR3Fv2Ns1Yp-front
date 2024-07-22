@@ -79,7 +79,7 @@ body{
     font-weight: 700; 
 }
 
-.p-paginator-page-start{
+.p-highlight{
     background-color: #305555;
     color: #fff;
 }
@@ -101,4 +101,12 @@ body{
 }
 .p-paginator-last{
     display: none;
+}
+
+.p-dataview{
+    background-color: transparent;
+}
+
+.p-dataview-content{
+    background-color: transparent;
 }

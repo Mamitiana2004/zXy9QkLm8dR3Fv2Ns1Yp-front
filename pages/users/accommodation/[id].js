@@ -631,6 +631,7 @@ export default function HotelInfos() {
                                 style={{width:"100%",height:500}}
                                 lat={-18.9433924}
                                 lng={47.5288271}
+                                name="Hotel le Louvre & spa"
                             />
                         </TabPanel>
                     </TabView>

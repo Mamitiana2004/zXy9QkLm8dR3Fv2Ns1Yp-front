@@ -1,7 +1,11 @@
 import Image from 'next/image';
 import style from './../../style/components/card/PopularTripCard.module.css';
 import { ScrollPanel } from 'primereact/scrollpanel';
+import { useRouter } from 'next/router';
 export default function PopularTripCard(props) {
+
+    const router = useRouter();
+
     return(
         <div className={style.container}>
             <Image className={style.image} src={"/images/hotel/hotel3.jpg"} alt={props.name} width={320} height={239} />
@@ -22,7 +26,7 @@ export default function PopularTripCard(props) {
                 <ScrollPanel style={{ width: '100%', height: '70px' }}>
                     <span className={style.label}>Lorem ipsum dolor sit amet gubergren et dolores rebum vero. Dolor eos dolor stet magna assum magna te dolor veniam nulla tempor diam sanctus possim. Lorem et vel consectetuer dolores justo magna consectetuer et justo lorem nonumy elit. Sit sanctus rebum sit qui eu dolor lobortis at erat takimata nulla consequat sed facilisis at duis.</span>
                 </ScrollPanel>
-                <button onClick={props.onClick} className={style.button}>
+                <button onClick={()=>router.push(props.href)} className={style.button}>
                     View
                 </button>
             </div>
