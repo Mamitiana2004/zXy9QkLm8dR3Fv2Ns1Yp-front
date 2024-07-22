@@ -3,15 +3,18 @@ import style from './../style/components/FilterHandcraft.module.css';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 export default function FilterHandcraft(props) {
 
+    const router = useRouter();
+
     const [store,setStore]=useState([]);
-    const [storeSelected,setStoreSelected]=useState([]);
+    const [storeSelected,setStoreSelected]=useState();
 
     const [type,setType]=useState([]);
-    const [typeSelected,setTypeSelected]=useState([]);
+    const [typeSelected,setTypeSelected]=useState();
 
-    const [locationSelected,setLocationSelected] = useState(null);
+    const [locationSelected,setLocationSelected] = useState();
     const [location,setLocation] = useState([]);
     const getAllLocation = () =>{
         fetch("/api/region/getAll")
@@ -24,6 +27,25 @@ export default function FilterHandcraft(props) {
         getAllLocation();
     },[])
 
+    const search = () =>{
+        let url = new URLSearchParams();
+        if (storeSelected) {
+            url.append("store",storeSelected.nom);
+        }
+        if (typeSelected) {
+            url.append("type",typeSelected.nom);
+        }
+        if(locationSelected){
+            url.append("location",locationSelected.nom);
+        }
+        if(url.toString().trim()!==""){
+            router.push("/users/handcraft/filter?"+url.toString());
+        }
+        else{
+            router.push("/users/handcraft/filter");
+        }
+    }
+
     return(
         <div className={style.container}>
             <FloatLabel>
@@ -35,8 +57,9 @@ export default function FilterHandcraft(props) {
                     id='operator-select' 
                     value={storeSelected} 
                     onChange={(e)=>setStoreSelected(e.value)}
+                    showClear
                     options={store}
-                    optionLabel={"name"}
+                    optionLabel={"nom"}
                 />
                 <label className={style.dropdown_label} htmlFor='operator-select'>
                     <i className='pi pi-shop'/>
@@ -52,6 +75,7 @@ export default function FilterHandcraft(props) {
                     id='location-select' 
                     value={locationSelected} 
                     onChange={(e)=>setLocationSelected(e.value)}
+                    showClear
                     options={location}
                     optionLabel={"nom"}
                 />
@@ -69,6 +93,7 @@ export default function FilterHandcraft(props) {
                     id='location-select' 
                     value={typeSelected} 
                     onChange={(e)=>setTypeSelected(e.value)}
+                    showClear
                     options={type}
                     optionLabel={"nom"}
                 />
@@ -77,7 +102,7 @@ export default function FilterHandcraft(props) {
                     Handcraft type
                 </label>
             </FloatLabel>
-            <Button      icon="pi pi-search" label='Search' className='button-primary'/>
+            <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
         </div>
     )
 }

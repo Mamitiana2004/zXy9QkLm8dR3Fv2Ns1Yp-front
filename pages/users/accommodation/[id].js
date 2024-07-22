@@ -364,16 +364,12 @@ export default function HotelInfos() {
                             }}
                             header="Map"
                         >
-                            {data.localisation?.latitude && data.localisation?.longitude ? (
-                                    <Map 
-                                        style={{ width: "100%", height: 500 }}
-                                        lat={data.localisation.latitude}
-                                    lng={data.localisation.longitude}
-                                    name = {data.nom_hebergement}
-                                    />
-                                ) : (
-                                    <p>Loading map...</p>
-                                )}
+                            <Map 
+                                style={{width:"100%",height:500}}
+                                lat={-18.9433924}
+                                lng={47.5288271}
+                                name="Hotel le Louvre & spa"
+                            />
                         </TabPanel>
                     </TabView>
                     <div className={style.accommodation_card_container}>

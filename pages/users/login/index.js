@@ -1,6 +1,3 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
-import GoogleButton from '@/components/button/GoogleButton';
-import GoogleLoginButton from '@/components/button/GoogleLoginButton';
 import LayoutContext from '@/layouts/context/layoutContext';
 import style from '@/style/pages/login.module.css'
 import { UrlConfig } from '@/util/config';
@@ -118,7 +115,7 @@ export default function Login() {
                         <span className={style.login_title}>Login</span>
                         <span className={style.login_title_label}>Welcome back! Please enter your details</span>
                     </div>
-                    <GoogleLoginButton/>
+                    
 
                     <div className={style.separateur_container}>
                         <div className={style.separateur}></div>
