@@ -21,40 +21,40 @@ const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
-    let images = [
-        {
-            id:1,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:2,
-            imageLink:"/images/hotel/hotel2.jpg"
-        },
-        {
-            id:3,
-            imageLink:"/images/hotel/hotel3.jpg"
-        },
-        {
-            id:4,
-            imageLink:"/images/hotel/hotel4.jpg"
-        },
-        {
-            id:5,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:6,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:7,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:8,
-            imageLink:"/images/hotel/hotel.jpg"
-        }
-    ]
+        // let images = [
+        //     {
+        //         id:1,
+        //         imageLink:"/images/hotel/chambre.jpg"
+        //     },
+        //     {
+        //         id:2,
+        //         imageLink:"/images/hotel/hotel2.jpg"
+        //     },
+        //     {
+        //         id:3,
+        //         imageLink:"/images/hotel/hotel3.jpg"
+        //     },
+        //     {
+        //         id:4,
+        //         imageLink:"/images/hotel/hotel4.jpg"
+        //     },
+        //     {
+        //         id:5,
+        //         imageLink:"/images/hotel/hotel.jpg"
+        //     },
+        //     {
+        //         id:6,
+        //         imageLink:"/images/hotel/chambre.jpg"
+        //     },
+        //     {
+        //         id:7,
+        //         imageLink:"/images/hotel/hotel.jpg"
+        //     },
+        //     {
+        //         id:8,
+        //         imageLink:"/images/hotel/hotel.jpg"
+        //     }
+        // ]
 
     const router = useRouter();
     const { id } = router.query;
@@ -63,6 +63,10 @@ export default function HotelInfos() {
     const [availability, setAvailability] = useState(false);
     const [data, setData] = useState(false);
     const [imageHotel, setImageHotels] = useState(false);
+    const [chambre, setChambre] = useState([]);
+    const [chambre_id, setChambre_id] = useState(false);
+    const [accessoires, setAccessoires] = useState({});
+    const [accessoiresHaves, setAccessoiresHaves] = useState([]);
     
     useEffect(() => {
         const fetchData = async () => {
@@ -76,11 +80,21 @@ export default function HotelInfos() {
                 const result = await response.json();
                 // console.log(result);
 
-                // Mettre à jour les données et les images ici
                 setData(result);
-                if (result.images) { // Suppose que les images sont dans `result.images`
+                if (result.images) {
                     setImageHotels(result.images);
-                    console.log(result.images);
+                    // console.log(result.images);
+                }
+                if (result.chambres) {
+                    setChambre(result.chambres);
+                    console.log(result.chambres[0].images_chambre[0].images);
+              
+                }
+                if (result.accessoires) {
+                    setAccessoires(result.accessoires);
+                }
+                if (result.accessoires_haves) {
+                    setAccessoiresHaves(result.accessoires_haves);
                 }
             } catch (error) {
                 console.error('Erreur:', error);
@@ -96,6 +110,25 @@ export default function HotelInfos() {
         else 
             return style.tab;
     }
+
+    const renderAmenities = () => {
+        return Object.keys(accessoires).map((category, index) => (
+            <div key={index} className={style.amenties}>
+                <span className={style.amenties_title}>
+                    <i className="pi pi-lock" />
+                    {category}
+                </span>
+                <div className={style.amenties_detail_container}>
+                    {accessoires[category].map((item, i) => (
+                        <span key={i} className={style.amenties_detail}>
+                            <i className="pi pi-check" />
+                            {item.nom_accessoire}
+                        </span>
+                    ))}
+                </div>
+            </div>
+        ));
+    };
     return(
         <>
             <Head>
@@ -118,10 +151,10 @@ export default function HotelInfos() {
                         <div className={style.header_left_detail}>
                             <Image alt="star" src="/images/star_filled.svg"/>
                             <span>{data.nombre_etoile_hebergement}</span>
-                            <span className={style.header_left_review}>(1.5k reviews)</span>
+                            <span className={style.header_left_review}> ( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                             <span className={style.header_left_localisation}>
                                 <i className='pi pi-map-marker'/>
-                                {data.description_hebergement}
+                                {data.localisation?.adresse}, {data.localisation?.ville}
                             </span>
                         </div>  
                     </div>
@@ -162,179 +195,21 @@ export default function HotelInfos() {
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Description</span>
                                 <div className={style.paragraphe}>
-                                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error possimus quas explicabo delectus 
-                                velit veritatis sapiente magni cumque cum incidunt, alias harum modi ea pariatur debitis deleniti 
-                                culpa quae fuga ad, rerum natus. Quibusdam cumque veniam saepe nesciunt, fuga perspiciatis 
-                                possimus odit iste ipsam! Ex ad labore impedit incidunt tempora sed aliquid qui totam ducimus 
-                                distinctio, quos minus aliquam tempore officiis dolorem quidem amet mollitia, est fugiat. 
-                                Numquam nihil dolor corrupti, repellat temporibus facilis quisquam odio quam nobis doloribus 
-                                harum earum quod nostrum voluptatum quia enim iure? Quae molestias magni sint aliquid rerum, 
-                                veniam aperiam? Voluptas molestias fugiat doloremque dolorum? Lorem ipsum dolor sit amet, 
-                                consectetur adipisicing elit. Error possimus quas explicabo delectus velit veritatis sapiente magni 
-                                cumque cum incidunt, alias harum modi ea pariatur debitis deleniti culpa quae fuga ad, rerum 
-                                natus. Quibusdam cumque veniam saepe nesciunt, fuga perspiciatis possimus odit iste ipsam! Ex 
-                                ad labore impedit incidunt tempora sed aliquid qui totam ducimus distinctio, quos minus aliquam 
-                                tempore officiis dolorem quidem amet mollitia, est fugiat. Numquam nihil dolor corrupti, repellat 
-                                temporibus facilis quisquam odio quam nobis doloribus harum earum quod nostrum voluptatum 
-                                quia enim iure? Quae molestias magni sint aliquid rerum, veniam aperiam? Voluptas molestias 
-                                fugiat doloremque dolorum?
+                                {data.description_hebergement}
                                 </div>
                             </div>
-                            <div className={style.accommodation_detail}>
+                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
                                 <div className={style.amenties_container}>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {renderAmenities()}
                                 </div>
-                            </div>  
+                            </div>
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Reviews & ratings</span>
                                 <div className={style.review_container}>
                                     <div className={style.note_container_header}>
                                         <div className={style.note_container_header_left}>
-                                            <span className={style.note_container_header_label}>4</span>
+                                            <span className={style.note_container_header_label}>{data.nombre_etoile_hebergement}</span>
                                             <div className={style.note_container_header_value}>
                                                 <Rating
                                                     value={4}
@@ -348,7 +223,7 @@ export default function HotelInfos() {
                                                         })
                                                     }}
                                                 />
-                                                <span className={style.note_container_header_left_review}>1.5k reviews</span>
+                                                <span className={style.note_container_header_left_review}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                                             </div>
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
@@ -380,173 +255,35 @@ export default function HotelInfos() {
                             </div> 
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Map</span>
-                                <Map 
-                                    style={{width:"100%",height:500}}
-                                    lat={-18.9433924}
-                                    lng={47.5288271}
-                                    name="Hotel le louvre & spa"
-                                />
+                                {data.localisation?.latitude && data.localisation?.longitude ? (
+                                    <Map 
+                                        style={{ width: "100%", height: 500 }}
+                                        lat={data.localisation.latitude}
+                                            lng={data.localisation.longitude}
+                                            name = {data.nom_hebergement}
+                                    />
+                                ) : (
+                                    <p>Loading map...</p>
+                                )}
                             </div>
+
                         </div>
                         </TabPanel>
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,1)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 1)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header="Amenities"
                         >
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
                                 <div className={style.amenties_container}>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className={style.amenties}>
-                                        <span className={style.amenties_title}>
-                                            <i className="pi pi-lock" />
-                                            Security
-                                        </span>
-                                        <div className={style.amenties_detail_container}>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                            <span className={style.amenties_detail}>
-                                                <i className="pi pi-check"/>
-                                                Monitoring camera
-                                            </span>
-                                        </div>
-                                    </div>
+                                    {renderAmenities()}
                                 </div>
-                            </div>   
+                            </div>
                         </TabPanel>
                         <TabPanel
                             pt={{
@@ -562,7 +299,7 @@ export default function HotelInfos() {
                                 <div className={style.review_container}>
                                     <div className={style.note_container_header}>
                                         <div className={style.note_container_header_left}>
-                                            <span className={style.note_container_header_label}>4</span>
+                                            <span className={style.note_container_header_label}>{ data.nombre_etoile_hebergement}</span>
                                             <div className={style.note_container_header_value}>
                                                 <Rating
                                                     value={4}
@@ -576,12 +313,12 @@ export default function HotelInfos() {
                                                         })
                                                     }}
                                                 />
-                                                <span className={style.note_container_header_left_review}>1.5k reviews</span>
+                                                <span className={style.note_container_header_left_review}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                                             </div>
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
                                     </div>
-                                    <div className={style.note_content_container}>
+                                    {/* <div className={style.note_content_container}>
                                         <NoteBar
                                             label="Value for money"
                                             value={4}
@@ -602,7 +339,7 @@ export default function HotelInfos() {
                                             value={2.1}
                                             valueMax={5}
                                         />
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
                             </div>  
@@ -627,17 +364,22 @@ export default function HotelInfos() {
                             }}
                             header="Map"
                         >
-                            <Map 
-                                style={{width:"100%",height:500}}
-                                lat={-18.9433924}
-                                lng={47.5288271}
-                            />
+                            {data.localisation?.latitude && data.localisation?.longitude ? (
+                                    <Map 
+                                        style={{ width: "100%", height: 500 }}
+                                        lat={data.localisation.latitude}
+                                    lng={data.localisation.longitude}
+                                    name = {data.nom_hebergement}
+                                    />
+                                ) : (
+                                    <p>Loading map...</p>
+                                )}
                         </TabPanel>
                     </TabView>
                     <div className={style.accommodation_card_container}>
                         <div className={style.accommodation_card}>
                             <div className={style.card_check_header}>
-                                <span className={style.check_price_container}><span className={style.check_price}>$85</span>/night</span>
+                                <span className={style.check_price_container}><span className={style.check_price}>$90</span>/night</span>
                                 <div className={style.card_check_header_right}>
                                     <Image src="/images/star_filled.svg" alt="star" />
                                     <span>4</span>
@@ -678,71 +420,36 @@ export default function HotelInfos() {
                             <Button onClick={()=>setBookingVisible(true)} className="button-primary" label="Book now"/>
                         </div>
                         
-                        <div className={style.accommodation_card}>
-                            <span className={style.card_availability_title}>Availability (2)</span>
+                         <div className={style.accommodation_card}>
+                            <span className={style.card_availability_title}>Availability ({chambre.length})</span>
                             <div className={style.separateur}></div>
                             <ScrollPanel className={style.card_availability_parent}>
                                 <div className={style.chambre_list}>
-                                    <div className={style.chambre_container}>
-                                        <div className={style.chambre_top}>
-                                            <div className={style.checkbox_container}>
-                                                <input type='checkbox' className={style.checkbox}/>
-                                                <span className={style.checkbox_label}>Luxury room - A03</span>
+                                    {chambre.map((roomData, index) => (
+                                        <div key={index}>
+                                            <div className={style.chambre_container}>
+                                                <div className={style.chambre_top}>
+                                                    <div className={style.checkbox_container}>
+                                                        <input type='checkbox' className={style.checkbox}/>
+                                                        <span className={style.checkbox_label}>{roomData.chambre.type_chambre}</span>
+                                                    </div>
+                                                    <span className={style.chambre_price}>${roomData.prix_nuit_chambre}</span>
+                                                </div>
+                                                <div className={style.chambre_body}>
+                                                    <Image imageClassName={style.chambre_image} alt="chambre" src={roomData.images_chambre[0] != null ? UrlConfig.apiBaseUrl+roomData.images_chambre[0].images : "/images/hotel/chambre.jpg"} />
+                                                    <div className={style.chambre_detail}>
+                                                        <span><i className="pi pi-home" /> {roomData.chambre.nombre_min_personnes} - {roomData.chambre.nombre_max_personnes} Personnes</span>
+                                                        {roomData.accessoires.map(accessoire => (
+                                                            <span key={accessoire.id}><i className="pi pi-tv" /> {accessoire.nom_accessoire}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <Button onClick={() => { setChambre_id(roomData.id) ,setAvailability(true) }} className="button-primary" label="Details" />
+
                                             </div>
-                                            <span className={style.chambre_price}>$85</span>
+                                            <div className={style.separateur}></div>
                                         </div>
-                                        <div className={style.chambre_body}>
-                                            <Image imageClassName={style.chambre_image} alt="chmabre" src="/images/hotel/chambre.jpg"/>
-                                            <div className={style.chambre_detail}>
-                                                <span><i className="pi"/> 2 Bedroom</span>
-                                                <span><i className="pi"/> Tv</span>
-                                                <span><i className="pi"/>Bathroom</span>
-                                                <span><i className="pi"/> Balcon</span>
-                                            </div>
-                                        </div>
-                                        <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
-                                    </div>
-                                    <div className={style.separateur}></div>
-                                    <div className={style.chambre_container}>
-                                        <div className={style.chambre_top}>
-                                            <div className={style.checkbox_container}>
-                                                <input type='checkbox' className={style.checkbox}/>
-                                                <span className={style.checkbox_label}>Luxury room - A03</span>
-                                            </div>
-                                            <span className={style.chambre_price}>$85</span>
-                                        </div>
-                                        <div className={style.chambre_body}>
-                                            <Image imageClassName={style.chambre_image} alt="chmabre" src="/images/hotel/chambre.jpg"/>
-                                            <div className={style.chambre_detail}>
-                                                <span><i className="pi"/> 2 Bedroom</span>
-                                                <span><i className="pi"/> Tv</span>
-                                                <span><i className="pi"/>Bathroom</span>
-                                                <span><i className="pi"/> Balcon</span>
-                                            </div>
-                                        </div>
-                                        <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
-                                    </div>
-                                    <div className={style.separateur}></div>
-                                    <div className={style.chambre_container}>
-                                        <div className={style.chambre_top}>
-                                            <div className={style.checkbox_container}>
-                                                <input type='checkbox' className={style.checkbox}/>
-                                                <span className={style.checkbox_label}>Luxury room - A03</span>
-                                            </div>
-                                            <span className={style.chambre_price}>$85</span>
-                                        </div>
-                                        <div className={style.chambre_body}>
-                                            <Image imageClassName={style.chambre_image} alt="chmabre" src="/images/hotel/chambre.jpg"/>
-                                            <div className={style.chambre_detail}>
-                                                <span><i className="pi"/> 2 Bedroom</span>
-                                                <span><i className="pi"/> Tv</span>
-                                                <span><i className="pi"/>Bathroom</span>
-                                                <span><i className="pi"/> Balcon</span>
-                                            </div>
-                                        </div>
-                                        <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
-                                    </div>
-                                    <div className={style.separateur}></div>
+                                    ))}
                                 </div>
                             </ScrollPanel>
                         </div>
@@ -753,7 +460,8 @@ export default function HotelInfos() {
 
 
             <BookingModal visible={bookingVisible} onHide={()=>setBookingVisible(false)} />
-            <DetailChambre visible={availability} onHide={()=>setAvailability(false)}/>
+            <DetailChambre visible={availability} id={chambre_id} onHide={()=>setAvailability(false)}/>
+
         </>
     )
 }
