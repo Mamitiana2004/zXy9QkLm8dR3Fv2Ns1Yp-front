@@ -4,7 +4,10 @@ import { Dropdown } from 'primereact/dropdown';
 import { useEffect, useState } from 'react';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
+import { useTranslation } from 'react-i18next';
 export default function FilterTour(props) {
+
+    const {t} = useTranslation();
 
     const [operatorTourSelected,setOperatorTourSelected]=useState();
     let operator=[
@@ -52,7 +55,7 @@ export default function FilterTour(props) {
                 />
                 <label className={style.dropdown_label} htmlFor='operator-select'>
                     <i className='pi pi-map-marker'/>
-                    Operator tour
+                    {t("operator_tour")}
                 </label>
             </FloatLabel>
             <FloatLabel>
@@ -69,7 +72,7 @@ export default function FilterTour(props) {
                 />
                 <label className={style.dropdown_label} htmlFor='location-select'>
                     <i className='pi pi-map-marker'/>
-                    Destination
+                    {t("destination")}
                 </label>
             </FloatLabel>
             <FloatLabel>
@@ -84,7 +87,7 @@ export default function FilterTour(props) {
                 />
                 <label className={style.dropdown_label} htmlFor='periode'>
                     <i className='pi pi-calendar-times'/>
-                    Periode
+                    {t("periode")}
                 </label>
             </FloatLabel>
             <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>

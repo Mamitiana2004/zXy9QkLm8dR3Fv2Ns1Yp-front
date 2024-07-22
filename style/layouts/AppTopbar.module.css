@@ -7,45 +7,89 @@
     display: flex;
     width: 100vw;
     z-index: 99;
+    
+    .navbar{
+        display: flex;
+        flex-wrap: wrap;
+        width: 100vw;
+        align-items: center;
+        padding: 1vw 12vw;
+        box-sizing: border-box;
+        justify-content: space-between;
+    }
+
+    .nav_title{
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navbar_menu_container{
+        display: flex;
+        gap: 50px;
+        align-items: center;
+    }
+
+    .navbar_menu_item{
+        color: #000;
+        font-weight: 700;
+    }
+
+
+    .button_group{
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
 }
 
-.navbar{
+.container_home{
+    position: absolute;
+    background-color: #305555;
+    top: 0;
+    right: 0;
+    left: 0;    
     display: flex;
-    flex-wrap: wrap;
     width: 100vw;
-    align-items: center;
-    padding: 1vw 12vw;
-    box-sizing: border-box;
-    justify-content: space-between;
+    z-index: 99;
+
+    .navbar{
+        display: flex;
+        flex-wrap: wrap;
+        width: 100vw;
+        align-items: center;
+        padding: 1vw 12vw;
+        box-sizing: border-box;
+        justify-content: space-between;
+    }
+
+    .nav_title{
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navbar_menu_container{
+        display: flex;
+        gap: 50px;
+        align-items: center;
+    }
+
+    .navbar_menu_item{
+        color: #fff;
+        font-weight: 700;
+    }
+
+
+    .button_group{
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
 }
 
-.nav_title{
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar_menu_container{
-    display: flex;
-    gap: 50px;
-    align-items: center;
-}
-
-.navbar_menu_item{
-    color: #000;
-    font-weight: 700;
-}
-
-.nav_right{
-
-}
-
-.button_group{
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-}
 
 .user_container{
     display: flex;

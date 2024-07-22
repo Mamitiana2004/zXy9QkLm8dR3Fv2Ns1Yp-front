@@ -1,5 +1,6 @@
 import GoogleButton from '@/components/button/GoogleButton';
-import style from '@/style/pages/login.module.css';
+import style from '@/style/pages/login.module.css'
+import UrlConfig from '@/util/config';
 import { getCsrfTokenDirect } from '@/util/csrf';
 import { emailValid } from '@/util/verify';
 import Cookies from 'js-cookie';
@@ -9,97 +10,19 @@ import { useRouter } from 'next/router';
 import { Image } from 'primereact/image';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
-import GoogleSignupButton from '@/components/button/GoogleSignupButton';
-import { UrlConfig } from '@/util/config';
-
+import { useTranslation } from 'react-i18next';
 export default function Register() {
+
+    const {t}=useTranslation();
 
     const router= useRouter();
     const toast = useRef(null);
 
+
     const [email,setEmail]=useState("");
     const emailInput = useRef(null);
 
-    const [emailErreur, setEmailErreur] = useState(null);
-    
-    const sendVerificationEmail = async (email) => {
-    try {
-      const csrfToken = await getCsrfTokenDirect();
-      const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/send-verification-code/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          'X-CSRFToken': csrfToken,
-
-        },
-        body: JSON.stringify({ email }),
-      });
-      // const data = response.json()
-
-
-      if (!response.ok) {
-        throw new Error("Failed to send verification email.");
-      }
-
-        router.push("/users/register/verify-email");
-        
-    } catch (error) {
-        toast.current.show({
-                    severity:"error",
-                    summary:"Error",
-                    detail:"Failed to send verification email. Please try again later.",
-                    life:5000
-        });
-    }
-  };
-
-  const checkEmailExists = async (e) => {
-    // e.preventDefault();
-    const csrfToken = await getCsrfTokenDirect();
-    // localStorage.setItem("email_user", email);
-
-
-    try {
-      const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/check-email/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          'X-CSRFToken': csrfToken,
-        },
-        body: JSON.stringify({ email }),
-      });
-
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
-      }
-
-      const result = await response.json();
-
-        if (result.exists) {
-             toast.current.show({
-                    severity:"info",
-                    summary:"Info",
-                    detail:<>
-                            Email already exists. <Link href="/users/login">Login here</Link>.
-                        </>,
-                    life:5000
-            });
-      } else {
-        await sendVerificationEmail(email);
-      }
-    } catch (error) {
-        toast.current.show({
-                    severity:"error",
-                    summary:"Error",
-                    detail:"An error occurred. Please try again later.",
-                    life:5000
-        });
-        console.log(error)
-    }
-  };
-
-
+    const [emailErreur,setEmailErreur]=useState(null);
 
     const register=async (e)=>{
         e.preventDefault();
@@ -111,7 +34,7 @@ export default function Register() {
         }
         if (canSendData) {
             sessionStorage.setItem("email_in_signup",email);
-            const request = await checkEmailExists();
+            router.push("/users/register/verify-email");
         }
 
     }
@@ -128,14 +51,14 @@ export default function Register() {
                 </div>
                 <div className={style.login_right}>
                     <div className={style.login_title_container}>
-                        <span className={style.login_title}>Sign up</span>
-                        <span className={style.login_title_label}>Welcome ! Please enter your details</span>
+                        <span className={style.login_title}>{t("sign_up")}</span>
+                        <span className={style.login_title_label}>{t("welcome_sign_up")}</span>
                     </div>
-                    <GoogleSignupButton/>
+                    <GoogleButton/>
 
                     <div className={style.separateur_container}>
                         <div className={style.separateur}></div>
-                        <span>or</span>
+                        <span>{t("or")}</span>
                         <div className={style.separateur}></div>
                     </div>
 
@@ -149,7 +72,7 @@ export default function Register() {
                                         type="email" 
                                         autoFocus={true} 
                                         className={style.form_input} 
-                                        placeholder="Enter your email"
+                                        placeholder={t("enter_your_email")}
                                         value={email}
                                         onChange={(e)=>{
                                             emailInput.current.className=style.form_input;
@@ -163,12 +86,12 @@ export default function Register() {
                             </div>
 
                             <div className={style.button_group}>
-                                <button type='submit' className={style.login_button}>Sign up</button>
+                                <button type='submit' className={style.login_button}>{t("sign_up")}</button>
                             </div>
                         </form>
                         <div className={style.register_component}>
-                            <span className={style.register_label}>You have alerady an account, </span>
-                            <Link className={style.register_link} href={"/users/login"}>Sign in</Link>
+                            <span className={style.register_label}>{t("you_already_have")}, </span>
+                            <Link className={style.register_link} href={"/users/login"}>{t("sign_in")}</Link>
                         </div>
                     </div>
                 </div>
@@ -178,7 +101,7 @@ export default function Register() {
 
                 <div className={style.footer}>
                     <span>Copyright 2024 - All rights reserved</span>
-                    <Link style={{color:"#000"}} href={"/users/privatePolicy"}>Pivate policy</Link>
+                    <Link style={{color:"#000"}} href={"/users/privatePolicy"}>{t("private_policy")}</Link>
                 </div>
 
             </div>

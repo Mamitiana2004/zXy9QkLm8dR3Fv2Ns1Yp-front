@@ -1,10 +1,6 @@
-/* eslint-disable react/jsx-no-comment-textnodes */
 import GoogleButton from '@/components/button/GoogleButton';
-import GoogleLoginButton from '@/components/button/GoogleLoginButton';
-import LayoutContext from '@/layouts/context/layoutContext';
 import style from '@/style/pages/login.module.css'
-import { UrlConfig } from '@/util/config';
-
+import UrlConfig from '@/util/config';
 import { getCsrfTokenDirect } from '@/util/csrf';
 import { emailValid } from '@/util/verify';
 import Cookies from 'js-cookie';
@@ -13,15 +9,14 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Image } from 'primereact/image';
 import { Toast } from 'primereact/toast';
-import { useContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 export default function Login() {
+
+    const {t} = useTranslation();
 
     const router= useRouter();
     const toast = useRef(null);
-
-    const { user, setUser } = useContext(LayoutContext);
-
-
 
 
     const [email,setEmail]=useState("");
@@ -82,12 +77,6 @@ export default function Login() {
                 if (data.refresh) {
                     Cookies.set('refresh_token', data.refresh, { expires: 30, secure: true, sameSite: 'strict' });
                 }
-                setUser({
-                    username: data.username,
-                    id: data.id,
-                    userImage: data.image
-                    
-                })
                 router.push("/users");
             })
             .catch((error)=>{
@@ -106,6 +95,10 @@ export default function Login() {
 
     return(
         <>
+            
+            <Head>
+                <title>{t("login")}</title>
+            </Head>
             <div className={style.container}>
 
                 <div className={style.login_left}>
@@ -115,14 +108,14 @@ export default function Login() {
                 </div>
                 <div className={style.login_right}>
                     <div className={style.login_title_container}>
-                        <span className={style.login_title}>Login</span>
-                        <span className={style.login_title_label}>Welcome back! Please enter your details</span>
+                        <span className={style.login_title}>{t("login")}</span>
+                        <span className={style.login_title_label}>{t("welcome_login")}</span>
                     </div>
-                    <GoogleLoginButton/>
+                    <GoogleButton/>
 
                     <div className={style.separateur_container}>
                         <div className={style.separateur}></div>
-                        <span>or</span>
+                        <span>{t("or")}</span>
                         <div className={style.separateur}></div>
                     </div>
 
@@ -136,7 +129,7 @@ export default function Login() {
                                         type="email" 
                                         autoFocus={true} 
                                         className={style.form_input} 
-                                        placeholder="Enter your email"
+                                        placeholder={t("enter_your_email")}
                                         value={email}
                                         onChange={(e)=>{
                                             emailInput.current.className=style.form_input;
@@ -151,12 +144,12 @@ export default function Login() {
 
                             <div className={style.form_group}>
                                 <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Password</span>
+                                    <span className={style.form_label}>{t("password")}</span>
                                     <input 
                                         ref={passwordInput}
                                         type="password"  
                                         className={style.form_input} 
-                                        placeholder="Enter your pasword"
+                                        placeholder={t("enter_your_password")}
                                         value={password}
                                         onChange={(e)=>{
                                             passwordInput.current.className=style.form_input;
@@ -171,17 +164,17 @@ export default function Login() {
 
                             <div className={style.link_forgot_container}>
                                 <Link href={"/users/forgot"} className={style.link_forgot}>
-                                    Forgot password?
+                                    {t("forgot_password")}?
                                 </Link>
                             </div>
 
                             <div className={style.button_group}>
-                                <button type='submit' className={style.login_button}>Sign in</button>
+                                <button type='submit' className={style.login_button}>{t("sign_in")}</button>
                             </div>
                         </form>
                         <div className={style.register_component}>
-                            <span className={style.register_label}>Don&apos;t have an account ?</span>
-                            <Link className={style.register_link} href={"/users/register"}>Sign up</Link>
+                            <span className={style.register_label}>{t("dont_have_account")}</span>
+                            <Link className={style.register_link} href={"/users/register"}>{t("sign_up")}</Link>
                         </div>
                     </div>
                 </div>
@@ -191,7 +184,7 @@ export default function Login() {
 
                 <div className={style.footer}>
                     <span>Copyright 2024 - All rights reserved</span>
-                    <Link style={{color:"#000"}} href={"/users/privatePolicy"}>Pivate policy</Link>
+                    <Link style={{color:"#000"}} href={"/users/privatePolicy"}>{t("private_policy")}</Link>
                 </div>
 
             </div>
@@ -204,9 +197,6 @@ export default function Login() {
 Login.getLayout = function getLayout(page) {
     return(
         <>
-            <Head>
-                <title>Login</title>
-            </Head>
             {page}
         </>
     );

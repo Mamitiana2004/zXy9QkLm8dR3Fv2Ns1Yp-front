@@ -10,86 +10,21 @@ import NoteBar from "@/components/rating/NoteBar";
 import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
 import BookingModal from "../../../components/modal/BookingModal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DetailChambre from "@/components/modal/DetailChambre";
 import Filter from "@/components/Filter";
-import { useRouter } from "next/router";
-import { UrlConfig } from "@/util/config";
+import { useTranslation } from "react-i18next";
 
 
 const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
-    let images = [
-        {
-            id:1,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:2,
-            imageLink:"/images/hotel/hotel2.jpg"
-        },
-        {
-            id:3,
-            imageLink:"/images/hotel/hotel3.jpg"
-        },
-        {
-            id:4,
-            imageLink:"/images/hotel/hotel4.jpg"
-        },
-        {
-            id:5,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:6,
-            imageLink:"/images/hotel/chambre.jpg"
-        },
-        {
-            id:7,
-            imageLink:"/images/hotel/hotel.jpg"
-        },
-        {
-            id:8,
-            imageLink:"/images/hotel/hotel.jpg"
-        }
-    ]
-
-    const router = useRouter();
-    const { id } = router.query;
+    const {t} = useTranslation();
 
     const [bookingVisible,setBookingVisible]=useState(false);
-    const [availability, setAvailability] = useState(false);
-    const [data, setData] = useState(false);
-    const [imageHotel, setImageHotels] = useState(false);
-    
-    useEffect(() => {
-        const fetchData = async () => {
-            if (!id) return; 
+    const [availability,setAvailability]=useState(false);
 
-            try {
-                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la récupération des données');
-                }
-                const result = await response.json();
-                // console.log(result);
-
-                // Mettre à jour les données et les images ici
-                setData(result);
-                if (result.images) { // Suppose que les images sont dans `result.images`
-                    setImageHotels(result.images);
-                    console.log(result.images);
-                }
-            } catch (error) {
-                console.error('Erreur:', error);
-            }
-        };
-
-        fetchData();
-    }, [id]);
-    
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
             return style.tab_active;
@@ -105,7 +40,7 @@ export default function HotelInfos() {
             <div className={style.container}>
                 <div className={style.filter_header_top}>
                     <div className={style.filter_header_top_title_container}>
-                        <span className={style.filter_header_top_title}>Find your best accommodation on Hotello</span>
+                        <span className={style.filter_header_top_title}>{t("find_your_best_accommodation_on")}</span>
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
@@ -114,14 +49,14 @@ export default function HotelInfos() {
                 </div>
                 <div className={style.header_container}>
                     <div className={style.header_left}>
-                        <span className={style.header_left_title}>{data.nom_hebergement}</span>
+                        <span className={style.header_left_title}>Le Louvre Hotel & Spa</span>
                         <div className={style.header_left_detail}>
                             <Image alt="star" src="/images/star_filled.svg"/>
-                            <span>{data.nombre_etoile_hebergement}</span>
-                            <span className={style.header_left_review}>(1.5k reviews)</span>
+                            <span>4</span>
+                            <span className={style.header_left_review}>(1.5k {t("reviews")})</span>
                             <span className={style.header_left_localisation}>
                                 <i className='pi pi-map-marker'/>
-                                {data.description_hebergement}
+                                4 Kianina Philibert Tsiranana, Antaninarenina, Antananarivo 101
                             </span>
                         </div>  
                     </div>
@@ -140,7 +75,7 @@ export default function HotelInfos() {
                         </div>
                     </div>
                 </div>
-                {imageHotel.length > 0 && <GallerieHotel images={imageHotel} />}
+                <GallerieHotel/>
                 <div className={style.body_accommodation}>
                     <TabView
                         pt={{
@@ -156,11 +91,11 @@ export default function HotelInfos() {
                                 }),
                                 header:{ className: style.tab_container }
                             }}
-                            header="Overview"
+                            header={t("overview")}
                         >
                         <div className={style.overview}>
                             <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Description</span>
+                                <span className={style.accommodation_detail_title}>{t("description")}</span>
                                 <div className={style.paragraphe}>
                                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error possimus quas explicabo delectus 
                                 velit veritatis sapiente magni cumque cum incidunt, alias harum modi ea pariatur debitis deleniti 
@@ -181,7 +116,7 @@ export default function HotelInfos() {
                                 </div>
                             </div>
                             <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Amenities</span>
+                                <span className={style.accommodation_detail_title}>{t("amenities")}</span>
                                 <div className={style.amenties_container}>
                                     <div className={style.amenties}>
                                         <span className={style.amenties_title}>
@@ -330,7 +265,7 @@ export default function HotelInfos() {
                                 </div>
                             </div>  
                             <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Reviews & ratings</span>
+                                <span className={style.accommodation_detail_title}>{t("reviews")} & {t("rating")}</span>
                                 <div className={style.review_container}>
                                     <div className={style.note_container_header}>
                                         <div className={style.note_container_header_left}>
@@ -376,10 +311,10 @@ export default function HotelInfos() {
                                         />
                                     </div>
                                 </div>
-                                <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
+                                <Button style={{width:"250px"}} label={t("see_all_review")} className="button-primary"/>
                             </div> 
                             <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Map</span>
+                                <span className={style.accommodation_detail_title}>{t("map")}</span>
                                 <Map 
                                     style={{width:"100%",height:500}}
                                     lat={-18.9433924}
@@ -396,7 +331,7 @@ export default function HotelInfos() {
                                 }),
                                 header:{ className: style.tab_container }
                             }}
-                            header="Amenities"
+                            header={t("amenities")}
                         >
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
@@ -555,7 +490,7 @@ export default function HotelInfos() {
                                 }),
                                 header:{ className: style.tab_container }
                             }}
-                            header="Reviews"
+                            header={t("reviews")}
                         >
                             <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Reviews & ratings</span>
@@ -604,7 +539,7 @@ export default function HotelInfos() {
                                         />
                                     </div>
                                 </div>
-                                <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
+                                <Button style={{width:"250px"}} label={t("see_all_review")} className="button-primary"/>
                             </div>  
                         </TabPanel>
                         <TabPanel
@@ -614,7 +549,7 @@ export default function HotelInfos() {
                                 }),
                                 header:{ className: style.tab_container }
                             }}
-                            header="Policies"
+                            header={t("policies")}
                         >
 
                         </TabPanel>
@@ -625,7 +560,7 @@ export default function HotelInfos() {
                                 }),
                                 header:{ className: style.tab_container }
                             }}
-                            header="Map"
+                            header={t("map")}
                         >
                             <Map 
                                 style={{width:"100%",height:500}}
@@ -637,36 +572,36 @@ export default function HotelInfos() {
                     <div className={style.accommodation_card_container}>
                         <div className={style.accommodation_card}>
                             <div className={style.card_check_header}>
-                                <span className={style.check_price_container}><span className={style.check_price}>$85</span>/night</span>
+                                <span className={style.check_price_container}><span className={style.check_price}>$85</span>/{t("night")}</span>
                                 <div className={style.card_check_header_right}>
                                     <Image src="/images/star_filled.svg" alt="star" />
                                     <span>4</span>
-                                    <span style={{textDecoration:"underline"}}>(1.5k reviews)</span>
+                                    <span style={{textDecoration:"underline"}}>(1.5k {t("reviews")})</span>
                                 </div>
                             </div>
                             <div className={style.check_parent}>
                                 <div className={style.check_in_container}>
                                     <div className={style.check_cadre_container}>
-                                        <span className={style.check_cadre_label}>Check-in</span>
+                                        <span className={style.check_cadre_label}>{t("check_in")}</span>
                                         <span className={style.check_cadre_value}>2024, Jul 03</span>
                                     </div>
                                     <div className={style.check_cadre_container}>
-                                        <span className={style.check_cadre_label}>Check-in</span>
+                                        <span className={style.check_cadre_label}>{t("Check_out")}</span>
                                         <span className={style.check_cadre_value}>2024, Jul 07</span>
                                     </div>
                                 </div>
                                 <div className={style.check_cadre_container}>
-                                    <span className={style.check_cadre_label}>Guest</span>
+                                    <span className={style.check_cadre_label}>{t("guest")}</span>
                                     <span className={style.check_cadre_value}>2</span>
                                 </div>
                             </div>
                             <div className={style.check_detail_price_container}>
                                 <div className={style.check_detail_price}>
-                                    <span className={style.check_detail_price_label}>Price</span>
+                                    <span className={style.check_detail_price_label}>{t("price")}</span>
                                     <span className={style.check_detail_price_value}>$150</span>
                                 </div>
                                 <div className={style.check_detail_price}>
-                                    <span className={style.check_detail_price_label}>Discount</span>
+                                    <span className={style.check_detail_price_label}>{t("discount")}</span>
                                     <span className={style.check_detail_price_value}>0%</span>
                                 </div>
                                 <Divider/>
@@ -675,11 +610,11 @@ export default function HotelInfos() {
                                     <span className={style.check_detail_price_total_value}>$150</span>
                                 </div>
                             </div>
-                            <Button onClick={()=>setBookingVisible(true)} className="button-primary" label="Book now"/>
+                            <Button onClick={()=>setBookingVisible(true)} className="button-primary" label={t("book_now")}/>
                         </div>
                         
                         <div className={style.accommodation_card}>
-                            <span className={style.card_availability_title}>Availability (2)</span>
+                            <span className={style.card_availability_title}>{t("availability")} (2)</span>
                             <div className={style.separateur}></div>
                             <ScrollPanel className={style.card_availability_parent}>
                                 <div className={style.chambre_list}>
@@ -694,10 +629,10 @@ export default function HotelInfos() {
                                         <div className={style.chambre_body}>
                                             <Image imageClassName={style.chambre_image} alt="chmabre" src="/images/hotel/chambre.jpg"/>
                                             <div className={style.chambre_detail}>
-                                                <span><i className="pi"/> 2 Bedroom</span>
+                                                <span><i className="pi"/> 2 {t("bedroom")}</span>
                                                 <span><i className="pi"/> Tv</span>
-                                                <span><i className="pi"/>Bathroom</span>
-                                                <span><i className="pi"/> Balcon</span>
+                                                <span><i className="pi"/>{t("bathroom")}</span>
+                                                <span><i className="pi"/> {t("balcon")}</span>
                                             </div>
                                         </div>
                                         <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
@@ -714,10 +649,10 @@ export default function HotelInfos() {
                                         <div className={style.chambre_body}>
                                             <Image imageClassName={style.chambre_image} alt="chmabre" src="/images/hotel/chambre.jpg"/>
                                             <div className={style.chambre_detail}>
-                                                <span><i className="pi"/> 2 Bedroom</span>
+                                                <span><i className="pi"/> 2 {t("bedroom")}</span>
                                                 <span><i className="pi"/> Tv</span>
-                                                <span><i className="pi"/>Bathroom</span>
-                                                <span><i className="pi"/> Balcon</span>
+                                                <span><i className="pi"/>{t("bathroom")}</span>
+                                                <span><i className="pi"/> {t("balcon")}</span>
                                             </div>
                                         </div>
                                         <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>
@@ -734,10 +669,10 @@ export default function HotelInfos() {
                                         <div className={style.chambre_body}>
                                             <Image imageClassName={style.chambre_image} alt="chmabre" src="/images/hotel/chambre.jpg"/>
                                             <div className={style.chambre_detail}>
-                                                <span><i className="pi"/> 2 Bedroom</span>
+                                                <span><i className="pi"/> 2 {t("bedroom")}</span>
                                                 <span><i className="pi"/> Tv</span>
-                                                <span><i className="pi"/>Bathroom</span>
-                                                <span><i className="pi"/> Balcon</span>
+                                                <span><i className="pi"/>{t("bathroom")}</span>
+                                                <span><i className="pi"/> {t("balcon")}</span>
                                             </div>
                                         </div>
                                         <Button onClick={()=>setAvailability(true)} className="button-primary" label="Details"/>

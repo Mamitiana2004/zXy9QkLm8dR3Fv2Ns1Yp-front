@@ -10,7 +10,10 @@ import { useRouter } from 'next/router';
 import { Image } from 'primereact/image';
 import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 export default function Forgot() {
+
+    const {t} = useTranslation();
 
     const router= useRouter();
     const toast = useRef(null);
@@ -47,8 +50,8 @@ export default function Forgot() {
                 </div>
                 <div className={style.login_right}>
                     <div className={style.login_title_container}>
-                        <span className={style.login_title}>Forgot password ?</span>
-                        <span className={style.login_title_label}>No worries, we’ll send you reset instructions.</span>
+                        <span className={style.login_title}>{t("forgot_password")} ?</span>
+                        <span className={style.login_title_label}>{t("no_worries_we_ll")}</span>
                     </div>
 
                     <div className={style.content}>
@@ -61,7 +64,7 @@ export default function Forgot() {
                                         type="email" 
                                         autoFocus={true} 
                                         className={style.form_input} 
-                                        placeholder="Enter your email"
+                                        placeholder={t("enter_your_email")}
                                         value={email}
                                         onChange={(e)=>{
                                             emailInput.current.className=style.form_input;
@@ -75,12 +78,12 @@ export default function Forgot() {
                             </div>
 
                             <div className={style.button_group}>
-                                <button type='submit' className={style.login_button}>Confirm</button>
+                                <button type='submit' className={style.login_button}>{t("confirm")}</button>
                             </div>
                         </form>
                         <div className={style.register_component}>
                             <Link className={style.register_link} href={"/users/login"}>
-                            <i  className="pi pi-angle-left"/> Back to Login
+                            <i  className="pi pi-angle-left"/> {t("back_to_login")}
                             </Link>
                         </div>
                     </div>

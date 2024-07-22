@@ -1,9 +1,9 @@
+import config from "./config";
 import Cookies from "js-cookie";
-import { UrlConfig } from "./config";
 
 export const getCsrfToken = async () => {
 
-    const response = await fetch(`${UrlConfig.apiBaseUrl}/api/get-csrf-token/`, {
+    const response = await fetch(`${config.apiBaseUrl}/api/get-csrf-token/`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -18,42 +18,31 @@ export const getCsrfToken = async () => {
     }
 };
 
-// import Cookies from 'js-cookie';
-
 export const fetch_new_access = async () => {
     try {
-        const refreshToken = Cookies.get('refresh_token'); // Assurez-vous que le token de rafraîchissement est stocké dans les cookies
-        if (!refreshToken) {
-            throw new Error("No refresh token available");
-        }
-        
-        const response = await fetch('http://localhost:8000/api/token/refresh/', {
-            method: 'POST',
+        const refresh = Cookies.get('refresh_token');
+        const response = await fetch(`${config.apiBaseUrl}/api/token/refresh/`, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify({ refresh: refreshToken })
+            body: JSON.stringify({ refresh: refresh }),
         });
-        
+
+
         const data = await response.json();
-        if (response.ok) {
-            Cookies.set('access_token', data.access); // Stocker le nouveau token d'accès
-            return data.access;
-        } else {
-            console.error('Error refreshing token:', data);
-            throw new Error(data.detail);
-        }
+        // console.log("CSRF token set:", data);
+        return data.access;
     } catch (error) {
-        console.error('Error:', error);
+        // console.error("Error fetching CSRF token:", error.message);
         throw error;
     }
 };
 
 
-
 export const getCsrfFromToken = async () => {
     try {
-        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/get-csrf-token-direct/`, {
+        const response = await fetch(`${config.apiBaseUrl}/api/get-csrf-token-direct/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -75,7 +64,7 @@ export const getCsrfFromToken = async () => {
 
 
 export const custom_login = async (username, password) => {
-    const url = `${UrlConfig.apiBaseUrl}/api/token/`;
+    const url = `${config.apiBaseUrl}/api/token/`;
     const csrfToken = await getCsrfTokenDirect();
     const data = {
         username: username,
@@ -117,7 +106,7 @@ export const custom_login = async (username, password) => {
 
 export const getCsrfTokenDirect = async () => {
     try {
-        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/get-csrf-token-direct/`, {
+        const response = await fetch(`${config.apiBaseUrl}/api/get-csrf-token-direct/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -132,7 +121,7 @@ export const getCsrfTokenDirect = async () => {
         // console.log("CSRF token set:", data);
         return data.csrfToken;
     } catch (error) {
-        console.error("Error fetching CSRF token:", error.message);
+        // console.error("Error fetching CSRF token:", error.message);
         throw error;
     }
 };

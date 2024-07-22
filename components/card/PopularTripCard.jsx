@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import style from './../../style/components/card/PopularTripCard.module.css';
 import { ScrollPanel } from 'primereact/scrollpanel';
+import Link from 'next/link';
 export default function PopularTripCard(props) {
     return(
         <div className={style.container}>
@@ -22,9 +23,11 @@ export default function PopularTripCard(props) {
                 <ScrollPanel style={{ width: '100%', height: '70px' }}>
                     <span className={style.label}>Lorem ipsum dolor sit amet gubergren et dolores rebum vero. Dolor eos dolor stet magna assum magna te dolor veniam nulla tempor diam sanctus possim. Lorem et vel consectetuer dolores justo magna consectetuer et justo lorem nonumy elit. Sit sanctus rebum sit qui eu dolor lobortis at erat takimata nulla consequat sed facilisis at duis.</span>
                 </ScrollPanel>
-                <button onClick={props.onClick} className={style.button}>
-                    View
-                </button>
+                <Link href={props.href}>
+                    <button className={style.button}>
+                        View
+                    </button>
+                </Link>
             </div>
 
             <div className={style.distance}>

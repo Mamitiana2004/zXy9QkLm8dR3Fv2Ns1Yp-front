@@ -11,7 +11,9 @@ import { Toast } from 'primereact/toast';
 import { useEffect, useRef, useState } from 'react';
 import { InputOtp } from 'primereact/inputotp';
 import { Button } from 'primereact/button';
+import { useTranslation } from 'react-i18next';
 export default function Verify() {
+    const {t} = useTranslation();
 
     const router= useRouter();
     const toast = useRef(null);
@@ -79,21 +81,21 @@ export default function Verify() {
                 </div>
                 <div className={style.login_right}>
                     <div className={style.login_title_container}>
-                        <span className={style.login_title}>Check your email</span>
-                        <span className={style.login_title_label}>We sent a verification PIN code <br/>to <span style={{fontWeight:700}}>{email}</span>.Paste the PIN Code you<br/> received on the mail to below. </span>
+                        <span className={style.login_title}>{t("check_your_email")}</span>
+                        <span className={style.login_title_label}>{t("we_sent_a_verification_PIN")}<br/> <span style={{fontWeight:700}}>{email}</span>.<br/> {t("paste_the_PIN_Code_you")} </span>
                     </div>
                     
                     <div className={style.content}>
                         <div className={style.form}>
                             <div className={style.form_group}>
                                 <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Verification code</span>
+                                    <span className={style.form_label}>{t("verification_code")}</span>
                                     <InputOtp disabled={isInputDisabled} value={code} onChange={tapeCode} length={6} integerOnly/>
                                 </div>
                             </div>
 
                             <div className={style.button_group}>
-                                <Button onClick={resend} text disabled={isButtonDisabled} icon="pi pi-refresh" label='Resend code' iconPos='right' className={style.resend_button}/>
+                                <Button onClick={resend} text disabled={isButtonDisabled} icon="pi pi-refresh" label={t("resend_code")} iconPos='right' className={style.resend_button}/>
                                 <span className={style.timer}>{timer==0 ? "" : `Please wait ${timer} seconds before resending.`}</span>
                             </div>
                         </div>

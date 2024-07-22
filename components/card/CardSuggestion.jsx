@@ -1,7 +1,11 @@
 import Image from 'next/image';
 import style from '../../style/components/card/CardSuggestion.module.css'
 import { ScrollPanel } from 'primereact/scrollpanel';
+import { useTranslation } from 'react-i18next';
 export default function CardSuggestion(props) {
+
+    const {t} = useTranslation();
+
     return(
         <div className={style.container}>
             <Image className={style.image} src={props.image} alt={props.name} width={382} height={239} />

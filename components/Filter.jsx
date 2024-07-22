@@ -5,7 +5,10 @@ import { FloatLabel } from 'primereact/floatlabel';
 import { useEffect, useState } from 'react';
 import { InputNumber } from 'primereact/inputnumber';
 import { Button } from 'primereact/button';
+import { useTranslation } from 'react-i18next';
 export default function Filter(props) {
+
+    const {t} = useTranslation();
 
     const [locationSelected,setLocationSelected] = useState(null);
     const [location,setLocation] = useState([]);
@@ -40,7 +43,7 @@ export default function Filter(props) {
                 />
                 <label className={style.dropdown_label} htmlFor='location-select'>
                     <i className='pi pi-map-marker'/>
-                    Localisation
+                    {t("localisation")}
                 </label>
             </FloatLabel>
             <FloatLabel>
@@ -53,7 +56,7 @@ export default function Filter(props) {
                 />
                 <label className={style.dropdown_label} htmlFor='check_in'>
                     <i className='pi pi-calendar-times'/>
-                    Check in
+                    {t("check_in")}
                 </label>
             </FloatLabel>
             <FloatLabel>
@@ -66,17 +69,17 @@ export default function Filter(props) {
                 />
                 <label className={style.dropdown_label} htmlFor='check_out'>
                     <i className='pi pi-calendar-times'/>
-                    Check out
+                    {t("check_out")}
                 </label>
             </FloatLabel>
             <FloatLabel>
                 <InputNumber value={guest} onChange={(e)=>setGuest(e.value)} inputClassName={style.input_number} id='guest'/>
                 <label className={style.dropdown_label} htmlFor='check_out'>
                     <i className='pi pi-users'/>
-                    Guest
+                    {t("guest")}
                 </label>
             </FloatLabel>
-            <Button icon="pi pi-search" label='Search' className='button-primary'/>
+            <Button icon="pi pi-search" label={t("search")} className='button-primary'/>
         </div>
     )
 }

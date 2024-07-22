@@ -6,8 +6,9 @@ import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import PopularTripCard from "@/components/card/PopularTripCard";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 export default function Tour() {
-
+    const {t} = useTranslation();
     const router = useRouter();
 
 
@@ -22,7 +23,7 @@ export default function Tour() {
                     <Image src="/images/tours/tour.png" imageClassName={style.image_header_filter}/>
                     <div className={style.right_container}>
                         <div className={style.right_title_container}>
-                            <span className={style.right_title}>Find your best trip expedition in Madagascar with operator tour on Aftrip</span>
+                            <span className={style.right_title}>{t("tour_header_title")}</span>
                             <span>Lorem ipsum dolor emet si Lorem ipsum dolor emet siLorem ipsum dolor emet siLorem ipsum dolor emet siLorem ipsum dolor emet siLorem ipsum dolor emet si</span>
                         </div>
                         <FilterTour/>
@@ -30,15 +31,15 @@ export default function Tour() {
                 </div>
                 <div className={style.suggestion_container}>
                     <div className={style.suggestion_title_container}>
-                        <span className={style.suggestion_title}>Popular trip at the moment</span>
-                        <span className={style.suggestion_subtitle}>Don’t wait until tomorrow ! Discover your adventure now and feel the sensation of closeness to nature around you here in Madagascar, to get the best adventureyou just need to leaveand go where you like </span>
+                        <span className={style.suggestion_title}>{t("popular_trip_moment")}</span>
+                        <span className={style.suggestion_subtitle}>{t("popular_trip_moment_label")}</span>
                     </div>
                     <div className={style.suggestion_item_container}>
                     
-                        <PopularTripCard/>
-                        <PopularTripCard/>
-                        <PopularTripCard/>
-                        <PopularTripCard/>
+                        <PopularTripCard href="/users/tour/1"/>
+                        <PopularTripCard href="/users/tour/1"/>
+                        <PopularTripCard href="/users/tour/1"/>
+                        <PopularTripCard href="/users/tour/1"/>
                         
                     </div>
                 </div>

@@ -8,7 +8,10 @@ import { Toast } from 'primereact/toast';
 import { useRef, useState } from 'react';
 import stylePassword from '@/style/components/PasswordInput.module.css';
 import { Divider } from 'primereact/divider';
+import { useTranslation } from 'react-i18next';
 export default function NewPassword() {
+
+    const {t} = useTranslation();
 
     const router= useRouter();
     const toast = useRef(null);
@@ -64,23 +67,23 @@ export default function NewPassword() {
             <div className={stylePassword.check_wrapper}>
                 <div className={stylePassword.check}>
                     <Image alt='check' imageClassName={stylePassword.check_logo} src={checkLenght ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
-                    <span className={stylePassword.check_label}>Must be at least 8 characters</span>
+                    <span className={stylePassword.check_label}>{t("must_8_charactere")}</span>
                 </div>
                 <div className={stylePassword.check}>
                     <Image alt='check' imageClassName={stylePassword.check_logo} src={checkUppercase ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
-                    <span className={stylePassword.check_label}>Must contain at least one uppercase character</span>
+                    <span className={stylePassword.check_label}>{t("must_uppercase")}</span>
                 </div>
                 <div className={stylePassword.check}>
                     <Image alt='check' imageClassName={stylePassword.check_logo} src={checkLowercase ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
-                    <span className={stylePassword.check_label}>Must contain at least one lowercase character</span>
+                    <span className={stylePassword.check_label}>{t("must_lowercase")}</span>
                 </div>
                 <div className={stylePassword.check}>
                     <Image alt='check' imageClassName={stylePassword.check_logo} src={checkNumber ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
-                    <span className={stylePassword.check_label}>Must contain at least one number</span>
+                    <span className={stylePassword.check_label}>{t("must_number")}</span>
                 </div>
                 <div className={stylePassword.check}>
                     <Image alt='check' imageClassName={stylePassword.check_logo} src={checkSpecial ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
-                    <span className={stylePassword.check_label}>Must contain at least one special character</span>
+                    <span className={stylePassword.check_label}>{t("must_special")}</span>
                 </div>
             </div>
         </>
@@ -97,8 +100,8 @@ export default function NewPassword() {
                 </div>
                 <div className={style.login_right}>
                     <div className={style.login_title_container}>
-                        <span className={style.login_title}>Set new password</span>
-                        <span className={style.login_title_label}>Your new password must be different to <br/>the previously used passwords.</span>
+                        <span className={style.login_title}>{t("set_password")}</span>
+                        <span className={style.login_title_label}>{t("your_new_password_must")}</span>
                     </div>
 
                     <div className={style.content}>
@@ -129,12 +132,12 @@ export default function NewPassword() {
 
                             <div className={style.form_group}>
                                 <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Confirm password</span>
+                                    <span className={style.form_label}>{t("confirm_password")}</span>
                                     <input 
                                         ref={confPasswordInput}
                                         type="password"  
                                         className={style.form_input} 
-                                        placeholder="Confirm your pasword"
+                                        placeholder={t("confirm_your_password")}
                                         value={confPassword}
                                         onChange={(e)=>{
                                             confPasswordInput.current.className=style.form_input;
@@ -148,12 +151,12 @@ export default function NewPassword() {
                             </div>
 
                             <div className={style.button_group}>
-                                <button type='submit' className={style.login_button}>Confirm</button>
+                                <button type='submit' className={style.login_button}>{t("confirm")}</button>
                             </div>
                         </form>
                         <div className={style.register_component}>
                             <Link className={style.register_link} href={"/users/login"}>
-                            <i  className="pi pi-angle-left"/> Back to Login
+                            <i  className="pi pi-angle-left"/> {t("back_to_login")}
                             </Link>
                         </div>
                     </div>
