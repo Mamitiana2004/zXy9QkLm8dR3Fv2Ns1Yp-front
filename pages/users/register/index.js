@@ -13,7 +13,7 @@ import GoogleSignupButton from '@/components/button/GoogleSignupButton';
 import { UrlConfig } from '@/util/config';
 
 export default function Register() {
-
+    
     const router= useRouter();
     const toast = useRef(null);
 
@@ -56,7 +56,7 @@ export default function Register() {
   const checkEmailExists = async (e) => {
     // e.preventDefault();
     const csrfToken = await getCsrfTokenDirect();
-    // localStorage.setItem("email_user", email);
+    localStorage.setItem("email_user", email);
 
 
     try {
