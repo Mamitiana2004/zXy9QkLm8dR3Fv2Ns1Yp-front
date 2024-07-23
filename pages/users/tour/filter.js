@@ -30,46 +30,21 @@ export default function Accommodation() {
 
             />
     }
-  
 
-    // useEffect(() => {
-    //     const fetchHotels = async () => {
-    //         try {
-    //             const csrfToken = await getCsrfTokenDirect();
-    //             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`, {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     'X-CSRFToken': csrfToken,
-    //                 },
-    //             });
+    const [all_voyages, setAll_voyages] = useState([]);
 
-    //             if (!response.ok) {
-    //                 throw new Error('Failed to fetch hotels');
-    //             }
-
-    //             const data = await response.json();
-    //             setHotels(data.hebergements);
-    //             setLoading(false);
-    //         } catch (error) {
-    //             console.error('Error fetching hotel data:', error);
-    //             setError(error);
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     fetchHotels();
-    // }, []);
-
+    
     useEffect(()=>{
         fetch("/api/hebergement/getAll")
+        // fetch (`${UrlConfig.apiBaseUrl}/hebergement/getAll`)
         .then(res=>res.json())
         .then(data=>setHotels(data))
         .catch(error=>console.log(error));
-    },[])
-
-
-   
+    }, [])
+    
+    if (!all_voyages) {
+        return <div>Loading...</div>
+    }
 
     return (
         <>

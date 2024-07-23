@@ -40,7 +40,7 @@ export default function InfoTour() {
     }
 
     if (!voyage) {
-        return <div>Loading...</div>; // Show loading state while data is fetched
+        return <div>Loading...</div>;
     }
 
     return (
