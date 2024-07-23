@@ -115,7 +115,7 @@ export default function InfoTour() {
                                 </div>
                                 <div className={style.accommodation_detail}>
                                     <span className={style.accommodation_detail_title}>{t("programs")}</span>
-                                    <TimelineEvent trajets={voyage.trajets}/>
+                                    <TimelineEvent voyage={voyage} />
                                 </div>
                                 <div className={style.accommodation_detail}>
                                     <span className={style.accommodation_detail_title}>{t("travel_inclusion")}</span>
@@ -136,7 +136,7 @@ export default function InfoTour() {
                             }}
                             header={t("programs")}
                         >
-                            <TimelineEvent trajets={voyage.trajets} />
+                            <TimelineEvent voyage={voyage} />
                         </TabPanel>
                         <TabPanel
                             pt={{
