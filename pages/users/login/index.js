@@ -42,7 +42,6 @@ export default function Login() {
         }
 
         if (canSendData) {
-            // const csrfToken =  await getCsrfTokenDirect();
             fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/login/`, {
                 method: "POST",
                 headers: {
@@ -72,10 +71,10 @@ export default function Login() {
                 })
                 .then((data) => {
                     if (data.access) {
-                        Cookies.set('access_token', data.access, { expires: 7, secure: true, sameSite: 'strict' });
+                        Cookies.set('aofdimnnfiodfsnlmaiaftripacciop__', data.access, { expires: 7, secure: true, sameSite: 'strict' });
                     }
                     if (data.refresh) {
-                        Cookies.set('refresh_token', data.refresh, { expires: 30, secure: true, sameSite: 'strict' });
+                        Cookies.set('fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_', data.refresh, { expires: 30, secure: true, sameSite: 'strict' });
                     }
                     setUser({
                         username: data.username,

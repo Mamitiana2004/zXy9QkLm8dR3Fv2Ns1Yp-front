@@ -11,15 +11,48 @@ import { Divider } from 'primereact/divider';
 import { UrlConfig } from '@/util/config';
 import { custom_login, getCsrfTokenDirect } from '@/util/csrf';
 import LayoutContext from '@/layouts/context/layoutContext';
+const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Strict') => {
+    const date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    Cookies.set(name, value, {
+        expires: date,
+        secure: secure,
+        sameSite: sameSite
+    });
+};
+
+
+const sendWelcome = (email) => {
+    const csrfToken = getCsrfTokenDirect()
+    fetch(`${UrlConfig.apiBaseUrl}/api/accounts/welcome-mail/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({ email }),
+    })
+        .then((res) => res.json())
+        .then(data => {
+
+            setUser({
+                'id': data.id,
+                'username': username,
+
+            })
+            sessionStorage.removeItem("email_in_signup");
+            router.push('/');
+        })
+        .catch((error) => {
+            console.log(error);
+        })
+}
 export default function CreateAccount() {
 
     const router = useRouter();
     const toast = useRef(null);
 
 
-    // const [username,setUsername]=useState("");
-    // const usernameInput = useRef(null);
-    const [usernameErreur, setUsernameErreur] = useState(null);
     const [userInfo, setUserInfo] = useState();
     const [password, setPassword] = useState("");
     const passwordInput = useRef(null);
@@ -71,17 +104,21 @@ export default function CreateAccount() {
                 if (!response.ok) {
                     throw new Error('Failed to create client');
                 }
+
                 return response.json();
             })
             .then(data => {
-                console.log(data);
+                // setCookieWithExpiry("aofdimnnfiodfsnlmaiaftripacciop__", data.access, 5);
+                // Cookies.set("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_", data.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
+
+                sendWelcome(data.email);
                 setUser({
                     username: userInfo?.displayName,
                     id: data.id,
-                    userImage: userInfo?.photoURL,
+                    userImage: userInfo?.emailPhotoUrl,
                 });
                 localStorage.removeItem("user_register_info");
-                window.location.href = "/";
+                router.push("/");
             })
             .catch(error => {
                 toast.current.show({
@@ -108,7 +145,7 @@ export default function CreateAccount() {
             canSendData = false;
         }
         if (canSendData) {
-            const creat = await createClient(password)
+            const creat = createClient(password)
         }
 
     }
