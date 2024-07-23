@@ -13,94 +13,99 @@ import { custom_login, getCsrfTokenDirect } from '@/util/csrf';
 import LayoutContext from '@/layouts/context/layoutContext';
 export default function CreateAccount() {
 
-    const router= useRouter();
+    const router = useRouter();
     const toast = useRef(null);
 
 
     // const [username,setUsername]=useState("");
     // const usernameInput = useRef(null);
-    const [usernameErreur,setUsernameErreur]=useState(null);
+    const [usernameErreur, setUsernameErreur] = useState(null);
     const [userInfo, setUserInfo] = useState();
-    const [password,setPassword]=useState("");
+    const [password, setPassword] = useState("");
     const passwordInput = useRef(null);
-    const [passwordErreur,setPasswordErreur]=useState(null);
+    const [passwordErreur, setPasswordErreur] = useState(null);
 
-    const [confPassword,setConfPassword]=useState("");
-    const [confPasswordErreur,setConfPasswordErreur]=useState(null);
-    const confPasswordInput=useRef(null);
+    const [confPassword, setConfPassword] = useState("");
+    const [confPasswordErreur, setConfPasswordErreur] = useState(null);
+    const confPasswordInput = useRef(null);
 
-        useEffect(() => {
-            const info = localStorage.getItem("user_register_info");
-            if (info) {
+    useEffect(() => {
+        const info = localStorage.getItem("user_register_info");
+        if (info) {
             setUserInfo(JSON.parse(info));
-            }
-        }, []);    const [checkLenght,setCheckLenght]=useState(false);
-    const [checkUppercase,setCheckUppercase]=useState(false);
-    const [checkLowercase,setCheckLowercase]=useState(false);
-    const [checkNumber,setCheckNumber]=useState(false);
-    const [checkSpecial,setCheckSpecial]=useState(false);
+        }
+    }, []); const [checkLenght, setCheckLenght] = useState(false);
+    const [checkUppercase, setCheckUppercase] = useState(false);
+    const [checkLowercase, setCheckLowercase] = useState(false);
+    const [checkNumber, setCheckNumber] = useState(false);
+    const [checkSpecial, setCheckSpecial] = useState(false);
     const { user, setUser } = useContext(LayoutContext);
-    const checkChacun = (password) =>{
+    const checkChacun = (password) => {
         setCheckLenght(password.length > 8);
         setCheckSpecial(/[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password));
-        setCheckNumber(/\d/.test(password) );
+        setCheckNumber(/\d/.test(password));
         setCheckUppercase(/[A-Z]/.test(password));
         setCheckLowercase(/[a-z]/.test(password));
     }
-     
-        const createClient = async (password) => {
 
-                  try {
-                    const csrfToken = await getCsrfTokenDirect();
-                    const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/create/emailinfo/`, {
-                      method: "POST",
-                      headers: {
+    const createClient = (password) => {
+        getCsrfTokenDirect()
+            .then(csrfToken => {
+                return fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/create/emailinfo/`, {
+                    method: "POST",
+                    headers: {
                         "Content-Type": "application/json",
                         'X-CSRFToken': csrfToken,
-                      },
-
-                      body: JSON.stringify({
+                    },
+                    body: JSON.stringify({
                         username: userInfo?.displayName ?? '',
                         email: userInfo?.email ?? '',
                         password: password,
                         emailProviderId: userInfo?.providerData[0]?.providerId ?? '',
                         emailProviderUid: userInfo?.providerData[0]?.uid ?? '',
                         emailPhotoUrl: userInfo?.photoURL ?? '',
-                      }),
-                    });
+                    }),
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to create client');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                setUser({
+                    username: userInfo?.displayName,
+                    id: data.id,
+                    userImage: userInfo?.photoURL,
+                });
+                localStorage.removeItem("user_register_info");
+                window.location.href = "/";
+            })
+            .catch(error => {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to create client. Please try again later.',
+                    life: 5000,
+                });
+                console.error(error);
+            });
+    };
 
-                    if (!response.ok) {
-                      throw new Error('Failed to create client');
-                    }
-                      if (response.ok) {
-                            setUser({
-                                username: userInfo?.displayName,
-                                id: data.id,
-                                userImage: userInfo?.photoURL
-                                
-                            })
-                      localStorage.removeItem("user_register_info");
-                      window.location.href = "/";
-
-                    }
-
-                  } catch (error) {
-                    throw error;
-                  }
-                };
-
-    const handleSubmit=async (e)=>{
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        let canSendData=true;
-        if(password.length < 8 || password.trim()==""){
-            passwordInput.current.className=style.form_input_erreur;
+        let canSendData = true;
+        if (password.length < 8 || password.trim() == "") {
+            passwordInput.current.className = style.form_input_erreur;
             setPasswordErreur("Password required");
-            canSendData=false;
+            canSendData = false;
         }
-        if(confPassword != password){
-            confPasswordInput.current.className=style.form_input_erreur;
+        if (confPassword != password) {
+            confPasswordInput.current.className = style.form_input_erreur;
             setConfPasswordErreur("Password does not match");
-            canSendData=false;
+            canSendData = false;
         }
         if (canSendData) {
             const creat = await createClient(password)
@@ -108,11 +113,11 @@ export default function CreateAccount() {
 
     }
 
-    const passwordInputHeader =<span className={stylePassword.header_container}>Pick a new password</span>;
+    const passwordInputHeader = <span className={stylePassword.header_container}>Pick a new password</span>;
 
     const passwordInputFooter = (
         <>
-            <Divider/>
+            <Divider />
             <div className={stylePassword.check_wrapper}>
                 <div className={stylePassword.check}>
                     <Image alt='check' imageClassName={stylePassword.check_logo} src={checkLenght ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
@@ -138,13 +143,13 @@ export default function CreateAccount() {
         </>
     )
 
-    return(
+    return (
         <>
             <div className={style.container}>
 
                 <div className={style.login_left}>
                     <Link href={"/users"}>
-                        <Image src='/images/logo-aftrip.png' alt='logo' style={{width:"250px"}}/>
+                        <Image src='/images/logo-aftrip.png' alt='logo' style={{ width: "250px" }} />
                     </Link>
                 </div>
                 <div className={style.login_right}>
@@ -158,44 +163,44 @@ export default function CreateAccount() {
                             <div className={style.form_group}>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Password</span>
-                                    <Password 
+                                    <Password
                                         ref={passwordInput}
-                                        inputClassName={style.form_input_password} 
-                                        className={style.form_input_password_container} 
+                                        inputClassName={style.form_input_password}
+                                        className={style.form_input_password_container}
                                         placeholder="Enter your pasword"
                                         value={password}
                                         toggleMask
                                         header={passwordInputHeader}
                                         footer={passwordInputFooter}
-                                        onChange={(e)=>{
-                                            passwordInput.current.className=style.form_input;
+                                        onChange={(e) => {
+                                            passwordInput.current.className = style.form_input;
                                             setPassword(e.target.value)
                                             setPasswordErreur(null);
                                             checkChacun(e.target.value);
                                         }}
                                     />
                                 </div>
-                                <span style={passwordErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur}>{passwordErreur}</span>
+                                <span style={passwordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{passwordErreur}</span>
                             </div>
 
                             <div className={style.form_group}>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Confirm password</span>
-                                    <input 
+                                    <input
                                         ref={confPasswordInput}
-                                        type="password"  
-                                        className={style.form_input} 
+                                        type="password"
+                                        className={style.form_input}
                                         placeholder="Confirm your pasword"
                                         value={confPassword}
-                                        onChange={(e)=>{
-                                            confPasswordInput.current.className=style.form_input;
+                                        onChange={(e) => {
+                                            confPasswordInput.current.className = style.form_input;
                                             setConfPassword(e.target.value)
                                             setConfPasswordErreur(null);
                                         }}
                                     />
-                                    <Image style={confPasswordErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!"/>
+                                    <Image style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!" />
                                 </div>
-                                <span style={confPasswordErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur}>{confPasswordErreur}</span>
+                                <span style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{confPasswordErreur}</span>
                             </div>
 
                             <div className={style.button_group}>
@@ -204,7 +209,7 @@ export default function CreateAccount() {
                         </form>
                         <div className={style.register_component}>
                             <Link className={style.register_link} href={"/users/login"}>
-                            <i  className="pi pi-angle-left"/> Back to Login
+                                <i className="pi pi-angle-left" /> Back to Login
                             </Link>
                         </div>
                     </div>
@@ -215,18 +220,18 @@ export default function CreateAccount() {
 
                 <div className={style.footer}>
                     <span>Copyright 2024 - All rights reserved</span>
-                    <Link style={{color:"#000"}} href={"/users/privatePolicy"}>Pivate policy</Link>
+                    <Link style={{ color: "#000" }} href={"/users/privatePolicy"}>Pivate policy</Link>
                 </div>
 
             </div>
-            <Toast ref={toast}/>
+            <Toast ref={toast} />
         </>
     )
 }
 
 
 CreateAccount.getLayout = function getLayout(page) {
-    return(
+    return (
         <>
             <Head>
                 <title>Create an account</title>

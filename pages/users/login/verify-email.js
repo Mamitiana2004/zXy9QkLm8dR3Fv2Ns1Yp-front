@@ -1,4 +1,5 @@
 import style from '@/style/pages/login.module.css'
+import UrlConfig from '@/util/config';
 import { getCsrfTokenDirect } from '@/util/csrf';
 import { emailValid } from '@/util/verify';
 import Cookies from 'js-cookie';
@@ -10,22 +11,10 @@ import { Toast } from 'primereact/toast';
 import { useEffect, useRef, useState } from 'react';
 import { InputOtp } from 'primereact/inputotp';
 import { Button } from 'primereact/button';
-import { UrlConfig } from '@/util/config';
 export default function Verify() {
 
-    const router = useRouter();
-    const toast = useRef(null);
-    const [timer, setTimer] = useState(0);
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [isInputDisabled, setIsInputDisabled] = useState(false);
-
-
-    const [email, setEmail] = useState("");
-    const [code, setCode] = useState();
-
-    const inputCode = useRef(null);
-
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
         getCsrfTokenDirect()
             .then(csrfToken => {
@@ -44,18 +33,30 @@ export default function Verify() {
             .then(response => response.json().then(data => ({ status: response.status, body: data })))
             .then(({ status, body }) => {
                 if (status === 200) {
-                    toast.current.show({ severity: 'success', summary: 'Success', detail: 'Verification code is correct', life: 3000 });
-                    setIsInputDisabled(true);
-                    router.push('/users/register/create-account');
+                    toast.success('Verification code is correct');
+                    router.push('/users/register/create-password-manual/');
                 } else {
-                    toast.current.show({ severity: 'error', summary: 'Error', detail: body.error || 'Verification code is incorrect', life: 3000 });
+                    toast.error(body.error || 'Verification code is incorrect');
                 }
             })
             .catch(error => {
-                toast.current.show({ severity: 'error', summary: 'Error', detail: 'An error occurred: ' + error.message, life: 3000 });
+                toast.error('An error occurred: ' + error.message);
                 console.error('Error:', error);
             });
     };
+
+    const router = useRouter();
+    const toast = useRef(null);
+    const [timer, setTimer] = useState(0);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isInputDisabled, setIsInputDisabled] = useState(false);
+
+
+    const [email, setEmail] = useState("");
+    const [code, setCode] = useState();
+
+    const inputCode = useRef(null);
+
     const resend = async (e) => {
         setIsButtonDisabled(true);
         setTimer(120);
@@ -83,11 +84,8 @@ export default function Verify() {
     const tapeCode = (e) => {
         setCode(e.value);
         if (e.value.length == 6) {
-            const verify_code = handleSubmit();
-            if (verify_code) {
-                setIsInputDisabled(true);
-                // router.push("/users/register/create-account")
-            } else (console.error(verify_code))
+            setIsInputDisabled(true);
+            router.push("/users/register/create-account")
         }
     }
 
