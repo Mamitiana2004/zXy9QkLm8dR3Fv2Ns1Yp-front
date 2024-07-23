@@ -70,7 +70,7 @@ export default function HotelInfos() {
     
     useEffect(() => {
         const fetchData = async () => {
-            if (!id) return; 
+            if (!id) return;
 
             try {
                 const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
@@ -78,24 +78,12 @@ export default function HotelInfos() {
                     throw new Error('Erreur lors de la récupération des données');
                 }
                 const result = await response.json();
-                // console.log(result);
 
                 setData(result);
-                if (result.images) {
-                    setImageHotels(result.images);
-                    // console.log(result.images);
-                }
-                if (result.chambres) {
-                    setChambre(result.chambres);
-                    console.log(result.chambres[0].images_chambre[0].images);
-              
-                }
-                if (result.accessoires) {
-                    setAccessoires(result.accessoires);
-                }
-                if (result.accessoires_haves) {
-                    setAccessoiresHaves(result.accessoires_haves);
-                }
+                if (result.images) setImageHotels(result.images);
+                if (result.chambres) setChambre(result.chambres);
+                if (result.accessoires) setAccessoires(result.accessoires);
+                if (result.accessoires_haves) setAccessoiresHaves(result.accessoires_haves);
             } catch (error) {
                 console.error('Erreur:', error);
             }
@@ -112,6 +100,8 @@ export default function HotelInfos() {
     }
 
     const renderAmenities = () => {
+        if (!Object.keys(accessoires).length) return <p>No amenities available.</p>;
+
         return Object.keys(accessoires).map((category, index) => (
             <div key={index} className={style.amenties}>
                 <span className={style.amenties_title}>
@@ -119,12 +109,16 @@ export default function HotelInfos() {
                     {category}
                 </span>
                 <div className={style.amenties_detail_container}>
-                    {accessoires[category].map((item, i) => (
-                        <span key={i} className={style.amenties_detail}>
-                            <i className="pi pi-check" />
-                            {item.nom_accessoire}
-                        </span>
-                    ))}
+                    {accessoires[category].length > 0 ? (
+                        accessoires[category].map((item, i) => (
+                            <span key={i} className={style.amenties_detail}>
+                                <i className="pi pi-check" />
+                                {item.nom_accessoire}
+                            </span>
+                        ))
+                    ) : (
+                        <p>No items available.</p>
+                    )}
                 </div>
             </div>
         ));
@@ -192,12 +186,12 @@ export default function HotelInfos() {
                             header="Overview"
                         >
                         <div className={style.overview}>
-                            <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Description</span>
-                                <div className={style.paragraphe}>
-                                {data.description_hebergement}
-                                </div>
+                             <div className={style.accommodation_detail}>
+                            <span className={style.accommodation_detail_title}>Description</span>
+                            <div className={style.paragraphe}>
+                                {data?.description_hebergement || 'No description available'}
                             </div>
+                        </div>
                              <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
                                 <div className={style.amenties_container}>
