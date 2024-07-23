@@ -28,8 +28,24 @@ export default function Tour() {
         })
         .catch(error => console.log(error));
     }, [])
-    
     if(!popular_voyage){
+        return <div>Loading...</div>
+    }
+
+
+    // Pour recuperer les operateurs populaires
+    const [popular_operateur, setPopular_operateur] = useState([]);
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/operateurs-populaires/`)
+            .then(res => res.json())
+            .then(data => {
+                setPopular_operateur(data);
+                
+            })
+            .catch(error => console.log(error));
+        
+    }, [])
+    if (!popular_operateur) {
         return <div>Loading...</div>
     }
 
@@ -162,34 +178,29 @@ export default function Tour() {
 
 
                 <div className={style.list_operator_container}>
-                    <span className={style.list_operator_title}>{t("popular_operator_tour")}</span>
-                    <div className={style.list_operator}>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
+            <span className={style.list_operator_title}>{t("popular_operator_tour")}</span>
+            <div className={style.list_operator}>
+                {popular_operateur.map((operator) => {
+                    const imageUrl = operator.images_tour.find(image => image.couverture)?.image || '/images/tours/default.png';
+                    const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${UrlConfig.apiBaseUrl}${imageUrl}`;
+                    
+                    return (
+                        <Link key={operator.id} href={`/users/tour/operator/${operator.id}`} className={style.operator}>
+                            <Image
+                                className={style.image_operator}
+                                src={fullImageUrl}
+                                alt={operator.nom_operateur}
+                                width={400} 
+                                height={250} 
+                            />
                             <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
+                                <span>{operator.nom_operateur}</span>
                             </div>
                         </Link>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
-                            <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
-                            </div>
-                        </Link>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
-                            <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
-                            </div>
-                        </Link>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
-                            <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
-                            </div>
-                        </Link>
-                    </div>
-                </div>
+                    );
+                })}
+            </div>
+        </div>
             </div>
         </>
     )
