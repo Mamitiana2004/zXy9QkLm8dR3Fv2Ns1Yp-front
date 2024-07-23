@@ -8,6 +8,8 @@ import { UrlConfig } from "@/util/config";
 import { Toast } from 'primereact/toast';
 import style from '@/style/components/button/GoogleButton.module.css';
 import { Button } from "primereact/button";
+import { useContext } from "react";
+import LayoutContext from "@/layouts/context/layoutContext";
 
 const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Strict') => {
     const date = new Date();
@@ -19,7 +21,8 @@ const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Stric
     });
 };
 
-const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast) => {
+const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast, setUser) => {
+
     try {
         const csrfToken = getCsrfTokenDirect();
         fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/loginwithemail/`, {
@@ -28,9 +31,10 @@ const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast) => {
                 "Content-Type": "application/json",
                 'X-CSRFToken': csrfToken,
             },
-            body: JSON.stringify({ email: firebaseInfoUser.email, emailProviderUid: firebaseInfoUser.providerData[0].uid }),
+            body: JSON.stringify({ email: firebaseInfoUser.email }),
         })
-            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(response => response.json()
+                .then(data => ({ status: response.status, body: data })))
             .then(({ status, body }) => {
                 if (status !== 200) {
                     const errorMessage = status === 404
@@ -41,14 +45,20 @@ const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast) => {
                 }
 
                 setCookieWithExpiry("csrfToken", csrfToken, 5);
-                setCookieWithExpiry("access_token", body.access, 5);
-                Cookies.set("refresh_token", body.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
+                setCookieWithExpiry("aofdimnnfiodfsnlmaiaftripacciop__", body.access, 5);
+                Cookies.set("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_", body.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
 
                 const info = localStorage.getItem("user_register_info");
                 if (info) {
                     const parsedInfo = JSON.parse(info);
+                    setUser({
+                        username: parsedInfo.displayName,
+                        id: body.id,
+                        userImage: parsedInfo.photoURL,
+                    });
                     Cookies.set("profile_user", parsedInfo.photoURL, { expires: 1, secure: true, sameSite: 'Strict' });
                     Cookies.set("username", parsedInfo.displayName, { expires: 1, secure: true, sameSite: 'Strict' });
+
                 }
 
                 localStorage.removeItem("user_register_info");
@@ -74,6 +84,7 @@ export default function GoogleLoginButton() {
     const auth_domain = process.env.NEXT_PUBLIC_GOOGLE_FIREBASE_AUTHDOMAIN;
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
+    const { user, setUser } = useContext(LayoutContext);
 
     const toast = useRef(null);
     const firebaseConfig = {
@@ -121,14 +132,14 @@ export default function GoogleLoginButton() {
 
     useEffect(() => {
         if (userInfo) {
-            verifyUserInfo(userInfo, setIsLoggedIn, toast);
+            verifyUserInfo(userInfo, setIsLoggedIn, toast, setUser);
         }
-    }, [userInfo]);
+    }, [userInfo, setUser]);
 
     return (
         <>
             <Button className={style.button_container} onClick={handleSignIn}>
-                <Image imageClassName={style.image_google} width={25} height={25} alt="G" src="/images/google.png" />
+                <Image width={25} height={25} alt="G" src="/images/google.png" />
                 Log in with Google
             </Button>
             <Toast ref={toast} />

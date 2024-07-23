@@ -1,20 +1,10 @@
 import { createContext, useEffect, useState } from "react";
 import './../../pages/i18n';
 import i18n from "./../../pages/i18n";
+import Cookies from "js-cookie";
 
 const LayoutContext = createContext();
 
-// export const LayoutProvider=({children})=>{
-
-//     const [user,setUser]=useState();
-//     const [lang,setLang] = useState("en");
-
-//     useEffect(()=>{
-//         i18n.changeLanguage(lang);
-//     },[lang]);
-
-//     return <LayoutContext.Provider value={{user,setUser,lang,setLang}}>{children}</LayoutContext.Provider>
-// }
 
 export const LayoutProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -29,7 +19,7 @@ export const LayoutProvider = ({ children }) => {
             }
             if (savedLang) {
                 setLang(savedLang);
-                i18n.changeLanguage(savedLang); 
+                i18n.changeLanguage(savedLang);
             }
         }
     }, []);
