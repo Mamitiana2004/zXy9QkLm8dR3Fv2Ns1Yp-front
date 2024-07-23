@@ -21,41 +21,6 @@ const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
-        // let images = [
-        //     {
-        //         id:1,
-        //         imageLink:"/images/hotel/chambre.jpg"
-        //     },
-        //     {
-        //         id:2,
-        //         imageLink:"/images/hotel/hotel2.jpg"
-        //     },
-        //     {
-        //         id:3,
-        //         imageLink:"/images/hotel/hotel3.jpg"
-        //     },
-        //     {
-        //         id:4,
-        //         imageLink:"/images/hotel/hotel4.jpg"
-        //     },
-        //     {
-        //         id:5,
-        //         imageLink:"/images/hotel/hotel.jpg"
-        //     },
-        //     {
-        //         id:6,
-        //         imageLink:"/images/hotel/chambre.jpg"
-        //     },
-        //     {
-        //         id:7,
-        //         imageLink:"/images/hotel/hotel.jpg"
-        //     },
-        //     {
-        //         id:8,
-        //         imageLink:"/images/hotel/hotel.jpg"
-        //     }
-        // ]
-
     const router = useRouter();
     const { id } = router.query;
 
@@ -99,6 +64,24 @@ export default function HotelInfos() {
             return style.tab;
     }
 
+    const checkAmenity = (amenity) => {
+        const amenityId = amenity.id;
+
+        // Vérifiez si l'accessoire est dans les accessoires de l'hébergement
+        if (accessoiresHaves.some(item => item.accessoire === amenityId)) {
+            return true;
+        }
+
+        // Vérifiez si l'accessoire est dans les accessoires des chambres
+        for (let room of chambre) {
+            if (room.accessoires && room.accessoires.some(item => item.id === amenityId)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
     const renderAmenities = () => {
         if (!Object.keys(accessoires).length) return <p>No amenities available.</p>;
 
@@ -112,7 +95,7 @@ export default function HotelInfos() {
                     {accessoires[category].length > 0 ? (
                         accessoires[category].map((item, i) => (
                             <span key={i} className={style.amenties_detail}>
-                                <i className="pi pi-check" />
+                                <i className={checkAmenity(item) ? "pi pi-check" : "pi pi-times"} />
                                 {item.nom_accessoire}
                             </span>
                         ))
@@ -192,7 +175,7 @@ export default function HotelInfos() {
                                 {data?.description_hebergement || 'No description available'}
                             </div>
                         </div>
-                             <div className={style.accommodation_detail}>
+                              <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
                                 <div className={style.amenties_container}>
                                     {renderAmenities()}
