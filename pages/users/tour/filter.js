@@ -22,20 +22,10 @@ export default function Accommodation() {
 
     const router = useRouter();
 
-    // const itemTemplate = (tour) =>{
-        
-    //     return  <TripCard
-    //                 href={`/users/tour/`+tour.id}
-
-    //         />
-    // }
-
+    // Recupere tous les listes des voyages
     const [all_voyages, setAll_voyages] = useState([]);
-
-    
     useEffect(()=>{
         fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages/`)
-        // fetch (`${UrlConfig.apiBaseUrl}/hebergement/getAll`)
         .then(res=>res.json())
         .then(data=>setAll_voyages(data))
         .catch(error=>console.log(error));

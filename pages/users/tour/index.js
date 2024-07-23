@@ -6,13 +6,32 @@ import { Image } from "primereact/image";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import PopularTripCard from "@/components/card/PopularTripCard";
-import { useState } from "react";
 import Link from "next/link";
+import { UrlConfig } from "@/util/config";
+import React, { useState, useEffect } from 'react';
+
 export default function Tour() {
 
     const router = useRouter();
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+    
+    // Recupere tous les listes des voyages populaires
+    const [popular_voyage, setPopular_voyage] = useState([]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages-populaire/`)
+        .then(res => res.json())
+        .then(data => {
+            setPopular_voyage(data);
+            setLoading(false);
+        })
+        .catch(error => console.log(error));
+    }, [])
+    
+    if(!popular_voyage){
+        return <div>Loading...</div>
+    }
 
     return(
         <>
@@ -122,20 +141,12 @@ export default function Tour() {
                         <span className={style.suggestion_subtitle}>Don’t wait until tomorrow ! Discover your adventure now and feel the sensation of closeness to nature around you here in Madagascar, to get the best adventureyou just need to leaveand go where you like </span>
                     </div>
                     <div className={style.suggestion_item_container}>
-                    
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        
+                        {popular_voyage.map(voyage => (
+                            <PopularTripCard
+                                key={voyage.id}
+                                voyage={voyage}
+                            />
+                        ))}
                     </div>
                 </div>
 
