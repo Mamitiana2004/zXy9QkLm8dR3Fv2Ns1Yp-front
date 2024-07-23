@@ -11,11 +11,27 @@ import TimelineEvent from "@/layouts/users/tour/TimelineEvent";
 import { Avatar } from "primereact/avatar";
 import PopularTripCard from "@/components/card/PopularTripCard";
 import { useRouter } from "next/router";
-const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
-export default function InfoTour() {
+import { useState, useEffect } from "react";
+import { UrlConfig } from "@/util/config";
 
-    const {t} = useTranslation();
+const Map = dynamic(() => import('@/components/Map'), { ssr: false });
+
+export default function InfoTour() {
+    const { t } = useTranslation();
     const router = useRouter();
+    const { id } = router.query; // Get the tour ID from the URL query
+
+    const [voyage, setVoyage] = useState(null);
+
+    useEffect(() => {
+        if (id) {
+            fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages/${id}/`)
+                .then(res => res.json())
+                .then(data => setVoyage(data))
+                .catch(error => console.log(error));
+        }
+    }, [id]);
+
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
             return style.tab_active;
@@ -23,7 +39,11 @@ export default function InfoTour() {
             return style.tab;
     }
 
-    return(
+    if (!voyage) {
+        return <div>Loading...</div>; // Show loading state while data is fetched
+    }
+
+    return (
         <>
             <Head>
                 <title>Info {t("tour")}</title>
@@ -41,7 +61,7 @@ export default function InfoTour() {
                 </div>
                 <div className={style.header_container}>
                     <div className={style.header_left}>
-                        <span className={style.header_left_title}>Tje wonder of madagascaar south west</span> 
+                        <span className={style.header_left_title}>{voyage.nom_voyage}</span> 
                     </div>
                     <div className={style.header_right}>
                         <div className={style.header_right_button_container}>
@@ -61,11 +81,11 @@ export default function InfoTour() {
                 <GallerieHotel/>
                 <div className={style.tour_detail_container}>
                     <div className={style.tour_detail_left}>
-                        <span className={style.tour_detail_title}>Antananarivo - Tsiribihana - Morondava - Toliara</span>
+                        <span className={style.tour_detail_title}>{voyage.ville_depart} - {voyage.destination_voyage}</span>
                         <div></div>
                     </div>
                     <div className={style.tour_detail_right}>
-                        <span className={style.tour_detail_price}>$960/</span>
+                        <span className={style.tour_detail_price}>${voyage.prix_voyage}/</span>
                         <span>person</span>
                     </div>
                 </div>
@@ -79,10 +99,10 @@ export default function InfoTour() {
                     >
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,0)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 0)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header={t("overview")}
                         >
@@ -90,59 +110,55 @@ export default function InfoTour() {
                                 <div className={style.accommodation_detail}>
                                     <span className={style.accommodation_detail_title}>{t("description")}</span>
                                     <div className={style.paragraphe}>
-                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Error possimus quas explicabo delectus 
-                                    velit veritatis sapiente magni cumque cum incidunt, alias harum modi ea pariatur debitis deleniti 
-                                    culpa quae fuga ad, rerum natus. Quibusdam cumque veniam saepe nesciunt, fuga perspiciatis 
-                                    possimus odit iste ipsam! Ex ad labore impedit incidunt tempora sed aliquid qui totam ducimus 
-                                    distinctio, quos minus aliquam tempore officiis dolorem quidem amet mollitia, est fugiat. 
-                                    Numquam nihil dolor corrupti, repellat temporibus facilis quisquam odio quam nobis doloribus 
-                                    harum earum quod nostrum voluptatum quia enim iure? Quae molestias magni sint aliquid rerum, 
-                                    veniam aperiam? Voluptas molestias fugiat doloremque dolorum? Lorem ipsum dolor sit amet, 
-                                    consectetur adipisicing elit. Error possimus quas explicabo delectus velit veritatis sapiente magni 
-                                    cumque cum incidunt, alias harum modi ea pariatur debitis deleniti culpa quae fuga ad, rerum 
-                                    natus. Quibusdam cumque veniam saepe nesciunt, fuga perspiciatis possimus odit iste ipsam! Ex 
-                                    ad labore impedit incidunt tempora sed aliquid qui totam ducimus distinctio, quos minus aliquam 
-                                    tempore officiis dolorem quidem amet mollitia, est fugiat. Numquam nihil dolor corrupti, repellat 
-                                    temporibus facilis quisquam odio quam nobis doloribus harum earum quod nostrum voluptatum 
-                                    quia enim iure? Quae molestias magni sint aliquid rerum, veniam aperiam? Voluptas molestias 
-                                    fugiat doloremque dolorum?
+                                        {voyage.description_voyage}
                                     </div>
                                 </div>
                                 <div className={style.accommodation_detail}>
                                     <span className={style.accommodation_detail_title}>{t("programs")}</span>
-                                    <TimelineEvent/>
+                                    <TimelineEvent voyage={voyage} />
                                 </div>
                                 <div className={style.accommodation_detail}>
                                     <span className={style.accommodation_detail_title}>{t("travel_inclusion")}</span>
-                                    
+                                    <ul>
+                                        {voyage.inclusions.map((inclusion) => (
+                                            <li key={inclusion.id}>{inclusion.nom_type_inclusion}</li>
+                                        ))}
+                                    </ul>
                                 </div>
                             </div>
                         </TabPanel>
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,1)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 1)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header={t("programs")}
-                        ></TabPanel>
+                        >
+                            <TimelineEvent voyage={voyage} />
+                        </TabPanel>
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,2)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 2)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header={t("travel_inclusion")}
-                        ></TabPanel>
-
+                        >
+                            <ul>
+                                {voyage.all_inclusions.map((inclusion) => (
+                                    <li key={inclusion.id}>{inclusion.nom_inclusion}</li>
+                                ))}
+                            </ul>
+                        </TabPanel>
                     </TabView>
                     <div className={style.tour_card_container}>
                         <DetailTravel/>
                         <div className={style.tour_card}>
                             <Map
-                                style={{width:"100%",height:"300px"}}
+                                style={{ width: "100%", height: "300px" }}
                                 lat={-18.9433924}
                                 lng={47.5288271}  
                             />
@@ -159,31 +175,22 @@ export default function InfoTour() {
                                 </div>
                             </div>
                             <div className={style.paragraphe}>
-                            Lorem ipsum dolor sit amet dolor sadipscing. Dolores diam no eos vel gubergren consequat erat accusam sit eum at stet ea et. Amet sed at voluptua voluptua diam lorem rebum elitr et dolore qui diam elitr ipsum accusam takimata et suscipit. Duo esse possim dolore consectetuer blandit. In eu voluptua id vero diam facilisis accusam tempor est dolores ipsum amet consequat. Zzril vulputate ipsum duo vel erat elitr. Labore et no elitr soluta no nisl at dolore elitr lorem stet ea kasd dolor molestie at. Accusam et ut nonumy.
+                                Lorem ipsum dolor sit amet dolor sadipscing. Dolores diam no eos vel gubergren consequat erat accusam sit eum at stet ea et. Amet sed at voluptua voluptua diam lorem rebum elitr et dolore qui diam elitr ipsum accusam takimata et suscipit. Duo esse possim dolore consectetuer blandit. In eu voluptua id vero diam facilisis accusam tempor est dolores ipsum amet consequat. Zzril vulputate ipsum duo vel erat elitr. Labore et no elitr soluta no nisl at dolore elitr lorem stet ea kasd dolor molestie at. Accusam et ut nonumy.
                             </div>
-                            <Button onClick={()=>router.push("/users/tour/operator/1")} className="button-primary" label="About the operator"/>
+                            <Button onClick={() => router.push("/users/tour/operator/1")} className="button-primary" label="About the operator"/>
                         </div>
                     </div>
                 </div>
                 <div className={style.suggstion_container}>
-                    <span className={style.suggstion_title}>{t("you_woult_like_it")}</span>
+                    <span className={style.suggstion_title}>{t("you_would_like_it")}</span>
                     <div className={style.suggestion_body}>
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
+                        <PopularTripCard href="/users/tour/1" />
+                        <PopularTripCard href="/users/tour/1" />
+                        <PopularTripCard href="/users/tour/1" />
+                        <PopularTripCard href="/users/tour/1" />
                     </div>
                 </div>
             </div>
-
         </>
     );
 }
