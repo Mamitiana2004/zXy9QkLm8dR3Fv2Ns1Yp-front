@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Image } from "primereact/image";
 import { Carousel } from "primereact/carousel";
 import { Rating } from "primereact/rating";
+import { UrlConfig } from "@/util/config";
 export default function Home() {
 
     const {t} = useTranslation();
@@ -55,16 +56,16 @@ export default function Home() {
         fetch("/api/region/getAll")
         .then(res=>res.json())
         .then(data=>setRegions(data))
-        .catch(error=>console.log(error));
+        .catch(error=>console.log(error))   ;
     }
 
     const [check,setCheck] = useState();
     const [guest,setGuest] = useState();
 
     //suggestion
-    const [suggestions,setSuggestions]=useState([]);
+    const [suggestions, setSuggestions] = useState({ hebergements: [] });
     const getSuggestion = () =>{
-        fetch("/api/hotel/suggestion")
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/suggestion/`)
         .then(res=>res.json())
         .then(data=>setSuggestions(data))
         .catch(error=>console.log(error));
@@ -73,7 +74,7 @@ export default function Home() {
     //review
     const [reviews,setReviews] = useState([]);
     const getReview = () =>{
-        fetch("http://192.168.88.37:8000/api/hebergement/avis-clients/")
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/avis-clients/`)
         .then(res=>res.json())
         .then(data=>setReviews(data))
         .catch(error => console.log(error));
@@ -84,6 +85,7 @@ export default function Home() {
             getAllRegion();
             getSuggestion();
             getReview(); 
+
         }
     },[]);
 
@@ -163,19 +165,20 @@ export default function Home() {
                     <span className={style.suggestion_title}>Suggestions for you</span>
                     <div className={style.suggestion_item_container}>
                         {
-                            suggestions.map((suggestion,index)=>{
-                                return  <CardSuggestion 
-                                            key={index}
-                                            image={suggestion.image}
-                                            note={suggestion.note_moyenne}
-                                            name={suggestion.name}
-                                            localisation={suggestion.ville}
-                                            description={suggestion.description}
-                                            onClick={()=>{router.push("/users/accommodation/"+suggestion.id)}}
-                                        />
+                            suggestions.hebergements && suggestions.hebergements.map((suggestion, index) => {
+                                return (
+                                    <CardSuggestion
+                                        key={index}
+                                        image={suggestion.image.length > 0 ? suggestion.image : ""}                                     
+                                        note={suggestion.note_moyenne}
+                                        name={suggestion.nom_hebergement}
+                                        localisation={suggestion.ville}
+                                        description={suggestion.description_hebergement}
+                                        onClick={() => { router.push("/users/accommodation/" + suggestion.id) }}
+                                    />
+                                )
                             })
                         }
-                        
                     </div>
                     <div className={style.suggestion_bottom}>
                         <Button onClick={()=>router.push("/users/accommodation/filter")} className="button-primary" label="See more"/>
