@@ -1,21 +1,17 @@
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
-
 import Image from "next/image";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getCsrfTokenDirect } from "@/util/csrf";
-import Urlconfig from "@/util/config";
-import { toast } from "react-toastify";
-
-import style from '@/style/components/button/GoogleButton.module.css'
+import { UrlConfig } from "@/util/config";
+import { Toast } from 'primereact/toast';
+import style from '@/style/components/button/GoogleButton.module.css';
 import { Button } from "primereact/button";
 
-
-const setCookieWithExpiry = (name, value, days, secure = true, sameSite) => {
+const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Strict') => {
     const date = new Date();
     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-
     Cookies.set(name, value, {
         expires: date,
         secure: secure,
@@ -23,52 +19,53 @@ const setCookieWithExpiry = (name, value, days, secure = true, sameSite) => {
     });
 };
 
-
-const verifyUserInfo = async (firebaseInfoUser, setIsLoggedIn) => {
+const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast) => {
     try {
-        const csrfToken = await getCsrfTokenDirect();
-        const response = await fetch(`${Urlconfig.apiBaseUrl}/api/accounts/client/loginwithemail/`, {
+        const csrfToken = getCsrfTokenDirect();
+        fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/loginwithemail/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // "X-CSRFToken": csrfToken,
+                'X-CSRFToken': csrfToken,
             },
             body: JSON.stringify({ email: firebaseInfoUser.email, emailProviderUid: firebaseInfoUser.providerData[0].uid }),
-        });
+        })
+            .then(response => response.json().then(data => ({ status: response.status, body: data })))
+            .then(({ status, body }) => {
+                if (status !== 200) {
+                    const errorMessage = status === 404
+                        ? 'Email incorrect ou n\'existe pas'
+                        : 'Erreur de connexion';
+                    toast.current.show({ severity: 'error', summary: 'Error', detail: errorMessage, life: 5000 });
+                    return;
+                }
 
-        const data = await response.json();
+                setCookieWithExpiry("csrfToken", csrfToken, 5);
+                setCookieWithExpiry("access_token", body.access, 5);
+                Cookies.set("refresh_token", body.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
 
-        if (!response.ok) {
-            if (response.status === 404) {
-                toast.error("Email incorrect ou n'existe pas", { autoClose: 5000 });
-            } else {
-                toast.error("Erreur de connexion", { autoClose: 5000 });
-            }
-            return;
-        }
+                const info = localStorage.getItem("user_register_info");
+                if (info) {
+                    const parsedInfo = JSON.parse(info);
+                    Cookies.set("profile_user", parsedInfo.photoURL, { expires: 1, secure: true, sameSite: 'Strict' });
+                    Cookies.set("username", parsedInfo.displayName, { expires: 1, secure: true, sameSite: 'Strict' });
+                }
 
-        setCookieWithExpiry("csrfToken", csrfToken, 5);
-        setCookieWithExpiry("access_token", data.access, 5);
+                localStorage.removeItem("user_register_info");
 
-        Cookies.set("refresh_token", data.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
-
-        const info = localStorage.getItem("user_register_info");
-        if (info) {
-            const parsedInfo = JSON.parse(info);
-            Cookies.set("profile_user", parsedInfo.photoURL, { expires: 1, secure: true, sameSite: 'Strict' });
-            Cookies.set("username", parsedInfo.displayName, { expires: 1, secure: true, sameSite: 'Strict' });
-        }
-
-
-        localStorage.removeItem("user_register_info");
-
-        toast.success("Connexion réussie", { autoClose: 2000 });
-        setIsLoggedIn(true);
-        setTimeout(() => {
-            window.location.href = "/";
-        }, 1000);
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Connexion réussie', life: 2000 });
+                setIsLoggedIn(true);
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 1000);
+            })
+            .catch(error => {
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Erreur de connexion', life: 2000 });
+                console.error(error);
+            });
     } catch (error) {
-        toast.error("Erreur de connexion", { autoClose: 2000 });
+        toast.current.show({ severity: 'error', summary: 'Error', detail: 'Erreur de connexion', life: 2000 });
+        console.error(error);
     }
 };
 
@@ -76,8 +73,9 @@ export default function GoogleLoginButton() {
     const apikey = process.env.NEXT_PUBLIC_GOOGLE_API_FIREBASE;
     const auth_domain = process.env.NEXT_PUBLIC_GOOGLE_FIREBASE_AUTHDOMAIN;
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userInfo, setUserInfo] = useState() ;
+    const [userInfo, setUserInfo] = useState(null);
 
+    const toast = useRef(null);
     const firebaseConfig = {
         apiKey: apikey,
         authDomain: auth_domain,
@@ -95,18 +93,10 @@ export default function GoogleLoginButton() {
         provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
         const auth = getAuth(app);
         auth.languageCode = 'fr';
-        provider.setCustomParameters({
-            'login_hint': 'user@example.com'
-        });
+        provider.setCustomParameters({ 'login_hint': 'user@example.com' });
 
         signInWithPopup(auth, provider)
-            .then((result) => {
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-
-                if (credential) {
-                    const token = credential.accessToken;
-                }
-
+            .then(result => {
                 const user = result.user;
                 localStorage.setItem("user_register_info", JSON.stringify(user));
                 setUserInfo({
@@ -116,15 +106,9 @@ export default function GoogleLoginButton() {
                     providerData: user.providerData
                 });
             })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                const email = error.customData?.email;
-                const credential = GoogleAuthProvider.credentialFromError(error);
-                console.error("Error Code: ", errorCode);
-                console.error("Error Message: ", errorMessage);
-                console.error("Email: ", email);
-                console.error("Credential: ", credential);
+            .catch(error => {
+                console.error("Error Code: ", error.code);
+                console.error("Error Message: ", error.message);
             });
     };
 
@@ -133,19 +117,21 @@ export default function GoogleLoginButton() {
         if (info) {
             setUserInfo(JSON.parse(info));
         }
-    }, [],
-    );
+    }, []);
 
     useEffect(() => {
         if (userInfo) {
-            verifyUserInfo(userInfo, setIsLoggedIn);
+            verifyUserInfo(userInfo, setIsLoggedIn, toast);
         }
     }, [userInfo]);
 
     return (
-        <Button className={style.button_container} onClick={handleSignIn}>
-            <Image imageClassName={style.image_google} width={25} height={25} alt="G" src="/images/google.png"/>
-            Log in with Google
-        </Button>
+        <>
+            <Button className={style.button_container} onClick={handleSignIn}>
+                <Image imageClassName={style.image_google} width={25} height={25} alt="G" src="/images/google.png" />
+                Log in with Google
+            </Button>
+            <Toast ref={toast} />
+        </>
     );
 }
