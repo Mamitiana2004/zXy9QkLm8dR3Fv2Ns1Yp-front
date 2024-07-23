@@ -17,6 +17,7 @@ export default function Home() {
 
     const router=useRouter();
 
+    // Image carrosels
     let images= [
         {
             name:"Hotel LUXURA",
@@ -169,7 +170,7 @@ export default function Home() {
                                 return (
                                     <CardSuggestion
                                         key={index}
-                                        image={suggestion.image.length > 0 ? suggestion.image : ""}                                     
+                                        image={suggestion.image ? suggestion.image : "/images/hotel/chambre.jpg"}
                                         note={suggestion.note_moyenne}
                                         name={suggestion.nom_hebergement}
                                         localisation={suggestion.ville}

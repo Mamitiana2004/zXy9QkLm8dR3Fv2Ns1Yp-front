@@ -20,57 +20,62 @@ export default function Accommodation() {
     const [error, setError] = useState(null);
 
     const router = useRouter();
-    const {type ,location , check_in, check_out, invite} = router.query;
+    const { type, location, check_in, check_out, invite } = router.query;
+    
 
-    const itemTemplate = (hotel) =>{
-        
-        return  <HotelCard
-                    href={`/users/accommodation/${hotel.id}`}
-                    rate={hotel.nombre_etoile_hebergement}
-                    img={hotel.images}
-                    price={hotel.min_prix_nuit_chambre}
-                    name={hotel.nom_hebergement}
-                    localisation={`Localisation information here`}
-                    description={hotel.description_hebergement}
-                />
-    }
+    const itemTemplate = (hotel) => {
+    const baseUrl = `${UrlConfig.apiBaseUrl}`;
+    const imageUrl = hotel.images && hotel.images.length > 0 ? `${baseUrl}${hotel.images[0].image}` : "";
+
+    return (
+        <HotelCard
+            href={`/users/accommodation/${hotel.id}`}
+            rate={hotel.nombre_etoile_hebergement}
+            img={imageUrl}
+            price={hotel.min_prix_nuit_chambre}
+            name={hotel.nom_hebergement}
+            localisation={`Localisation information here`}
+            description={hotel.description_hebergement}
+        />
+    );
+};
   
 
-    // useEffect(() => {
-    //     const fetchHotels = async () => {
-    //         try {
-    //             const csrfToken = await getCsrfTokenDirect();
-    //             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`, {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     'X-CSRFToken': csrfToken,
-    //                 },
-    //             });
+    useEffect(() => {
+        const fetchHotels = async () => {
+            try {
+                const csrfToken = await getCsrfTokenDirect();
+                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': csrfToken,
+                    },
+                });
 
-    //             if (!response.ok) {
-    //                 throw new Error('Failed to fetch hotels');
-    //             }
+                if (!response.ok) {
+                    throw new Error('Failed to fetch hotels');
+                }
 
-    //             const data = await response.json();
-    //             setHotels(data.hebergements);
-    //             setLoading(false);
-    //         } catch (error) {
-    //             console.error('Error fetching hotel data:', error);
-    //             setError(error);
-    //             setLoading(false);
-    //         }
-    //     };
+                const data = await response.json();
+                setHotels(data.hebergements);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching hotel data:', error);
+                setError(error);
+                setLoading(false);
+            }
+        };
 
-    //     fetchHotels();
-    // }, []);
+        fetchHotels();
+    }, []);
 
-    useEffect(()=>{
-        fetch("/api/hebergement/getAll")
-        .then(res=>res.json())
-        .then(data=>setHotels(data))
-        .catch(error=>console.log(error));
-    },[])
+    // useEffect(()=>{
+    //     fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`)
+    //     .then(res=>res.json())
+    //     .then(data=>setHotels(data))
+    //     .catch(error=>console.log(error));
+    // },[])
 
 
    
