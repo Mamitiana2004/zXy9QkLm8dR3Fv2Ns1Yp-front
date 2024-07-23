@@ -143,7 +143,7 @@ export default function InfoTour() {
                                 <div className={style.accommodation_detail}>
                                     <span className={style.accommodation_detail_title}>{t("travel_inclusion")}</span>
                                     <ul>
-                                        {voyage.inclusions.map((inclusion) => (
+                                        {voyage.inclusions && voyage.inclusions.map((inclusion) => (
                                             <li key={inclusion.id}>{inclusion.nom_type_inclusion}</li>
                                         ))}
                                     </ul>
@@ -171,8 +171,8 @@ export default function InfoTour() {
                             header={t("travel_inclusion")}
                         >
                             <ul>
-                                {voyage.all_inclusions.map((inclusion) => (
-                                    <li key={inclusion.id}>{inclusion.nom_inclusion}</li>
+                                {voyage.inclusions && voyage.inclusions.map((inclusion) => (
+                                    <li key={inclusion.id}>{inclusion.nom_type_inclusion}</li>
                                 ))}
                             </ul>
                         </TabPanel>
