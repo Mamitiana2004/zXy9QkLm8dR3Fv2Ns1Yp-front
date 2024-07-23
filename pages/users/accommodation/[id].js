@@ -64,23 +64,20 @@ export default function HotelInfos() {
             return style.tab;
     }
 
-    const checkAmenity = (amenity) => {
-        const amenityId = amenity.id;
-
-        // Vérifiez si l'accessoire est dans les accessoires de l'hébergement
-        if (accessoiresHaves.some(item => item.accessoire === amenityId)) {
-            return true;
-        }
-
-        // Vérifiez si l'accessoire est dans les accessoires des chambres
-        for (let room of chambre) {
-            if (room.accessoires && room.accessoires.some(item => item.id === amenityId)) {
+   const checkAmenity = (amenity) => {
+            // Check if the amenity is in the hotel's accessories
+            if (accessoiresHaves.some(item => item.nom_accessoire === amenity.nom_accessoire)) {
                 return true;
             }
-        }
+            // Check if the amenity is in any of the rooms' accessories
+            for (let room of chambre) {
+                if (room.accessoires && room.accessoires.some(item => item.nom_accessoire === amenity.nom_accessoire)) {
+                    return true;
+                }
+            }
+            return false;
+        };
 
-        return false;
-    };
 
     const renderAmenities = () => {
         if (!Object.keys(accessoires).length) return <p>No amenities available.</p>;
