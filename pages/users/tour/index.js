@@ -6,13 +6,48 @@ import { Image } from "primereact/image";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import PopularTripCard from "@/components/card/PopularTripCard";
-import { useState } from "react";
 import Link from "next/link";
+import { UrlConfig } from "@/util/config";
+import React, { useState, useEffect } from 'react';
+
 export default function Tour() {
 
     const router = useRouter();
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+    
+    // Recupere tous les listes des voyages populaires
+    const [popular_voyage, setPopular_voyage] = useState([]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages-populaire/`)
+        .then(res => res.json())
+        .then(data => {
+            setPopular_voyage(data);
+            setLoading(false);
+        })
+        .catch(error => console.log(error));
+    }, [])
+    if(!popular_voyage){
+        return <div>Loading...</div>
+    }
+
+
+    // Pour recuperer les operateurs populaires
+    const [popular_operateur, setPopular_operateur] = useState([]);
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/operateurs-populaires/`)
+            .then(res => res.json())
+            .then(data => {
+                setPopular_operateur(data);
+                
+            })
+            .catch(error => console.log(error));
+        
+    }, [])
+    if (!popular_operateur) {
+        return <div>Loading...</div>
+    }
 
     return(
         <>
@@ -122,20 +157,12 @@ export default function Tour() {
                         <span className={style.suggestion_subtitle}>Don’t wait until tomorrow ! Discover your adventure now and feel the sensation of closeness to nature around you here in Madagascar, to get the best adventureyou just need to leaveand go where you like </span>
                     </div>
                     <div className={style.suggestion_item_container}>
-                    
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        <PopularTripCard
-                            href="/users/tour/1"
-                        />
-                        
+                        {popular_voyage.map(voyage => (
+                            <PopularTripCard
+                                key={voyage.id}
+                                voyage={voyage}
+                            />
+                        ))}
                     </div>
                 </div>
 
@@ -151,34 +178,29 @@ export default function Tour() {
 
 
                 <div className={style.list_operator_container}>
-                    <span className={style.list_operator_title}>{t("popular_operator_tour")}</span>
-                    <div className={style.list_operator}>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
+            <span className={style.list_operator_title}>{t("popular_operator_tour")}</span>
+            <div className={style.list_operator}>
+                {popular_operateur.map((operator) => {
+                    const imageUrl = operator.images_tour.find(image => image.couverture)?.image || '/images/tours/default.png';
+                    const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${UrlConfig.apiBaseUrl}${imageUrl}`;
+                    
+                    return (
+                        <Link key={operator.id} href={`/users/tour/operator/${operator.id}`} className={style.operator}>
+                            <Image
+                                className={style.image_operator}
+                                src={fullImageUrl}
+                                alt={operator.nom_operateur}
+                                width={400} 
+                                height={250} 
+                            />
                             <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
+                                <span>{operator.nom_operateur}</span>
                             </div>
                         </Link>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
-                            <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
-                            </div>
-                        </Link>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
-                            <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
-                            </div>
-                        </Link>
-                        <Link href={"/users/tour/operator/1"} className={style.operator}>
-                            <Image imageClassName={style.image_operator} src="/images/tours/landscape.png" alt="image"/>
-                            <div className={style.operator_detail}>
-                                <span>Ztrip Mada</span>
-                            </div>
-                        </Link>
-                    </div>
-                </div>
+                    );
+                })}
+            </div>
+        </div>
             </div>
         </>
     )

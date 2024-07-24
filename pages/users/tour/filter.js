@@ -17,59 +17,30 @@ const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false }
 
 export default function Accommodation() {
 
-    const [hotels, setHotels] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const router = useRouter();
 
-    const itemTemplate = (tour) =>{
-        
-        return  <TripCard
-                    href={`/users/tour/`+tour.id}
-
-            />
-    }
-  
-
-    // useEffect(() => {
-    //     const fetchHotels = async () => {
-    //         try {
-    //             const csrfToken = await getCsrfTokenDirect();
-    //             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`, {
-    //                 method: "GET",
-    //                 headers: {
-    //                     "Content-Type": "application/json",
-    //                     'X-CSRFToken': csrfToken,
-    //                 },
-    //             });
-
-    //             if (!response.ok) {
-    //                 throw new Error('Failed to fetch hotels');
-    //             }
-
-    //             const data = await response.json();
-    //             setHotels(data.hebergements);
-    //             setLoading(false);
-    //         } catch (error) {
-    //             console.error('Error fetching hotel data:', error);
-    //             setError(error);
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     fetchHotels();
-    // }, []);
-
+    // Recupere tous les listes des voyages
+    const [all_voyages, setAll_voyages] = useState([]);
     useEffect(()=>{
-        fetch("/api/hebergement/getAll")
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages/`)
         .then(res=>res.json())
-        .then(data=>setHotels(data))
+        .then(data=>setAll_voyages(data))
         .catch(error=>console.log(error));
-    },[])
-
-
-   
+    }, [])
+    
+    if (!all_voyages) {
+        return <div>Loading...</div>
+    }
+    const itemTemplate = (voyage) => (
+        <TripCard
+            key={voyage.id}
+            href={`/users/tour/${voyage.id}`}
+            voyage={voyage}
+        />
+    );
 
     return (
         <>
@@ -90,7 +61,7 @@ export default function Accommodation() {
                 <div className={style.filter_header_container}>
                     <span className={style.filter_header_left}>
                         Properties in Antananarivo :    
-                        <span className={style.filter_header_left_bold}> {hotels.length} properties found</span>
+                        <span className={style.filter_header_left_bold}> {all_voyages.length} properties found</span>
                     </span>
                     <div></div>
                 </div>
@@ -107,7 +78,7 @@ export default function Accommodation() {
                         <DataView 
                             emptyMessage="No hotel found"
                             itemTemplate={itemTemplate}
-                            value={hotels}
+                            value={all_voyages}
                             paginator
                             rows={4}
                         />

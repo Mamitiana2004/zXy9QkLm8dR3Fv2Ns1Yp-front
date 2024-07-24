@@ -17,20 +17,42 @@ import { UrlConfig } from "@/util/config";
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
 export default function InfoTour() {
-    const { t } = useTranslation();
+       const { t } = useTranslation();
     const router = useRouter();
-    const { id } = router.query; // Get the tour ID from the URL query
+    const { id } = router.query;
 
     const [voyage, setVoyage] = useState(null);
+    const [popularVoyages, setPopularVoyages] = useState([]);
+    const [loading, setLoading] = useState(true);
 
+    // Fetch voyage details when ID changes
     useEffect(() => {
         if (id) {
             fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages/${id}/`)
                 .then(res => res.json())
                 .then(data => setVoyage(data))
-                .catch(error => console.log(error));
+                .catch(error => console.error('Error fetching voyage details:', error));
         }
     }, [id]);
+
+    // Fetch popular voyages
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages-populaire/`)
+            .then(res => res.json())
+            .then(data => {
+                setPopularVoyages(data);
+                setLoading(false);
+            })
+            .catch(error => console.error('Error fetching popular voyages:', error));
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!voyage) {
+        return <div>No voyage data available.</div>;
+    }
 
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
@@ -40,9 +62,10 @@ export default function InfoTour() {
     }
 
     if (!voyage) {
-        return <div>Loading...</div>; // Show loading state while data is fetched
+        return <div>Loading...</div>;
     }
 
+    
     return (
         <>
             <Head>
@@ -120,7 +143,7 @@ export default function InfoTour() {
                                 <div className={style.accommodation_detail}>
                                     <span className={style.accommodation_detail_title}>{t("travel_inclusion")}</span>
                                     <ul>
-                                        {voyage.inclusions.map((inclusion) => (
+                                        {voyage.inclusions && voyage.inclusions.map((inclusion) => (
                                             <li key={inclusion.id}>{inclusion.nom_type_inclusion}</li>
                                         ))}
                                     </ul>
@@ -148,8 +171,8 @@ export default function InfoTour() {
                             header={t("travel_inclusion")}
                         >
                             <ul>
-                                {voyage.all_inclusions.map((inclusion) => (
-                                    <li key={inclusion.id}>{inclusion.nom_inclusion}</li>
+                                {voyage.inclusions && voyage.inclusions.map((inclusion) => (
+                                    <li key={inclusion.id}>{inclusion.nom_type_inclusion}</li>
                                 ))}
                             </ul>
                         </TabPanel>
@@ -181,13 +204,12 @@ export default function InfoTour() {
                         </div>
                     </div>
                 </div>
-                <div className={style.suggstion_container}>
+                  <div className={style.suggstion_container}>
                     <span className={style.suggstion_title}>{t("you_would_like_it")}</span>
                     <div className={style.suggestion_body}>
-                        <PopularTripCard href="/users/tour/1" />
-                        <PopularTripCard href="/users/tour/1" />
-                        <PopularTripCard href="/users/tour/1" />
-                        <PopularTripCard href="/users/tour/1" />
+                        {popularVoyages.map(voyage => (
+                            <PopularTripCard key={voyage.id} voyage={voyage} />
+                        ))}
                     </div>
                 </div>
             </div>
