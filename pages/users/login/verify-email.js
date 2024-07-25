@@ -84,8 +84,11 @@ export default function Verify() {
     const tapeCode = (e) => {
         setCode(e.value);
         if (e.value.length == 6) {
+            const code_test = handleSubmit()
+            if(code_test){
             setIsInputDisabled(true);
-            router.push("/users/register/create-account")
+                router.push("/users/register/create-account")
+            }
         }
     }
 
