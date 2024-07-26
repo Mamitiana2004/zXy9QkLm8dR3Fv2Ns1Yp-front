@@ -27,8 +27,8 @@ export default function HotelCard(props) {
                                 })
                             }}
                         />
-                        <span className={style.note}></span>
-                        <span className={style.view}>{props.avis_hotel} View{props.avis_hotel>1 ? "s":""}</span>
+                        <span className={style.note}>{props.rate}</span>
+                        <span className={style.view}>{props.avis_hotel} ( reviews ){props.avis_hotel>1 ? "s":""}</span>
                     </div>
                     <span className={style.hotel_container_top_right}>
                         from {props.price}$/night

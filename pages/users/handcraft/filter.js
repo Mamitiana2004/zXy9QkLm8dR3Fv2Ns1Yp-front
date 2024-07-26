@@ -9,6 +9,7 @@ import { DataView } from 'primereact/dataview';
 import { useEffect, useState } from "react";
 import { classNames } from "primereact/utils";
 import { useRouter } from "next/router";
+import { UrlConfig } from "@/util/config";
 
 const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false });
 
@@ -18,21 +19,21 @@ export default function FilterHandCraft() {
 
     const router = useRouter();
     
-    const {location,store,type}=router.query;
+    const { location, store, type } = router.query;
 
     let itemTemplate = (handcraft) =>{
         return  <ProductCard
-                    nom_produit="Raphia Bag"
-                    by="TArt Mlagasy"
-                    location="Ivato , Antananarivo , 105"
-                    prix="$ 950"
+                    nom_produit={handcraft.nom_produit_artisanal}
+                    by={"TArt Mlagasy"}
+                    location={handcraft.artisanat.localisation.adresse}
+                    prix={`$ ${handcraft.prix_artisanat}`} 
                     discount="20"
                     href="/users/handcraft/1"
                 />
     }
 
     useEffect(()=>{
-        fetch("/api/hebergement/getAll")
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanal/produits-artisanaux/`)
         .then(res=>res.json())
         .then(data=>setHandcrafts(data))
         .catch(error=>console.log(error));
