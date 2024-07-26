@@ -9,20 +9,10 @@ import { getCsrfTokenDirect } from "@/util/csrf";
 import { UrlConfig } from "@/util/config";
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
+import { firebaseConfig } from '@/util/config'
 
 const GoogleSignupButton = () => {
     const toast = useRef(null);
-    const apikey = process.env.NEXT_PUBLIC_GOOGLE_API_FIREBASE;
-    const auth_domain = process.env.NEXT_PUBLIC_GOOGLE_FIREBASE_AUTHDOMAIN;
-    const firebaseConfig = {
-        apiKey: apikey,
-        authDomain: auth_domain,
-        projectId: "test-ce224",
-        storageBucket: "test-ce224.appspot.com",
-        messagingSenderId: "758626351874",
-        appId: "1:758626351874:web:4e0e954eb74dde33c3a01b",
-        measurementId: "G-9B4HNZLJ79",
-    };
 
     const app = initializeApp(firebaseConfig);
 

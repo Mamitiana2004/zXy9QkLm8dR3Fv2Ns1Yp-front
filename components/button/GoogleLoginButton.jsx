@@ -10,6 +10,7 @@ import style from '@/style/components/button/GoogleButton.module.css';
 import { Button } from "primereact/button";
 import { useContext } from "react";
 import LayoutContext from "@/layouts/context/layoutContext";
+import { firebaseConfig } from '@/util/config'
 
 const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Strict') => {
     const date = new Date();
@@ -80,22 +81,12 @@ const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast, setUser) => {
 };
 
 export default function GoogleLoginButton() {
-    const apikey = process.env.NEXT_PUBLIC_GOOGLE_API_FIREBASE;
-    const auth_domain = process.env.NEXT_PUBLIC_GOOGLE_FIREBASE_AUTHDOMAIN;
+
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
     const { user, setUser } = useContext(LayoutContext);
 
     const toast = useRef(null);
-    const firebaseConfig = {
-        apiKey: apikey,
-        authDomain: auth_domain,
-        projectId: "test-ce224",
-        storageBucket: "test-ce224.appspot.com",
-        messagingSenderId: "758626351874",
-        appId: "1:758626351874:web:4e0e954eb74dde33c3a01b",
-        measurementId: "G-9B4HNZLJ79"
-    };
 
     const app = initializeApp(firebaseConfig);
 
