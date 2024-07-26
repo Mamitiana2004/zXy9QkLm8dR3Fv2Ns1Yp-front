@@ -19,25 +19,31 @@ export default function FilterHandCraft() {
 
     const router = useRouter();
     
-    const { location, store, type } = router.query;
+    const {location,store,type}=router.query;
 
     let itemTemplate = (handcraft) =>{
         return  <ProductCard
                     nom_produit={handcraft.nom_produit_artisanal}
-                    by={"TArt Mlagasy"}
-                    location={handcraft.artisanat.localisation.adresse}
-                    prix={`$ ${handcraft.prix_artisanat}`} 
+                    by={handcraft.artisanat.nom_artisanat}
+                    location={`${handcraft.artisanat.localisation_artisanat.ville} ${handcraft.artisanat.localisation_artisanat.adresse}`}
+                    prix={`$ ${handcraft.prix_artisanat}`}
                     discount="20"
-                    href="/users/handcraft/1"
+                    href={`/users/handcraft/${handcraft.id}`}
+                    images={handcraft.images}
                 />
     }
 
+    // Recuperer tous les liste des produits artisanaux
     useEffect(()=>{
-        fetch(`${UrlConfig.apiBaseUrl}/api/artisanal/produits-artisanaux/`)
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
         .then(res=>res.json())
         .then(data=>setHandcrafts(data))
         .catch(error=>console.log(error));
-    },[])
+    }, [])
+    
+    if (!handcrafts) {
+        return <div>Loading...</div>
+    }
 
     return(
         <>

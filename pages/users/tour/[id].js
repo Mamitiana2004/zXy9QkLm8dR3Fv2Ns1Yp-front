@@ -17,7 +17,7 @@ import { UrlConfig } from "@/util/config";
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
 export default function InfoTour() {
-       const { t } = useTranslation();
+    const { t } = useTranslation();
     const router = useRouter();
     const { id } = router.query;
 

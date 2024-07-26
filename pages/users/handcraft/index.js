@@ -7,10 +7,30 @@ import ProductCard from "@/components/card/ProductCard";
 import { Button } from "primereact/button";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { useEffect } from "react";
+import { UrlConfig } from "@/util/config";
 
 export default function Handcraft() {
     const {t} = useTranslation();
     const router = useRouter();
+
+
+    const [handcrafts,setHandcrafts]= useState([]);
+
+    
+    // Recuperer tous les liste des produits artisanaux
+    useEffect(()=>{
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
+        .then(res=>res.json())
+        .then(data=>setHandcrafts(data))
+        .catch(error=>console.log(error));
+    }, [])
+    
+    // if (!handcrafts) {
+    //     return <div>Loading...</div>
+    // }
+
     return(
         <>
             <Head>
@@ -115,41 +135,58 @@ export default function Handcraft() {
                         <span className={style.suggestion_title}>{t("exclusive_handcraft_product")}</span>
                         <span className={style.suggestion_subtitle}>{t("dont_wait_to_discover_handcraft")} </span>
                     </div>
+                    {/* <div className={style.suggestion_item_container}>
+                        <ProductCard
+                            nom_produit={handcrafts.nom_produit_artisanal}
+                            by="TArt Mlagasy"
+                            location="Ivato , Antananarivo , 105"
+                            prix="$ 950"
+                            discount="20"
+                            href="/users/handcraft/1"
+                        />
+                        <ProductCard
+                            nom_produit="Raphia Bag"
+                            by="TArt Mlagasy"
+                            location="Ivato , Antananarivo , 105"
+                            prix="$ 950"
+                            discount="20"
+                            href="/users/handcraft/1"
+                        />
+                        <ProductCard
+                            nom_produit="Raphia Bag"
+                            by="TArt Mlagasy"
+                            location="Ivato , Antananarivo , 105"
+                            prix="$ 950"
+                            discount="20"
+                            href="/users/handcraft/1"
+                        />
+                        <ProductCard
+                            nom_produit="Raphia Bag"
+                            by="TArt Mlagasy"
+                            location="Ivato , Antananarivo , 105"
+                            prix="$ 950"
+                            discount="20"
+                            href="/users/handcraft/1"
+                        />
+
+                    </div> */}
                     <div className={style.suggestion_item_container}>
-                        <ProductCard
-                            nom_produit="Raphia Bag"
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-                        <ProductCard
-                            nom_produit="Raphia Bag"
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-                        <ProductCard
-                            nom_produit="Raphia Bag"
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-                        <ProductCard
-                            nom_produit="Raphia Bag"
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-                        
-                        
+                        {handcrafts.length > 0 ? (
+                            handcrafts.map((product, index) => (
+                                <ProductCard
+                                    key={index}
+                                    nom_produit={product.nom_produit_artisanal}
+                                    by={product.artisanat.nom_artisanat}
+                                    location={`${product.artisanat.localisation_artisanat.ville} ${product.artisanat.localisation_artisanat.adresse}`}
+                                    prix={`$ ${product.prix_artisanat}`}
+                                    discount={product.discount}
+                                    href={product.href}
+                                    images={product.images}
+                                />
+                            ))
+                        ) : (
+                            <p>{t("no_suggested_products")}</p>
+                        )}
                     </div>
                 </div>
             </div>

@@ -2,14 +2,27 @@ import { Image } from 'primereact/image';
 import style from '../../style/components/card/ProductCard.module.css';
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
+import { UrlConfig } from '@/util/config';
 export default function ProductCard(props) {
 
-    const router= useRouter();
+    const router = useRouter();
+    console.log(props);
+    // Extract the cover image URL from the images array
+    const coverImage = props.images.find(img => img.couverture)?.image;
+    
+    const usedImage = coverImage ? coverImage : props.images[0].image;
+    const imageUrl = usedImage ? `${UrlConfig.apiBaseUrl}${usedImage}` : '/images/artisanat/artisanat.jpg';
+
 
     return(
         <div className={style.container}>
             <div className={style.image_container}>
-                <Image src={"/images/artisanat/artisanat.jpg"} alt={props.nom_produit} imageClassName={style.image_product} className={style.image_product} />
+                <Image
+                    src={imageUrl}
+                    alt={props.nom_produit}
+                    imageClassName={style.image_product}
+                    className={style.image_product}
+                />
                 <div className={style.background}></div>
                 {
                     props.discount!=null ?
