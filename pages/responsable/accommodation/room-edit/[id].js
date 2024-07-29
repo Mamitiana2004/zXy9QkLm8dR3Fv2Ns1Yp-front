@@ -1,22 +1,24 @@
 import Head from "next/head";
 
-import style from './../../../style/pages/responsable/accommodation/addNewRoom.module.css'
-import { useEffect, useRef, useState } from "react";
+import style from '@/style/pages/responsable/accommodation/addNewRoom.module.css'
+import { useRef, useState } from "react";
 import { Image } from "primereact/image";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { useRouter } from "next/router";
 import RoomAmenities from "@/components/RoomAmenities";
-import { UrlConfig } from "@/util/config";
-export default function AddNewRoom() {
-    const [typeChambre, setTypeChambre] = useState();
+export default function EditRoom() {
+    const router = useRouter();
+
+    const { id } = router.query;
     const [imageFile, setImageFile] = useState();
     const inputRef = useRef(null);
-    const [selectedType, setSelectedType] = useState(null);
 
     const [listImage, setListImage] = useState([]);
+
 
     const handleClick = () => {
         inputRef.current.click();
@@ -31,17 +33,11 @@ export default function AddNewRoom() {
             setListImage(listImageCopy);
         }
     }
-    useEffect(() => {
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`)
-            .then(response => response.json())
-            .then(data => setTypeChambre(data))
-            .catch(error => console.error('Erreur lors de la récupération des données :', error));
-    }, []);
 
     return (
         <>
             <Head>
-                <title>Add new Room</title>
+                <title>Edit Room</title>
             </Head>
 
             <div className={style.top_container}>
@@ -75,11 +71,7 @@ export default function AddNewRoom() {
                         </FloatLabel>
                         <FloatLabel>
                             <Dropdown
-                                id="id"
-                                value={selectedType}
-                                onChange={(e) => setSelectedType(e.value)}
-                                options={typeChambre}
-                                optionLabel="type_chambre"
+                                id="type_select"
                                 className={style.dropdown}
                             />
                             <label htmlFor="type_select">Type</label>
@@ -112,7 +104,7 @@ export default function AddNewRoom() {
                 </div>
                 <div className={style.button_list}>
                     <Button className="button-secondary" raised label="Cancel" />
-                    <Button className="button-primary" label="+ Add room" />
+                    <Button className="button-primary" label="Save room" />
                 </div>
             </div>
         </>
