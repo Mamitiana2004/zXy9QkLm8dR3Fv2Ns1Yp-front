@@ -2,8 +2,7 @@ import GoogleLoginButton from '@/components/button/GoogleLoginButton';
 import LayoutContext from '@/layouts/context/layoutContext';
 import style from '@/style/pages/login.module.css'
 import { UrlConfig } from '@/util/config';
-
-import { getCsrfTokenDirect } from '@/util/csrf';
+import { setTokensInCookies } from '@/util/Cookies';
 import { emailValid } from '@/util/verify';
 import Cookies from 'js-cookie';
 import Head from 'next/head'
@@ -70,19 +69,17 @@ export default function Login() {
                     }
                 })
                 .then((data) => {
-                    if (data.access) {
-                        Cookies.set('aofdimnnfiodfsnlmaiaftripacciop__', data.access, { expires: 7, secure: true, sameSite: 'strict' });
-                    }
-                    if (data.refresh) {
-                        Cookies.set('fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_', data.refresh, { expires: 30, secure: true, sameSite: 'strict' });
-                    }
-                    setUser({
-                        username: data.username,
-                        id: data.id,
-                        userImage: data.image
+                    if (data.refresh, data.access) {
+                        setTokensInCookies(data.refresh, data.access)
+                        setUser({
+                            username: data.username,
+                            id: data.id,
+                            userImage: data.image
 
-                    })
-                    router.push("/users");
+                        }); router.push("/users");
+                    }
+
+
                 })
                 .catch((error) => {
                     toast.current.show({

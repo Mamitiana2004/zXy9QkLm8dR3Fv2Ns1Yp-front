@@ -29,6 +29,12 @@ export default function AppTopbar(props) {
 
     // Définir la fonction logOut avant de l'utiliser dans le tableau items
     const logOut = () => {
+        Cookies.remove("accessToken");
+        Cookies.remove("refreshToken");
+        Cookies.remove("aofdimnnfiodfsnlmaiaftripacciop__");
+        Cookies.remove("profile_user");
+        Cookies.remove("username");
+        Cookies.remove("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_");
         router.push("/users/login");
         setUser(null);
     };
@@ -51,19 +57,19 @@ export default function AppTopbar(props) {
                     </Link>
                 </div>
                 <div className={style.navbar_menu_container}>
-                    <Link style={{textDecoration:"none"}} href={"/users"}>
+                    <Link style={{ textDecoration: "none" }} href={"/users"}>
                         <span className={style.navbar_menu_item}>{t("home")}</span>
                     </Link>
-                    <Link style={{textDecoration:"none"}} href={"/users/accommodation"}>
+                    <Link style={{ textDecoration: "none" }} href={"/users/accommodation"}>
                         <span className={style.navbar_menu_item}>{t("accommodation")}</span>
                     </Link>
-                    <Link style={{textDecoration:"none"}} href={"/users/handcraft"}>
+                    <Link style={{ textDecoration: "none" }} href={"/users/handcraft"}>
                         <span className={style.navbar_menu_item}>{t("handcraft")}</span>
                     </Link>
-                    <Link style={{textDecoration:"none"}} href={"/users/tour"}>
+                    <Link style={{ textDecoration: "none" }} href={"/users/tour"}>
                         <span className={style.navbar_menu_item}>{t("tour")}</span>
                     </Link>
-                    <Link style={{textDecoration:"none"}} href={"/users/about"}>
+                    <Link style={{ textDecoration: "none" }} href={"/users/about"}>
                         <span className={style.navbar_menu_item}>{t("about_us")}</span>
                     </Link>
                 </div>

@@ -11,6 +11,7 @@ import { Button } from "primereact/button";
 import { useContext } from "react";
 import LayoutContext from "@/layouts/context/layoutContext";
 import { firebaseConfig } from '@/util/config'
+import { setTokensInCookies } from "@/util/Cookies";
 
 const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Strict') => {
     const date = new Date();
