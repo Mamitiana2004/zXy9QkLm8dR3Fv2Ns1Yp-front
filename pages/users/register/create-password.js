@@ -11,15 +11,8 @@ import { Divider } from 'primereact/divider';
 import { UrlConfig } from '@/util/config';
 import { custom_login, getCsrfTokenDirect } from '@/util/csrf';
 import LayoutContext from '@/layouts/context/layoutContext';
-const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Strict') => {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    Cookies.set(name, value, {
-        expires: date,
-        secure: secure,
-        sameSite: sameSite
-    });
-};
+import { setTokensInCookies } from '@/util/Cookies';
+
 
 
 const sendWelcome = (email) => {
@@ -108,9 +101,8 @@ export default function CreateAccount() {
                 return response.json();
             })
             .then(data => {
-                // setCookieWithExpiry("aofdimnnfiodfsnlmaiaftripacciop__", data.access, 5);
-                // Cookies.set("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_", data.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
 
+                setTokensInCookies(data.refresh, data.access)
                 sendWelcome(data.email);
                 setUser({
                     username: userInfo?.displayName,

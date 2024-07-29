@@ -11,6 +11,7 @@ import { Button } from "primereact/button";
 import { useContext } from "react";
 import LayoutContext from "@/layouts/context/layoutContext";
 import { firebaseConfig } from '@/util/config'
+import { setTokensInCookies } from "@/util/Cookies";
 
 const setCookieWithExpiry = (name, value, days, secure = true, sameSite = 'Strict') => {
     const date = new Date();
@@ -46,8 +47,9 @@ const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast, setUser) => {
                 }
 
                 setCookieWithExpiry("csrfToken", csrfToken, 5);
-                setCookieWithExpiry("aofdimnnfiodfsnlmaiaftripacciop__", body.access, 5);
-                Cookies.set("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_", body.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
+                setTokensInCookies(
+                    body.refresh, body.access
+                )
 
                 const info = localStorage.getItem("user_register_info");
                 if (info) {

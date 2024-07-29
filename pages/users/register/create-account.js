@@ -13,108 +13,114 @@ import { custom_login, getCsrfTokenDirect } from '@/util/csrf';
 import LayoutContext from '@/layouts/context/layoutContext';
 export default function CreateAccount() {
 
-    const router= useRouter();
+    const router = useRouter();
     const toast = useRef(null);
 
 
-    const [username,setUsername]=useState("");
+    const [username, setUsername] = useState("");
     const usernameInput = useRef(null);
-    const [usernameErreur,setUsernameErreur]=useState(null);
+    const [usernameErreur, setUsernameErreur] = useState(null);
 
-    const [password,setPassword]=useState("");
+    const [password, setPassword] = useState("");
     const passwordInput = useRef(null);
-    const [passwordErreur,setPasswordErreur]=useState(null);
+    const [passwordErreur, setPasswordErreur] = useState(null);
 
-    const [confPassword,setConfPassword]=useState("");
-    const [confPasswordErreur,setConfPasswordErreur]=useState(null);
-    const confPasswordInput=useRef(null);
+    const [confPassword, setConfPassword] = useState("");
+    const [confPasswordErreur, setConfPasswordErreur] = useState(null);
+    const confPasswordInput = useRef(null);
 
     //
-    const [checkLenght,setCheckLenght]=useState(false);
-    const [checkUppercase,setCheckUppercase]=useState(false);
-    const [checkLowercase,setCheckLowercase]=useState(false);
-    const [checkNumber,setCheckNumber]=useState(false);
-    const [checkSpecial,setCheckSpecial]=useState(false);
+    const [checkLenght, setCheckLenght] = useState(false);
+    const [checkUppercase, setCheckUppercase] = useState(false);
+    const [checkLowercase, setCheckLowercase] = useState(false);
+    const [checkNumber, setCheckNumber] = useState(false);
+    const [checkSpecial, setCheckSpecial] = useState(false);
     const { user, setUser } = useContext(LayoutContext);
-    const checkChacun = (password) =>{
+    const checkChacun = (password) => {
         setCheckLenght(password.length > 8);
         setCheckSpecial(/[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password));
-        setCheckNumber(/\d/.test(password) );
+        setCheckNumber(/\d/.test(password));
         setCheckUppercase(/[A-Z]/.test(password));
         setCheckLowercase(/[a-z]/.test(password));
     }
     const createClient = async (password) => {
         const csrfToken = await getCsrfTokenDirect();
         const email = sessionStorage.getItem("email_in_signup")
-            try {
-                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/create-with-username/`, {
+        fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/create-with-username/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({ email, username, password }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to create client');
+                }
+
+                custom_login(username, password)
+                return response.json();
+
+            }).then(data => {
+                setUser({
+                    id: data.id,
+                    username: username,
+                    userImage: data.emailPhotoUrl
+                });
+            })
+            .then(() => {
+                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/welcome-mail/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': csrfToken,
                     },
-                    body: JSON.stringify({ email, username, password }),
-                });
-
-                const waiting = await custom_login(username, password);
-                if (!waiting) {
-                    throw new Error('Failed to login after client creation');
-                } if (!response.ok) {
-                    throw new Error('Failed to create client');
-                } else {
-                    fetch(`${UrlConfig.apiBaseUrl}/api/accounts/welcome-mail/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken,
-                        },
-                        body: JSON.stringify({ email }),
+                    body: JSON.stringify({ email }),
+                })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Failed to send welcome email');
+                        }
+                        return res.json();
                     })
-                    .then((res) => res.json())
                     .then(data => {
-                        
-                        setUser({
-                            'id': data.id,
-                            'username': username,
-                            
-                        })
+
                         sessionStorage.removeItem("email_in_signup");
                         router.push('/');
                     })
-                    .catch((error) => {
-                        console.log(error);    
-                    })    
-                    
-                }
-
-
-            } catch (error) {
+                    .catch(error => {
+                        console.log('Error sending welcome email:', error);
+                    });
+            })
+            .catch(error => {
                 toast.current.show({
-                    severity:"error",
-                    summary:"Error",
-                    detail:'An error occurred: ' + error.message,
-                    life:5000
+                    severity: "error",
+                    summary: "Error",
+                    detail: 'An error occurred: ' + error.message,
+                    life: 5000
+                });
             });
-            }
-        };
 
-    const handleSubmit=async (e)=>{
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        let canSendData=true;
-        if(username.trim()==""){
-            usernameInput.current.className=style.form_input_erreur;
+        let canSendData = true;
+        if (username.trim() == "") {
+            usernameInput.current.className = style.form_input_erreur;
             setUsernameErreur("Username required");
-            canSendData=false;
+            canSendData = false;
         }
-        if(password.length < 8 || password.trim()==""){
-            passwordInput.current.className=style.form_input_erreur;
+        if (password.length < 8 || password.trim() == "") {
+            passwordInput.current.className = style.form_input_erreur;
             setPasswordErreur("Password required");
-            canSendData=false;
+            canSendData = false;
         }
-        if(confPassword != password){
-            confPasswordInput.current.className=style.form_input_erreur;
+        if (confPassword != password) {
+            confPasswordInput.current.className = style.form_input_erreur;
             setConfPasswordErreur("Password does not match");
-            canSendData=false;
+            canSendData = false;
         }
         if (canSendData) {
             const creat = await createClient(password)
@@ -122,11 +128,11 @@ export default function CreateAccount() {
 
     }
 
-    const passwordInputHeader =<span className={stylePassword.header_container}>Pick a new password</span>;
+    const passwordInputHeader = <span className={stylePassword.header_container}>Pick a new password</span>;
 
     const passwordInputFooter = (
         <>
-            <Divider/>
+            <Divider />
             <div className={stylePassword.check_wrapper}>
                 <div className={stylePassword.check}>
                     <Image alt='check' imageClassName={stylePassword.check_logo} src={checkLenght ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
@@ -152,13 +158,13 @@ export default function CreateAccount() {
         </>
     )
 
-    return(
+    return (
         <>
             <div className={style.container}>
 
                 <div className={style.login_left}>
                     <Link href={"/users"}>
-                        <Image src='/images/logo-aftrip.png' alt='logo' style={{width:"250px"}}/>
+                        <Image src='/images/logo-aftrip.png' alt='logo' style={{ width: "250px" }} />
                     </Link>
                 </div>
                 <div className={style.login_right}>
@@ -169,67 +175,67 @@ export default function CreateAccount() {
 
                     <div className={style.content}>
                         <form onSubmit={handleSubmit} className={style.form}>
-                        <div className={style.form_group}>
+                            <div className={style.form_group}>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Username</span>
-                                    <input 
+                                    <input
                                         ref={usernameInput}
-                                        type="text"  
-                                        className={style.form_input} 
+                                        type="text"
+                                        className={style.form_input}
                                         placeholder="Enter your username"
                                         value={username}
-                                        onChange={(e)=>{
-                                            usernameInput.current.className=style.form_input;
+                                        onChange={(e) => {
+                                            usernameInput.current.className = style.form_input;
                                             setUsername(e.target.value)
                                             setUsernameErreur(null);
                                         }}
                                     />
-                                    <Image style={confPasswordErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!"/>
+                                    <Image style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!" />
                                 </div>
-                                <span style={usernameErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur}>{usernameErreur}</span>
+                                <span style={usernameErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{usernameErreur}</span>
                             </div>
-                            
+
                             <div className={style.form_group}>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Password</span>
-                                    <Password 
+                                    <Password
                                         ref={passwordInput}
-                                        inputClassName={style.form_input_password} 
-                                        className={style.form_input_password_container} 
+                                        inputClassName={style.form_input_password}
+                                        className={style.form_input_password_container}
                                         placeholder="Enter your pasword"
                                         value={password}
                                         toggleMask
                                         header={passwordInputHeader}
                                         footer={passwordInputFooter}
-                                        onChange={(e)=>{
-                                            passwordInput.current.className=style.form_input;
+                                        onChange={(e) => {
+                                            passwordInput.current.className = style.form_input;
                                             setPassword(e.target.value)
                                             setPasswordErreur(null);
                                             checkChacun(e.target.value);
                                         }}
                                     />
                                 </div>
-                                <span style={passwordErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur}>{passwordErreur}</span>
+                                <span style={passwordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{passwordErreur}</span>
                             </div>
 
                             <div className={style.form_group}>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Confirm password</span>
-                                    <input 
+                                    <input
                                         ref={confPasswordInput}
-                                        type="password"  
-                                        className={style.form_input} 
+                                        type="password"
+                                        className={style.form_input}
                                         placeholder="Confirm your pasword"
                                         value={confPassword}
-                                        onChange={(e)=>{
-                                            confPasswordInput.current.className=style.form_input;
+                                        onChange={(e) => {
+                                            confPasswordInput.current.className = style.form_input;
                                             setConfPassword(e.target.value)
                                             setConfPasswordErreur(null);
                                         }}
                                     />
-                                    <Image style={confPasswordErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!"/>
+                                    <Image style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!" />
                                 </div>
-                                <span style={confPasswordErreur!=null ? {display:"block"}:{display:"none"}} className={style.form_erreur}>{confPasswordErreur}</span>
+                                <span style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{confPasswordErreur}</span>
                             </div>
 
                             <div className={style.button_group}>
@@ -238,7 +244,7 @@ export default function CreateAccount() {
                         </form>
                         <div className={style.register_component}>
                             <Link className={style.register_link} href={"/users/login"}>
-                            <i  className="pi pi-angle-left"/> Back to Login
+                                <i className="pi pi-angle-left" /> Back to Login
                             </Link>
                         </div>
                     </div>
@@ -249,18 +255,18 @@ export default function CreateAccount() {
 
                 <div className={style.footer}>
                     <span>Copyright 2024 - All rights reserved</span>
-                    <Link style={{color:"#000"}} href={"/users/privatePolicy"}>Pivate policy</Link>
+                    <Link style={{ color: "#000" }} href={"/users/privatePolicy"}>Pivate policy</Link>
                 </div>
 
             </div>
-            <Toast ref={toast}/>
+            <Toast ref={toast} />
         </>
     )
 }
 
 
 CreateAccount.getLayout = function getLayout(page) {
-    return(
+    return (
         <>
             <Head>
                 <title>Create an account</title>

@@ -1,7 +1,6 @@
 import style from '@/style/pages/login.module.css'
 import { getCsrfTokenDirect } from '@/util/csrf';
 import { emailValid } from '@/util/verify';
-import Cookies from 'js-cookie';
 import Head from 'next/head'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
