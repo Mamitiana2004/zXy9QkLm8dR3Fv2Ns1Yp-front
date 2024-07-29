@@ -77,7 +77,8 @@ export default function Login() {
                                 id: data.id,
                                 userImage: data.image
 
-                            }); router.push("/users");
+                            });
+                            router.push("/users");
                         }
                     }
 
