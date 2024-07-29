@@ -123,6 +123,7 @@ export default function AppTopbar(props) {
                                     <div className={style.button_group}>
                                         <button onClick={()=>router.push("/users/login")} className='button-secondary'>{t("login")}</button>
                                         <button onClick={()=>router.push("/users/register")} className={props.home ? 'button-secondary' :'button-primary'}>{t("register")}</button>
+                                        <button onClick={()=>router.push("/users/etablissement/add")} className={props.home ? 'button-secondary' :'button-primary'}>+ add etablissement</button>
                                     </div>
                                 </div>
                             )

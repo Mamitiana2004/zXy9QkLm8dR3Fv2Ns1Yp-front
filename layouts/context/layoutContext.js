@@ -6,10 +6,7 @@ const LayoutContext = createContext();
 
 export const LayoutProvider=({children})=>{
 
-    const [user,setUser]=useState({
-        id:1,
-        username:"Faneva Mamitiana"
-    });
+    const [user,setUser]=useState(null);
     const [lang,setLang] = useState("en");
 
     useEffect(()=>{
