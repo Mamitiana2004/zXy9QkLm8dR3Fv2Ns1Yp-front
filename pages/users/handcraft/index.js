@@ -135,46 +135,12 @@ export default function Handcraft() {
                         <span className={style.suggestion_title}>{t("exclusive_handcraft_product")}</span>
                         <span className={style.suggestion_subtitle}>{t("dont_wait_to_discover_handcraft")} </span>
                     </div>
-                    {/* <div className={style.suggestion_item_container}>
-                        <ProductCard
-                            nom_produit={handcrafts.nom_produit_artisanal}
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-                        <ProductCard
-                            nom_produit="Raphia Bag"
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-                        <ProductCard
-                            nom_produit="Raphia Bag"
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-                        <ProductCard
-                            nom_produit="Raphia Bag"
-                            by="TArt Mlagasy"
-                            location="Ivato , Antananarivo , 105"
-                            prix="$ 950"
-                            discount="20"
-                            href="/users/handcraft/1"
-                        />
-
-                    </div> */}
                     <div className={style.suggestion_item_container}>
                         {handcrafts.length > 0 ? (
                             handcrafts.map((product, index) => (
                                 <ProductCard
-                                    key={index}
+                                    key={product.id}
+                                    id={product.id}
                                     nom_produit={product.nom_produit_artisanal}
                                     by={product.artisanat.nom_artisanat}
                                     location={`${product.artisanat.localisation_artisanat.ville} ${product.artisanat.localisation_artisanat.adresse}`}
@@ -188,6 +154,7 @@ export default function Handcraft() {
                             <p>{t("no_suggested_products")}</p>
                         )}
                     </div>
+
                 </div>
             </div>
         </>
