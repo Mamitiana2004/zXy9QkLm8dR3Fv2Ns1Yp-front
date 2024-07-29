@@ -46,8 +46,9 @@ const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast, setUser) => {
                 }
 
                 setCookieWithExpiry("csrfToken", csrfToken, 5);
-                setCookieWithExpiry("aofdimnnfiodfsnlmaiaftripacciop__", body.access, 5);
-                Cookies.set("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_", body.refresh, { expires: 1, secure: true, sameSite: 'Strict' });
+                setTokensInCookies(
+                    body.refresh, body.access
+                )
 
                 const info = localStorage.getItem("user_register_info");
                 if (info) {
