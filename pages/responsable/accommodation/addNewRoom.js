@@ -38,7 +38,7 @@ export default function AddNewRoom() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Room</span>
-                    <span className={style.top_container_subtitle}>Carlton Hotel</span>
+                    <span className={style.top_container_subtitle}>Brajas Hotel</span>
                 </div>
             </div>
 
