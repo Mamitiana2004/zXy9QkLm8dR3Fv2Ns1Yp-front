@@ -70,13 +70,16 @@ export default function Login() {
                 })
                 .then((data) => {
                     if (data.refresh, data.access) {
-                        setTokensInCookies(data.refresh, data.access)
-                        setUser({
-                            username: data.username,
-                            id: data.id,
-                            userImage: data.image
+                        const cook = setTokensInCookies(data.refresh, data.access)
+                        if (cook) {
+                            setUser({
+                                username: data.username,
+                                id: data.id,
+                                userImage: data.image
 
-                        }); router.push("/users");
+                            });
+                            router.push("/users");
+                        }
                     }
 
 

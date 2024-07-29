@@ -1,16 +1,18 @@
-import { createContext,  useState } from "react";
+import { createContext, useState } from "react";
 
 const ResponsableLayoutContext = createContext();
 
-export const ResponsableLayoutProvider=({children})=>{
+export const ResponsableLayoutProvider = ({ children }) => {
 
-    const [user,setUser]=useState({
-        username:"Faneva Mamitiana",
-        job_post:"Manager"
+    const [user, setUser] = useState({
+        username: "Dude 404",
+        job_post: "Manager",
+        id_etablissement: 1,
+        type_etablissement: 1
     });
-    const [typeResponsable,setTypeResponsable] = useState(1);
-    
-    return <ResponsableLayoutContext.Provider value={{user,setUser,typeResponsable,setTypeResponsable}}>{children}</ResponsableLayoutContext.Provider>
+    const [typeResponsable, setTypeResponsable] = useState(1);
+
+    return <ResponsableLayoutContext.Provider value={{ user, setUser, typeResponsable, setTypeResponsable }}>{children}</ResponsableLayoutContext.Provider>
 }
 
 export default ResponsableLayoutContext;
