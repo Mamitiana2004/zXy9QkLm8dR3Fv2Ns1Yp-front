@@ -15,6 +15,7 @@ export default function Room() {
     const [booking, setBooking] = useState([]);
     const id = user.id_etablissement;
 
+    // Recuperer tous les listes des Chambres 
     useEffect(() => {
         if (id) {
             fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id}/chambres/`)
@@ -24,6 +25,7 @@ export default function Room() {
         }
     }, [id]);
 
+    // Suprimer une chambre
     const deleteRoom = (id_chambre) => {
         fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/delete-hebergement-chambre/${id_chambre}/`, {
             method: 'DELETE',
