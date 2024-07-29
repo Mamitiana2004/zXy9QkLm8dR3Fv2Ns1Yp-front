@@ -18,6 +18,7 @@ const setTokensInCookies = (refreshToken, accessToken) => {
         secure: true,
         sameSite: 'Strict'
     });
+    return true
 };
 
 
