@@ -83,51 +83,51 @@ export default function AppTopbar(props) {
         }
     ];
 
-
-    const logOut = () => {
-        Cookies.remove('refresh_token');
-        Cookies.remove('access_token');
-        router.push("/users/login");
-        setUser(null);
-    }
-    return (
-        <div style={props.style} className={!props.home ? style.container : style.container_home}>
-            <div className={style.navbar}>
-                <div className={style.nav_title}>
-                    <Link href={"/users"}>
-                        <Image width={100} height={106} src={"/images/logo-aftrip.png"} alt='logo' />
-                    </Link>
-                </div>
-                <div className={style.navbar_menu_container}>
-                    <Link style={{ textDecoration: "none" }} href={"/users"}>
-                        <span className={style.navbar_menu_item}>{t("home")}</span>
-                    </Link>
-                    <Link style={{ textDecoration: "none" }} href={"/users/accommodation"}>
-                        <span className={style.navbar_menu_item}>{t("accommodation")}</span>
-                    </Link>
-                    <Link style={{ textDecoration: "none" }} href={"/users/handcraft"}>
-                        <span className={style.navbar_menu_item}>{t("handcraft")}</span>
-                    </Link>
-                    <Link style={{ textDecoration: "none" }} href={"/users/tour"}>
-                        <span className={style.navbar_menu_item}>{t("tour")}</span>
-                    </Link>
-                    <Link style={{ textDecoration: "none" }} href={"/users/about"}>
-                        <span className={style.navbar_menu_item}>{t("about_us")}</span>
-                    </Link>
-                </div>
-                <div className={style.right_container}>
-                    <Button onClick={(e) => menuLang.current.toggle(e)} className={style.icon_cog} label={lang} />
-                    <Menu
-                        ref={menuLang}
-                        model={langMenu}
-                        popup
-                    />
-                    {
-                        user == null && (
-                            <div className={style.nav_right}>
-                                <div className={style.button_group}>
-                                    <button onClick={() => router.push("/users/login")} className='button-secondary'>{t("login")}</button>
-                                    <button onClick={() => router.push("/users/register")} className={props.home ? 'button-secondary' : 'button-primary'}>{t("register")}</button>
+        
+        const logOut=()=>{
+            router.push("/users/login");
+            setUser(null);
+        }
+        return(
+            <div style={props.style} className={!props.home ? style.container : style.container_home}>
+                <div className={style.navbar}>
+                    <div className={style.nav_title}>
+                        <Link href={"/users"}>
+                            <Image width={100} height={106} src={"/images/logo-aftrip.png"} alt='logo'/>
+                        </Link>
+                    </div>
+                    <div className={style.navbar_menu_container}>
+                        <Link style={{textDecoration:"none"}} href={"/users"}>
+                            <span className={style.navbar_menu_item}>{t("home")}</span>
+                        </Link>
+                        <Link style={{textDecoration:"none"}} href={"/users/accommodation"}>
+                            <span className={style.navbar_menu_item}>{t("accommodation")}</span>
+                        </Link>
+                        <Link style={{textDecoration:"none"}} href={"/users/handcraft"}>
+                            <span className={style.navbar_menu_item}>{t("handcraft")}</span>
+                        </Link>
+                        <Link style={{textDecoration:"none"}} href={"/users/tour"}>
+                            <span className={style.navbar_menu_item}>{t("tour")}</span>
+                        </Link>
+                        <Link style={{textDecoration:"none"}} href={"/users/about"}>
+                            <span className={style.navbar_menu_item}>{t("about_us")}</span>
+                        </Link>
+                    </div>
+                    <div className={style.right_container}>
+                        <Button onClick={(e)=>menuLang.current.toggle(e)} className={style.icon_cog} label={lang}/>
+                        <Menu
+                            ref={menuLang}
+                            model={langMenu}
+                            popup
+                        />
+                        {
+                            user==null && (
+                                <div className={style.nav_right}>
+                                    <div className={style.button_group}>
+                                        <button onClick={()=>router.push("/users/login")} className='button-secondary'>{t("login")}</button>
+                                        <button onClick={()=>router.push("/users/register")} className={props.home ? 'button-secondary' :'button-primary'}>{t("register")}</button>
+                                        <button onClick={()=>router.push("/users/etablissement/add")} className={props.home ? 'button-secondary' :'button-primary'}>+ add etablissement</button>
+                                    </div>
                                 </div>
                             </div>
                         )
