@@ -10,18 +10,24 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import RoomAmenities from "@/components/RoomAmenities";
 import { UrlConfig } from "@/util/config";
+
 export default function AddNewRoom() {
     const [typeChambre, setTypeChambre] = useState();
     const [imageFile, setImageFile] = useState();
     const inputRef = useRef(null);
     const [selectedType, setSelectedType] = useState(null);
-
+    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [fileImages, setFileImages] = useState([]);
+    const [amenities, setAmenities] = useState([]);
     const [listImage, setListImage] = useState([]);
 
     const handleClick = () => {
         inputRef.current.click();
     }
-
+    const statusOptions = [
+        { id: 1, name: 'Available' },
+        { id: 2, name: 'Not Available' }
+    ];
     const handleFileUpload = () => {
         const files = inputRef.current.files;
         if (files.length > 0 && files[0].type.startsWith('image/')) {
@@ -29,6 +35,9 @@ export default function AddNewRoom() {
             const listImageCopy = [...listImage];
             listImageCopy.push(fileUrl);
             setListImage(listImageCopy);
+            const filesCopy = [...fileImages];
+            filesCopy.push(files[0]);
+            setFileImages(filesCopy);
         }
     }
     useEffect(() => {
@@ -37,6 +46,38 @@ export default function AddNewRoom() {
             .then(data => setTypeChambre(data))
             .catch(error => console.error('Erreur lors de la récupération des données :', error));
     }, []);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('name', document.getElementById('name_input').value);
+        formData.append('type_chambre', selectedType.id);
+        formData.append('capacity', document.getElementById('capacity_input').value);
+        formData.append('price_per_night', document.getElementById('price_input').value);
+        formData.append('status', selectedStatus.id);
+        formData.append('description', document.querySelector('.room_description_textarea').value);
+
+        fileImages.forEach((file, index) => {
+            formData.append(`images[${index}]`, file);
+        });
+
+        amenities.forEach((accessory, index) => {
+            formData.append(`accessories[${index}]`, accessory.id);
+        });
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    };
 
     return (
         <>
@@ -95,6 +136,10 @@ export default function AddNewRoom() {
                         <FloatLabel>
                             <Dropdown
                                 id="status_select"
+                                value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.value)}
+                                options={statusOptions}
+                                optionLabel="name"
                                 className={style.dropdown}
                             />
                             <label htmlFor="status_select">Add status</label>
@@ -103,7 +148,7 @@ export default function AddNewRoom() {
                 </div>
                 <div className={style.room_ammenties_container}>
                     <span className={style.room_ammenties_title}>Room ammenties</span>
-                    <RoomAmenities />
+                    <RoomAmenities setAmenities={setAmenities} />
 
                 </div>
                 <div className={style.room_description_container}>
@@ -112,7 +157,7 @@ export default function AddNewRoom() {
                 </div>
                 <div className={style.button_list}>
                     <Button className="button-secondary" raised label="Cancel" />
-                    <Button className="button-primary" label="+ Add room" />
+                    <Button className="button-primary" label="+ Add room" onClick={handleSubmit} />
                 </div>
             </div>
         </>
