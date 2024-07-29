@@ -39,7 +39,7 @@ const LikeProduct = (idProduct) => {
 
                 return false;
             }
-            return liked;
+            // return liked;
         })
         .catch(error => {
             console.error('Error during like operation:', error);

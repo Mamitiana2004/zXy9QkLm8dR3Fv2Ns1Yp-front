@@ -11,42 +11,22 @@ export default function Room() {
 
     const router = useRouter();
 
-    const [booking,setBooking] = useState([
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"}
+    const [booking, setBooking] = useState([
+    
+        {id:"#1",name:"401",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#2",name:"402",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#3",name:"403",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#4",name:"404",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#5",name:"405",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#6",name:"406",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#7",name:"407",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#8",name:"408",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#9",name:"409",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#10",name:"410",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#11",name:"411",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#12",name:"412",type:"Couple",guests:"2",status:"Available",price:"$132"},
+        {id:"#13",name:"413",type:"Couple",guests:"2",status:"Available",price:"$132"},
+      
     ])
 
     const buttonTemplate = (item) =>{
@@ -82,7 +62,7 @@ export default function Room() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Room</span>
-                    <span className={style.top_container_subtitle}>Carlton Hotel</span>
+                    <span className={style.top_container_subtitle}>Brajas Hotel</span>
                 </div>
                 <Button onClick={()=>router.push("/responsable/accommodation/addNewRoom")} label="+ Add new room" className={style.button_add}/>
             </div>
@@ -90,13 +70,13 @@ export default function Room() {
             <div className={style.container}>
                 <span className={style.container_title}>All room</span>
                 <div className={style.table_container}>
-                    <DataTable  paginator rows={10} value={booking}>
+                    <DataTable  paginator rows={5} value={booking}>
                         <Column sortable field="id" header="No"/>
                         <Column sortable field="name" header="Name"/>
-                        <Column sortable field="room" header="Room"/>
+                        <Column sortable field="type" header="Type"/>
                         <Column sortable field="guests" header="Guests"/>
-                        <Column sortable field="check_in" header="Check in"/>
-                        <Column sortable field="check_out" header="Check out"/>
+                        <Column sortable field="status" header="Status"/>
+                        <Column sortable field="price" header="Price"/>
                         <Column header="Action" body={buttonTemplate}/>
                     </DataTable>
                 </div>
