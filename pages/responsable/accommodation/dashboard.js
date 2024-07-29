@@ -192,7 +192,7 @@ export default function DashBoard() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Dashboard</span>
-                    <span className={style.top_container_subtitle}>Carlton Hotel</span>
+                    <span className={style.top_container_subtitle}>Brajas Hotel</span>
                 </div>
                 <Button onClick={()=>router.push("/responsable/accommodation/addNewRoom")} label="+ Add new room" className={style.button_add}/>
             </div>
@@ -211,28 +211,28 @@ export default function DashBoard() {
                         <div className={style.card_detail}>
                             <i className="pi pi-calendar" style={{fontSize:"32px"}}/>
                             <div className={style.card_detail_text}>
-                                <span className={style.card_detail_title}>Total booking</span>
-                                <span className={style.card_detail_value}>32</span>
+                                <span className={style.card_detail_title}>Avaliable room</span>
+                                <span className={style.card_detail_value}>3</span>
                             </div>
                         </div>
                         <div className={style.card_detail}>
                             <i className="pi pi-calendar" style={{fontSize:"32px"}}/>
                             <div className={style.card_detail_text}>
-                                <span className={style.card_detail_title}>Total booking</span>
-                                <span className={style.card_detail_value}>32</span>
+                                <span className={style.card_detail_title}>Total guests</span>
+                                <span className={style.card_detail_value}>75</span>
                             </div>
                         </div>
                     </div>
 
                     <div className={style.detail_dashboard}>
-                        <span className={style.detail_dashboard_title}>Booking state</span>
+                        <span className={style.detail_dashboard_title}>Booking states</span>
                         <div className={style.card}>
                             <Chart type="bar" data={barData} options={barOptions}/>
                         </div>
                     </div>
                     
                     <div className={style.detail_dashboard}>
-                        <span className={style.detail_dashboard_title}>Recent Booking</span>
+                        <span className={style.detail_dashboard_title}>Recent Bookings</span>
                         <div className={style.card}>
                             <DataTable value={recentBooking}>
                                 <Column sortable field="id" header="No"/>
