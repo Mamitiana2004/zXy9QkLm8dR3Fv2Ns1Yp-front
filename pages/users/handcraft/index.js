@@ -135,6 +135,7 @@ export default function Handcraft() {
                         <span className={style.suggestion_title}>{t("exclusive_handcraft_product")}</span>
                         <span className={style.suggestion_subtitle}>{t("dont_wait_to_discover_handcraft")} </span>
                     </div>
+
                     <div className={style.suggestion_item_container}>
                         {handcrafts.length > 0 ? (
                             handcrafts.map((product, index) => (
