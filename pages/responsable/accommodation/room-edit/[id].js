@@ -1,29 +1,33 @@
 import Head from "next/head";
 
 import style from '@/style/pages/responsable/accommodation/addNewRoom.module.css'
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image } from "primereact/image";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import { useRouter } from "next/router";
 import RoomAmenities from "@/components/RoomAmenities";
-export default function EditRoom() {
-    const router = useRouter();
+import { UrlConfig } from "@/util/config";
 
-    const { id } = router.query;
+export default function AddNewRoom() {
+    const [typeChambre, setTypeChambre] = useState();
     const [imageFile, setImageFile] = useState();
     const inputRef = useRef(null);
-
+    const [selectedType, setSelectedType] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState(null);
+    const [fileImages, setFileImages] = useState([]);
+    const [amenities, setAmenities] = useState([]);
     const [listImage, setListImage] = useState([]);
-
 
     const handleClick = () => {
         inputRef.current.click();
     }
-
+    const statusOptions = [
+        { id: 1, name: 'Available' },
+        { id: 2, name: 'Not Available' }
+    ];
     const handleFileUpload = () => {
         const files = inputRef.current.files;
         if (files.length > 0 && files[0].type.startsWith('image/')) {
@@ -31,13 +35,22 @@ export default function EditRoom() {
             const listImageCopy = [...listImage];
             listImageCopy.push(fileUrl);
             setListImage(listImageCopy);
+            const filesCopy = [...fileImages];
+            filesCopy.push(files[0]);
+            setFileImages(filesCopy);
         }
     }
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`)
+            .then(response => response.json())
+            .then(data => setTypeChambre(data))
+            .catch(error => console.error('Erreur lors de la récupération des données :', error));
+    }, []);
 
     return (
         <>
             <Head>
-                <title>Edit Room</title>
+                <title>Add new Room</title>
             </Head>
 
             <div className={style.top_container}>
@@ -71,7 +84,11 @@ export default function EditRoom() {
                         </FloatLabel>
                         <FloatLabel>
                             <Dropdown
-                                id="type_select"
+                                id="id"
+                                value={selectedType}
+                                onChange={(e) => setSelectedType(e.value)}
+                                options={typeChambre}
+                                optionLabel="type_chambre"
                                 className={style.dropdown}
                             />
                             <label htmlFor="type_select">Type</label>
@@ -87,6 +104,10 @@ export default function EditRoom() {
                         <FloatLabel>
                             <Dropdown
                                 id="status_select"
+                                value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.value)}
+                                options={statusOptions}
+                                optionLabel="name"
                                 className={style.dropdown}
                             />
                             <label htmlFor="status_select">Add status</label>
@@ -95,7 +116,7 @@ export default function EditRoom() {
                 </div>
                 <div className={style.room_ammenties_container}>
                     <span className={style.room_ammenties_title}>Room ammenties</span>
-                    <RoomAmenities />
+                    <RoomAmenities setAmenities={setAmenities} />
 
                 </div>
                 <div className={style.room_description_container}>
@@ -104,7 +125,7 @@ export default function EditRoom() {
                 </div>
                 <div className={style.button_list}>
                     <Button className="button-secondary" raised label="Cancel" />
-                    <Button className="button-primary" label="Save room" />
+                    <Button className="button-primary" label="+ Add room" onClick={console.log("hi")} />
                 </div>
             </div>
         </>

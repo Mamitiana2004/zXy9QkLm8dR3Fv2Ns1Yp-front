@@ -34,19 +34,19 @@ export default function Room() {
                 // 'Authorization': `Bearer ${user.token}`
             }
         })
-        .then(response => {
-            if (response.ok) {
-                setBooking(booking.filter(room => room.id !== id_chambre));
-            }
-        })
-        .catch(error => console.error('Error deleting room:', error));
+            .then(response => {
+                if (response.ok) {
+                    setBooking(booking.filter(room => room.id !== id_chambre));
+                }
+            })
+            .catch(error => console.error('Error deleting room:', error));
     }
 
     const buttonTemplate = (item) => {
         return (
             <>
-                <Button icon="pi pi-pen-to-square" text severity="success"/>
-                <Button onClick={(e) => confirm(e, item.id)} icon="pi pi-trash" text severity="danger"/>
+                <Button icon="pi pi-pen-to-square" onClick={(e) => router.push(`/responsable/accommodation/room-edit/${item.id}`)} text severity="success" />
+                <Button onClick={(e) => confirm(e, item.id)} icon="pi pi-trash" text severity="danger" />
             </>
         );
     }
@@ -83,7 +83,7 @@ export default function Room() {
                     <span className={style.top_container_title}>Room</span>
                     <span className={style.top_container_subtitle}>Brajas Hotel</span>
                 </div>
-                <Button onClick={() => router.push("/responsable/accommodation/addNewRoom")} label="+ Add new room" className={style.button_add}/>
+                <Button onClick={() => router.push("/responsable/accommodation/addNewRoom")} label="+ Add new room" className={style.button_add} />
             </div>
 
             <div className={style.container}>
@@ -101,7 +101,7 @@ export default function Room() {
                 </div>
             </div>
 
-            <ConfirmPopup/>
+            <ConfirmPopup />
         </>
     );
 }
