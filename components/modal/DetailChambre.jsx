@@ -54,11 +54,11 @@ export default function DetailChambre(props) {
                             <span className={style.price_label}>/night</span>
                         </span>
                     </div>
-                    <div className={style.detail_chambre}>
+                    {/* <div className={style.detail_chambre}>
                         <i className='pi pi-user'/>
                         <span className={style.detail_chambre_label}>Superficie :</span>
                         <span className={style.detail_chambre_value}>{roomData.superficie ? `${roomData.superficie} m²` : 'N/A'}</span>
-                    </div>
+                    </div> */}
                     <div className={style.detail_chambre}>
                         <i className='pi pi-user'/>
                         <span className={style.detail_chambre_label}>Type :</span>
@@ -80,11 +80,11 @@ export default function DetailChambre(props) {
                                         <i className="pi pi-check" />
                                         {accessory.nom_accessoire}
                                     </span>
-                                    <div className={style.amenties_detail_container}>
+                                    {/* <div className={style.amenties_detail_container}>
                                         <span className={style.amenties_detail}>
                                             {accessory.description_accessoire ? accessory.description_accessoire : 'No description available.'}
                                         </span>
-                                    </div>
+                                    </div> */}
                                 </div>
                             ))}
                         </div>
