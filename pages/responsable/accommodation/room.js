@@ -62,6 +62,16 @@ export default function Room() {
         });
     };
 
+    const status = [
+        { id: 1, name: 'Available' },
+        { id: 2, name: 'Not Available' }
+    ];
+    const statusTemplate = (rowData) => {
+        // Trouver l'objet statut correspondant à l'id du statut
+        const statusObj = status.find(s => s.id === rowData.status);
+        return statusObj ? statusObj.name : 'Unknown';
+    }
+
     return (
         <>
             <Head>
@@ -80,13 +90,13 @@ export default function Room() {
                 <span className={style.container_title}>All room</span>
                 <div className={style.table_container}>
                     <DataTable paginator rows={5} value={booking}>
-                        <Column sortable field="id" header="No" />
-                        <Column sortable field="nom_chambre" header="Name" />
-                        <Column sortable field="chambre.type_chambre" header="Type" />
-                        <Column sortable field="chambre.nombre_max_personnes" header="Guests" />
-                        <Column sortable field="disponible_chambre" header="Availability" />
-                        <Column sortable field="prix_nuit_chambre" header="Price" />
-                        <Column header="Action" body={buttonTemplate} />
+                        <Column sortable field="id" header="No"/>
+                        <Column sortable field="nom_chambre" header="Name"/>
+                        <Column sortable field="chambre.type_chambre" header="Type"/>
+                        <Column sortable field="chambre.nombre_max_personnes" header="Guests"/>
+                        <Column field="status" header="Availability" body={statusTemplate}/>
+                        <Column sortable field="prix_nuit_chambre" header="Price"/>
+                        <Column header="Action" body={buttonTemplate}/>
                     </DataTable>
                 </div>
             </div>

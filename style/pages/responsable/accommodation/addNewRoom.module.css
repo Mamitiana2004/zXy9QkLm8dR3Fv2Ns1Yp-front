@@ -168,3 +168,6 @@
     justify-content: flex-end;  
     gap: 20px; 
 }
+.input_missing {
+    border-color: red !important;
+}
