@@ -1,7 +1,7 @@
 import Head from "next/head";
 
 import style from './../../../style/pages/responsable/accommodation/addNewRoom.module.css'
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useContext } from "react";
 import { Image } from "primereact/image";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
@@ -10,6 +10,8 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import RoomAmenities from "@/components/RoomAmenities";
 import { UrlConfig } from "@/util/config";
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+
 
 export default function AddNewRoom() {
     const [typeChambre, setTypeChambre] = useState();
@@ -17,9 +19,15 @@ export default function AddNewRoom() {
     const inputRef = useRef(null);
     const [selectedType, setSelectedType] = useState(null);
     const [selectedStatus, setSelectedStatus] = useState(null);
+    const [price, setPrice] = useState(null);
     const [fileImages, setFileImages] = useState([]);
     const [amenities, setAmenities] = useState([]);
     const [listImage, setListImage] = useState([]);
+    const [description, setDescription] = useState("");
+    const { user } = useContext(ResponsableLayoutContext);
+    const id = user.id_etablissement;
+
+
 
     const handleClick = () => {
         inputRef.current.click();
@@ -51,12 +59,13 @@ export default function AddNewRoom() {
         e.preventDefault();
 
         const formData = new FormData();
-        formData.append('name', document.getElementById('name_input').value);
-        formData.append('type_chambre', selectedType.id);
-        formData.append('capacity', document.getElementById('capacity_input').value);
-        formData.append('price_per_night', document.getElementById('price_input').value);
+        formData.append('nom_chambre', document.getElementById('name_input').value);
+        formData.append('hebergement', id);
+        formData.append('chambre', selectedType.id);
+        formData.append('capacite', document.getElementById('capacity_input').value);
+        formData.append('prix_nuit_chambre', price);
         formData.append('status', selectedStatus.id);
-        formData.append('description', document.querySelector('.room_description_textarea').value);
+        formData.append('description', description);
 
         fileImages.forEach((file, index) => {
             formData.append(`images[${index}]`, file);
@@ -65,6 +74,7 @@ export default function AddNewRoom() {
         amenities.forEach((accessory, index) => {
             formData.append(`accessories[${index}]`, accessory.id);
         });
+        console.log(formData);
 
         fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
             method: 'POST',
@@ -130,7 +140,8 @@ export default function AddNewRoom() {
                             <label htmlFor="capacity_input">Capacity</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <InputNumber className={style.input_text} id="price_input" type="text" />
+                            <InputNumber className={style.input_text} id="price_input" type="text" value={price}
+                                onChange={(e) => setPrice(e.value)}/>
                             <label htmlFor="price_input">Price per night</label>
                         </FloatLabel>
                         <FloatLabel>
@@ -153,7 +164,11 @@ export default function AddNewRoom() {
                 </div>
                 <div className={style.room_description_container}>
                     <span className={style.room_description_title}>Room description</span>
-                    <textarea className={style.room_description_textarea} />
+                     <textarea
+                        className={style.room_description_textarea}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
                 </div>
                 <div className={style.button_list}>
                     <Button className="button-secondary" raised label="Cancel" />
