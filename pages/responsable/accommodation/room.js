@@ -34,19 +34,19 @@ export default function Room() {
                 // 'Authorization': `Bearer ${user.token}`
             }
         })
-        .then(response => {
-            if (response.ok) {
-                setBooking(booking.filter(room => room.id !== id_chambre));
-            }
-        })
-        .catch(error => console.error('Error deleting room:', error));
+            .then(response => {
+                if (response.ok) {
+                    setBooking(booking.filter(room => room.id !== id_chambre));
+                }
+            })
+            .catch(error => console.error('Error deleting room:', error));
     }
 
     const buttonTemplate = (item) => {
         return (
             <>
-                <Button icon="pi pi-pen-to-square" text severity="success"/>
-                <Button onClick={(e) => confirm(e, item.id)} icon="pi pi-trash" text severity="danger"/>
+                <Button icon="pi pi-pen-to-square" onClick={(e) => router.push(`/responsable/accommodation/room-edit/${item.id}`)} text severity="success" />
+                <Button onClick={(e) => confirm(e, item.id)} icon="pi pi-trash" text severity="danger" />
             </>
         );
     }
@@ -73,25 +73,25 @@ export default function Room() {
                     <span className={style.top_container_title}>Room</span>
                     <span className={style.top_container_subtitle}>Brajas Hotel</span>
                 </div>
-                <Button onClick={() => router.push("/responsable/accommodation/addNewRoom")} label="+ Add new room" className={style.button_add}/>
+                <Button onClick={() => router.push("/responsable/accommodation/addNewRoom")} label="+ Add new room" className={style.button_add} />
             </div>
 
             <div className={style.container}>
                 <span className={style.container_title}>All room</span>
                 <div className={style.table_container}>
                     <DataTable paginator rows={5} value={booking}>
-                        <Column sortable field="id" header="No"/>
-                        <Column sortable field="nom_chambre" header="Name"/>
-                        <Column sortable field="chambre.type_chambre" header="Type"/>
-                        <Column sortable field="chambre.nombre_max_personnes" header="Guests"/>
-                        <Column sortable field="disponible_chambre" header="Availability"/>
-                        <Column sortable field="prix_nuit_chambre" header="Price"/>
-                        <Column header="Action" body={buttonTemplate}/>
+                        <Column sortable field="id" header="No" />
+                        <Column sortable field="nom_chambre" header="Name" />
+                        <Column sortable field="chambre.type_chambre" header="Type" />
+                        <Column sortable field="chambre.nombre_max_personnes" header="Guests" />
+                        <Column sortable field="disponible_chambre" header="Availability" />
+                        <Column sortable field="prix_nuit_chambre" header="Price" />
+                        <Column header="Action" body={buttonTemplate} />
                     </DataTable>
                 </div>
             </div>
 
-            <ConfirmPopup/>
+            <ConfirmPopup />
         </>
     );
 }
