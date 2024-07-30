@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-import './../../pages/i18n';
-import i18n from "./../../pages/i18n";
+import '../../util/i18n';
+import i18n from "../../util/i18n";
 
 const LayoutContext = createContext();
 

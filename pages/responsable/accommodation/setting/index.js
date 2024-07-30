@@ -1,5 +1,5 @@
 import Head from "next/head";
-import style from './../../../style/pages/responsable/accommodation/setting.module.css';
+import style from './../../../../style/pages/responsable/accommodation/setting.module.css';
 import { useState } from "react";
 import { Button } from "primereact/button";
 export default function Setting() {
@@ -24,7 +24,7 @@ export default function Setting() {
                 <div className={style.left_container}>
                     <div className={style.left_top_container}>
                         <span className={style.left_top_subtitle}>{menuSidebar[menu].label}</span>
-                        <span className={style.left_top_title}>Tik'Art</span>
+                        <span className={style.left_top_title}>Tik&apos;Art</span>
                     </div>
                     <div className={style.left_body_container}>
                         {menuSidebar.map((item,index)=>{
