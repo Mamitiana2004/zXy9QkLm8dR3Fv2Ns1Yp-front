@@ -1,6 +1,5 @@
 import Head from "next/head";
 import style from './../../../style/pages/users/accommodation/filter.module.css';
-import dynamic from "next/dynamic";
 import ListCheckbox from "@/components/ListCheckbox";
 import HotelCard from "@/components/card/HotelCard";
 import React, { useState, useEffect } from 'react';
@@ -9,9 +8,9 @@ import Filter from "@/components/Filter";
 import { UrlConfig } from "@/util/config";
 import { useRouter } from "next/router";
 import { DataView } from 'primereact/dataview';
+import FilterMap from "@/components/FilterMap";
         
 
-const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false });
 
 export default function Accommodation() {
 
@@ -19,26 +18,28 @@ export default function Accommodation() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const [positions,setPositions] = useState([]);
+
     const router = useRouter();
     const { type, location, check_in, check_out, invite } = router.query;
     
 
     const itemTemplate = (hotel) => {
     const baseUrl = `${UrlConfig.apiBaseUrl}`;
-    const imageUrl = hotel.images && hotel.images.length > 0 ? `${baseUrl}${hotel.images[0].image}` : "";
 
-    return (
-        <HotelCard
-            href={`/users/accommodation/${hotel.id}`}
-            rate={hotel.nombre_etoile_hebergement}
-            img={imageUrl}
-            price={hotel.min_prix_nuit_chambre}
-            name={hotel.nom_hebergement}
-            localisation={`Localisation information here`}
-            description={hotel.description_hebergement}
-        />
-    );
-};
+    const imageUrl = hotel.images && hotel.images.length > 0 ? `${baseUrl}${hotel.images[0].image}` : "";
+        return (
+            <HotelCard
+                href={`/users/accommodation/${hotel.id}`}
+                rate={hotel.nombre_etoile_hebergement}
+                img={imageUrl}
+                price={hotel.min_prix_nuit_chambre}
+                name={hotel.nom_hebergement}
+                localisation={`Localisation information here`}
+                description={hotel.description_hebergement}
+            />
+        );
+    };
   
 
     useEffect(() => {
@@ -69,6 +70,20 @@ export default function Accommodation() {
 
         fetchHotels();
     }, []);
+
+
+    useEffect(()=>{
+        const positionCopy = [];
+        hotels.length!=0 & hotels.map((d)=>{
+            console.log(d);
+            d.localisation!=null && positionCopy.push({
+                adresse:d.nom_hebergement,
+                latitude:d.localisation.latitude,
+                longitude:d.localisation.longitude
+            });
+        });
+        setPositions(positionCopy);
+    },[hotels])
 
     // useEffect(()=>{
     //     fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-all-hebergement/`)
@@ -109,8 +124,7 @@ export default function Accommodation() {
                 <div className={style.filter_container}>
                     <div className={style.filter_left}>
                         <FilterMap
-                            lat={-18.9433924}
-                            lng={47.5288271}
+                            positions={positions}
                         />
                         <ListCheckbox />
                         <ListCheckbox />

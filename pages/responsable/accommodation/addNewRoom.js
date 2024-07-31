@@ -58,73 +58,70 @@ export default function AddNewRoom() {
     }, []);
 
     const handleSubmit = (e) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    // Collecting missing fields
-    const newMissingFields = {
-        name: !document.getElementById('name_input').value,
-        type: !selectedType,
-        capacity: !document.getElementById('capacity_input').value,
-        price: !price,
-        status: !selectedStatus,
-        description: !description,
-    };
+        // Collecting missing fields
+        const newMissingFields = {
+            name: !document.getElementById('name_input').value,
+            type: !selectedType,
+            capacity: !document.getElementById('capacity_input').value,
+            price: !price,
+            status: !selectedStatus,
+            description: !description,
+        };
 
-    setMissingFields(newMissingFields);
+        setMissingFields(newMissingFields);
 
-    // Check if any fields are missing
-    if (Object.values(newMissingFields).some(isMissing => isMissing)) {
-        toast.current.show({ severity: 'warn', summary: 'Warning', detail: 'All fields are required', life: 3000 });
-        return;
-    }
+        // Check if any fields are missing
+        if (Object.values(newMissingFields).some(isMissing => isMissing)) {
+            toast.current.show({ severity: 'warn', summary: 'Warning', detail: 'All fields are required', life: 3000 });
+            return;
+        }
 
-    const formData = new FormData();
-    formData.append('nom_chambre', document.getElementById('name_input').value);
-    formData.append('hebergement', id);
-    formData.append('chambre', selectedType.id);
-    formData.append('capacite', document.getElementById('capacity_input').value);
-    formData.append('prix_nuit_chambre', price);
-    formData.append('status', selectedStatus.id);
-    formData.append('description', description);
+        const formData = new FormData();
+        formData.append('nom_chambre', document.getElementById('name_input').value);
+        formData.append('hebergement', id);
+        formData.append('chambre', selectedType.id);
+        formData.append('capacite', document.getElementById('capacity_input').value);
+        formData.append('prix_nuit_chambre', price);
+        formData.append('status', selectedStatus.id);
+        formData.append('description', description);
 
-    fileImages.forEach((file, index) => {
-        formData.append(`images[${index}]`, file);
-    });
-
-    amenities.forEach((accessory, index) => {
-        formData.append(`accessories[${index}]`, accessory.id);
-    });
-
-    fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.json())
-        .then(data => {
-            toast.current.show({ severity: 'success', summary: 'Success', detail: 'Room added successfully', life: 2000 });
-
-            // Clear the form fields
-            setTimeout(() => {
-                // Clear form states
-                setTypeChambre([]);
-                setImageFile(null);
-                setSelectedType(null);
-                setSelectedStatus(null);
-                setPrice(null);
-                setFileImages([]);
-                setAmenities([]);
-                setListImage([]);
-                setDescription("");
-
-                // Optionally, you can also reload the page
-                window.location.reload();
-            }, 2000); // 3000 ms matches the toast message display time
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to add room', life: 3000 });
+        fileImages.forEach((file, index) => {
+            formData.append(`images[${index}]`, file);
         });
-};
+
+        amenities.forEach((accessory, index) => {
+            formData.append(`accessories[${index}]`, accessory.id);
+        });
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Room added successfully', life: 2000 });
+
+                setTimeout(() => {
+                    setTypeChambre([]);
+                    setImageFile(null);
+                    setSelectedType(null);
+                    setSelectedStatus(null);
+                    setPrice(null);
+                    setFileImages([]);
+                    setAmenities([]);
+                    setListImage([]);
+                    setDescription("");
+
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to add room', life: 3000 });
+            });
+    };
 
 
     return (
