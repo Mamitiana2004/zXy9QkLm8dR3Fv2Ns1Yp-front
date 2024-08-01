@@ -10,6 +10,27 @@ function Document() {
             <body>
                 <Main />
                 <NextScript />
+                {/* <script
+                    dangerouslySetInnerHTML={{
+                    __html: `
+                        (function() {
+                        const noop = () => {};
+                        console.log = noop;
+                        console.info = noop;
+                        console.warn = noop;
+                        console.error = noop;
+                        console.debug = noop;
+                        console.dir = noop;
+                        console.dirxml = noop;
+                        console.trace = noop;
+                        console.assert = noop;
+                        console.group = noop;
+                        console.groupCollapsed = noop;
+                        console.groupEnd = noop;
+                        })();
+                    `,
+                    }}
+                /> */}
             </body>
         </Html>
     );
