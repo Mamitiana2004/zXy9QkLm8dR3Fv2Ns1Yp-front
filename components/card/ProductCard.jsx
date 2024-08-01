@@ -1,36 +1,32 @@
-// import { useState } from 'react';
+import { useEffect, useRef, useState, useContext } from 'react';
 import { Image } from 'primereact/image';
 import style from '../../style/components/card/ProductCard.module.css';
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
 import { UrlConfig } from '@/util/config';
 import { LikeProduct, checkIfClientLikedProduct } from '@/util/Like';
-import { useEffect } from 'react';
-// import React, { useRef } from 'react';
 import { Toast } from 'primereact/toast';
-import { useContext, useRef, useState } from 'react';
 import LayoutContext from '@/layouts/context/layoutContext';
-
-
 
 export default function ProductCard(props) {
     const router = useRouter();
     const [isLiked, setIsLiked] = useState(false); 
     const toast = useRef(null);
+    const { user } = useContext(LayoutContext);
 
-     const { user, setUser } = useContext(LayoutContext);
-    if(user){
-        useEffect(() => {
-            const fetchLikeStatus = async () => {
+    // Always call useEffect, but add condition inside
+    useEffect(() => {
+        const fetchLikeStatus = async () => {
+            if (props.id) {
                 const liked = await checkIfClientLikedProduct(props.id);
                 setIsLiked(liked);
-            };
-
-            if (props.id) {
-                fetchLikeStatus();
             }
-        }, [props.id]);
-    }
+        };
+
+        if (user) {
+            fetchLikeStatus();
+        }
+    }, [props.id, user]); // Include `user` in dependencies
 
     const coverImage = props.images.find(img => img.couverture)?.image;
     const usedImage = coverImage ? coverImage : props.images[0].image;
@@ -42,11 +38,8 @@ export default function ProductCard(props) {
             return;
         }
         if (props.id) {
-            const like = LikeProduct(props.id);
-            console.log(like);// Pass toast reference
-                // setIsLiked(like);
-
-            setIsLiked(prev => !prev);   
+            LikeProduct(props.id); // Assuming LikeProduct is synchronous
+            setIsLiked(prev => !prev);
         } else {
             console.error('Product ID is undefined');
         }
@@ -94,4 +87,3 @@ export default function ProductCard(props) {
         </div>
     );
 }
-

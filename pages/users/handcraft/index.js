@@ -7,31 +7,23 @@ import ProductCard from "@/components/card/ProductCard";
 import { Button } from "primereact/button";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { UrlConfig } from "@/util/config";
 
 export default function Handcraft() {
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const router = useRouter();
+    const [handcrafts, setHandcrafts] = useState([]);
 
-
-    const [handcrafts,setHandcrafts]= useState([]);
-
-    
     // Recuperer tous les liste des produits artisanaux
-    useEffect(()=>{
+    useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
-        .then(res=>res.json())
-        .then(data=>setHandcrafts(data))
-        .catch(error=>console.log(error));
-    }, [])
-    
-    // if (!handcrafts) {
-    //     return <div>Loading...</div>
-    // }
+            .then(res => res.json())
+            .then(data => setHandcrafts(data))
+            .catch(error => console.log(error));
+    }, []);
 
-    return(
+    return (
         <>
             <Head>
                 <title>Handcraft</title>
@@ -39,62 +31,60 @@ export default function Handcraft() {
 
             <div className={style.container}>
                 <div className={style.handcraft_filter_container}>
-                    <Image src="/images/tours/tour.png" imageClassName={style.image_header_filter}/>
+                    <Image src="/images/tours/tour.png" imageClassName={style.image_header_filter} />
                     <div className={style.right_container}>
                         <div className={style.right_title_container}>
                             <span className={style.right_title}>{t("handcraft_header_title")}</span>
                             <span>Lorem ipsum dolor emet si Lorem ipsum dolor emet siLorem ipsum dolor emet siLorem ipsum dolor emet siLorem ipsum dolor emet siLorem ipsum dolor emet si</span>
                         </div>
-                        <FilterHandcraft/>
+                        <FilterHandcraft />
                     </div>
                 </div>
                 <div className={style.categorie_container}>
                     <div className={style.categorie_top}>
                         <span className={style.categorie_title}>{t("explore_handcraft_categorie")}</span>
                         <span className={style.categorie_subtitle}>{t("explore_handcraft_categorie_label")}</span>
-                        <Button onClick={()=>router.push("/users/handcraft/filter")} label={t("explore_all_handcraft")} style={{width:"320px"}} className="button-primary"/>
+                        <Button onClick={() => router.push("/users/handcraft/filter")} label={t("explore_all_handcraft")} style={{ width: "320px" }} className="button-primary" />
                     </div>
 
                     <div className={style.image_categorie_container}>
                         <Link href={"/users/handcraft/filter?type=wooden"} className={style.image_categorie_content}>
-                            <Image src="/images/artisanat/sculpture-bois.png" imageClassName={style.image_categorie} alt="woode" />
+                            <Image src="/images/artisanat/sculpture-bois.png" imageClassName={style.image_categorie} alt="wooden sculpture" />
                             <div className={style.image_categorie_detail}>
                                 <span>{t("wooden_sculpture")}</span>
                             </div>
                         </Link>
-                        <Link href={"/users/handcraft/filter?type=wooden"} className={style.image_categorie_content}>
-                            <Image src="/images/artisanat/sculptur-metal.png" imageClassName={style.image_categorie} alt="woode" />
+                        <Link href={"/users/handcraft/filter?type=metal"} className={style.image_categorie_content}>
+                            <Image src="/images/artisanat/sculptur-metal.png" imageClassName={style.image_categorie} alt="metal sculpture" />
                             <div className={style.image_categorie_detail}>
                                 <span>{t("metal_sculpture")}</span>
                             </div>
                         </Link>
-                        <Link href={"/users/handcraft/filter?type=wooden"} className={style.image_categorie_content}>
-                            <Image src="/images/artisanat/bijou.png" imageClassName={style.image_categorie} alt="woode" />
+                        <Link href={"/users/handcraft/filter?type=jewelry"} className={style.image_categorie_content}>
+                            <Image src="/images/artisanat/bijou.png" imageClassName={style.image_categorie} alt="jewelry" />
                             <div className={style.image_categorie_detail}>
                                 <span>{t("jewerly")}</span>
                             </div>
                         </Link>
-                        <Link href={"/users/handcraft/filter?type=wooden"} className={style.image_categorie_content}>
-                            <Image src="/images/artisanat/tapisserie.png" imageClassName={style.image_categorie} alt="woode" />
+                        <Link href={"/users/handcraft/filter?type=tapestry"} className={style.image_categorie_content}>
+                            <Image src="/images/artisanat/tapisserie.png" imageClassName={style.image_categorie} alt="tapestry" />
                             <div className={style.image_categorie_detail}>
                                 <span>{t("tapestry")}</span>
                             </div>
                         </Link>
-                        <Link href={"/users/handcraft/filter?type=wooden"} className={style.image_categorie_content}>
-                            <Image src="/images/artisanat/peinture.png" imageClassName={style.image_categorie} alt="woode" />
+                        <Link href={"/users/handcraft/filter?type=paint"} className={style.image_categorie_content}>
+                            <Image src="/images/artisanat/peinture.png" imageClassName={style.image_categorie} alt="paint" />
                             <div className={style.image_categorie_detail}>
                                 <span>{t("paint")}</span>
                             </div>
                         </Link>
-                        <Link href={"/users/handcraft/filter?type=wooden"} className={style.image_categorie_content}>
-                            <Image src="/images/artisanat/vannerie.png" imageClassName={style.image_categorie} alt="woode" />
+                        <Link href={"/users/handcraft/filter?type=basketry"} className={style.image_categorie_content}>
+                            <Image src="/images/artisanat/vannerie.png" imageClassName={style.image_categorie} alt="basketry" />
                             <div className={style.image_categorie_detail}>
                                 <span>{t("basketry")}</span>
                             </div>
                         </Link>
                     </div>
-
-
                 </div>
                 <div className={style.top_value_container}>
                     <div className={style.top_value_top}>
@@ -104,23 +94,22 @@ export default function Handcraft() {
 
                     <div className={style.top_value_body}>
                         <div className={style.top_value_body_left}>
-                        
                             <div className={style.top_value_left_detail_container}>
-                                <Image src="/images/artisanat/bousole.svg" alt="bousole" imageClassName={style.top_value_left_detail_image}/>
+                                <Image src="/images/artisanat/bousole.svg" alt="compass" imageClassName={style.top_value_left_detail_image} />
                                 <div className={style.top_value_left_detail}>
                                     <span className={style.top_value_left_detail_title}>{t("home_made_customized")}</span>
                                     <span>{t("home_made_customized_label")}</span>
                                 </div>
                             </div>
                             <div className={style.top_value_left_detail_container}>
-                                <Image src="/images/artisanat/map.svg" alt="map" imageClassName={style.top_value_left_detail_image}/>
+                                <Image src="/images/artisanat/map.svg" alt="map" imageClassName={style.top_value_left_detail_image} />
                                 <div className={style.top_value_left_detail}>
                                     <span className={style.top_value_left_detail_title}>{t("cheap_price")}</span>
                                     <span>{t("cheap_price_label")}</span>
                                 </div>
                             </div>
                             <div className={style.top_value_left_detail_container}>
-                                <Image src="/images/artisanat/palm.svg" alt="palm" imageClassName={style.top_value_left_detail_image}/>
+                                <Image src="/images/artisanat/palm.svg" alt="palm" imageClassName={style.top_value_left_detail_image} />
                                 <div className={style.top_value_left_detail}>
                                     <span className={style.top_value_left_detail_title}>{t("memorable_souvenir")}</span>
                                     <span>{t("memorable_souvenir_label")}</span>
@@ -128,17 +117,16 @@ export default function Handcraft() {
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div className={style.suggestion_container}>
                     <div className={style.suggestion_title_container}>
                         <span className={style.suggestion_title}>{t("exclusive_handcraft_product")}</span>
-                        <span className={style.suggestion_subtitle}>{t("dont_wait_to_discover_handcraft")} </span>
+                        <span className={style.suggestion_subtitle}>{t("dont_wait_to_discover_handcraft")}</span>
                     </div>
 
                     <div className={style.suggestion_item_container}>
                         {handcrafts.length > 0 ? (
-                            handcrafts.map((product, index) => (
+                            handcrafts.map((product) => (
                                 <ProductCard
                                     key={product.id}
                                     id={product.id}
@@ -155,9 +143,8 @@ export default function Handcraft() {
                             <p>{t("no_suggested_products")}</p>
                         )}
                     </div>
-
                 </div>
             </div>
         </>
-    )
+    );
 }

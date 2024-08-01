@@ -485,8 +485,8 @@ export default function HotelInfos() {
                                                     <Image imageClassName={style.chambre_image} alt="chambre" src={roomData.images_chambre[0] != null ? UrlConfig.apiBaseUrl+roomData.images_chambre[0].images : "/images/hotel/chambre.jpg"} />
                                                     <div className={style.chambre_detail}>
                                                         <span><i className="pi pi-home" /> {roomData.chambre.nombre_min_personnes} - {roomData.chambre.nombre_max_personnes} Personnes</span>
-                                                        {roomData.accessoires.map(accessoire => (
-                                                            <span key={accessoire.id}><i className="pi pi-tv" /> {accessoire.nom_accessoire}</span>
+                                                        {roomData.accessoires.slice(0, 4).map(accessoire => (
+                                                            <span key={accessoire.id}><i className="pi pi-tv" /> {accessoire.nom_accessoire},</span>
                                                         ))}
                                                     </div>
                                                 </div>
