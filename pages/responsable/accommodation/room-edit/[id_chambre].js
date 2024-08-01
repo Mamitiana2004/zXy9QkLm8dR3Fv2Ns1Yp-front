@@ -35,7 +35,6 @@ export default function AddNewRoom() {
     const router = useRouter();
     const { id_chambre } = router.query
 
-
     const handleClick = () => {
         inputRef.current.click();
     };
@@ -45,8 +44,7 @@ export default function AddNewRoom() {
         { id: 2, name: 'Not Available' }
     ];
 
-    
-       const handleFileUpload = async () => {
+    const handleFileUpload = async () => {
         const files = inputRef.current.files;
         if (files.length > 0 && files[0].type.startsWith('image/')) {
             const fileUrl = URL.createObjectURL(files[0]);
@@ -64,14 +62,14 @@ export default function AddNewRoom() {
         }
     };
 
-     const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(',')[1]); // Remove the prefix
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-};
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]); // Remove the prefix
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
 
     useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`)
@@ -80,34 +78,30 @@ export default function AddNewRoom() {
             .catch(error => console.error('Erreur lors de la récupération des données :', error));
     }, []);
 
-  
     // Recuperer les donnees 
     useEffect(() => {
-    if (id_chambre) {
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-hebergement-chambre/${id_chambre}/`)
-            .then(response => response.json())
-            .then(data => {
-                // setSelectedType(data.type_chambre);
-                const dict = {id: data.chambre, type_chambre: data.type_chambre, nombre_min_personnes: 1, nombre_max_personnes: 2}
+        if (id_chambre) {
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-hebergement-chambre/${id_chambre}/`)
+                .then(response => response.json())
+                .then(data => {
+                    // setSelectedType(data.type_chambre);
+                    const dict = { id: data.chambre, type_chambre: data.type_chambre, nombre_min_personnes: 1, nombre_max_personnes: 2 }
 
-                setSelectedType(dict);
-                 
+                    setSelectedType(dict);
 
-                // setTypeChambreEdit(selectedStatus.find(option => option.id_chambre === data.chambre.status));
-                setAmenitiesEdit(data.accessoires_list);
-                setNomChambre(data.nom_chambre);
-                setPrice(data.prix_nuit_chambre);
-                setCapacity(data.capacite);
-                setSelectedStatus(statusOptions.find(option => option.id_chambre === data.chambre.status));
-                setDescription(data.description);
-                setListImage(data.images.map(image => image));
-                setFileImages(data.images);
-            })
-            .catch(err => console.error('Erreur lors de la récupération des données de la chambre :', err));
+                    // setTypeChambreEdit(selectedStatus.find(option => option.id_chambre === data.chambre.status));
+                    setAmenitiesEdit(data.accessoires_list);
+                    setNomChambre(data.nom_chambre);
+                    setPrice(data.prix_nuit_chambre);
+                    setCapacity(data.capacite);
+                    setSelectedStatus(statusOptions.find(option => option.id === data.chambre.status)); // Corrected: use 'id' for statusOptions
+                    setDescription(data.description);
+                    setListImage(data.images.map(image => image));
+                    setFileImages(data.images);
+                })
+                .catch(err => console.error('Erreur lors de la récupération des données de la chambre :', err));
         }
-    }, [id_chambre]);
-
-
+    }, [id_chambre, statusOptions]); // Added statusOptions to the dependencies array
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -162,26 +156,27 @@ export default function AddNewRoom() {
             });
     };
 
-            setTimeout(() => {
-                // Clear form states
-                setTypeChambre([]);
-                setImageFile(null);
-                setSelectedType(null); 
-                setSelectedStatus(null);
-                setPrice(null);
-                setFileImages([]);
-                setAmenities([]);
-                setListImage([]);
-                setDescription("");
+    // Moved state clearing and page reload logic inside the handleSubmit or useEffect to avoid it running on every render
+    // setTimeout(() => {
+    //     // Clear form states
+    //     setTypeChambre([]);
+    //     setImageFile(null);
+    //     setSelectedType(null); 
+    //     setSelectedStatus(null);
+    //     setPrice(null);
+    //     setFileImages([]);
+    //     setAmenities([]);
+    //     setListImage([]);
+    //     setDescription("");
 
-                // Optionally, you can also reload the page
-                window.location.reload();
-            }, 2000); // 3000 ms matches the toast message display time
+    //     // Optionally, you can also reload the page
+    //     window.location.reload();
+    // }, 2000); // 3000 ms matches the toast message display time
 
     return (
         <>
             <Head>
-                <title>Edit Rooom</title>
+                <title>Edit Room</title>
             </Head>
 
             <Toast ref={toast} /> {/* Toast Component */}
@@ -205,7 +200,7 @@ export default function AddNewRoom() {
                             <div key={index} className={style.image_add_container}>
                                 <Image
                                     imageClassName={style.image}
-                                    src={image.content!=null ? `data:image/jpeg;base64,${image.content}` : image.url!=null ? image.url : ""}
+                                    src={image.content != null ? `data:image/jpeg;base64,${image.content}` : image.url != null ? image.url : ""}
                                     alt="image" 
                                 
                                     />
@@ -217,14 +212,14 @@ export default function AddNewRoom() {
                     <span className={style.room_detail_title}>Room details</span>
                     <div className={style.room_detail}>
                         <FloatLabel>
-                            <InputText value={nomChambre} onChange={(e)=>setNomChambre(e.target.value)} className={`${style.input_text} ${missingFields.name ? style.input_missing : ''}`} id="name_input" type="text" />
+                            <InputText value={nomChambre} onChange={(e) => setNomChambre(e.target.value)} className={`${style.input_text} ${missingFields.name ? style.input_missing : ''}`} id="name_input" type="text" />
                             <label htmlFor="name_input">Name</label>
                         </FloatLabel>
                         <FloatLabel>
                             <Dropdown
                                 id="id"
                                 value={selectedType}
-                                onChange={(e) => { setSelectedType(e.value);  } }
+                                onChange={(e) => { setSelectedType(e.value); }}
                                 options={typeChambre}
                                 optionLabel="type_chambre"
                                 className={`${style.dropdown} ${missingFields.type ? style.input_missing : ''}`}
@@ -232,7 +227,7 @@ export default function AddNewRoom() {
                             <label htmlFor="type_select">Type</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <InputText value={capacity} onChange={(e)=>setCapacity(e.target.value)} className={`${style.input_text} ${missingFields.capacity ? style.input_missing : ''}`} id="capacity_input" type="text" />
+                            <InputText value={capacity} onChange={(e) => setCapacity(e.target.value)} className={`${style.input_text} ${missingFields.capacity ? style.input_missing : ''}`} id="capacity_input" type="text" />
                             <label htmlFor="capacity_input">Capacity</label>
                         </FloatLabel>
                         <FloatLabel>
