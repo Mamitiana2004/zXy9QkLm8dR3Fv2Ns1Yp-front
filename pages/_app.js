@@ -2,7 +2,7 @@ import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import 'primeicons/primeicons.css';
 import './../style/globals.css';
-import './i18n';
+import '../util/i18n';
 import Layout from "@/layouts/layout";
 import { useContext, useEffect, useState } from "react";
 import { Router, useRouter } from "next/router";

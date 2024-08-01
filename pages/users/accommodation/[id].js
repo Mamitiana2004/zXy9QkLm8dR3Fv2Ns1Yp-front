@@ -41,23 +41,22 @@ export default function HotelInfos() {
     useEffect(() => {
         const fetchData = async () => {
             if (!id) return;
+                try {
+                    const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la récupération des données');
+                    }
+                    const result = await response.json();
 
-            try {
-                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
-                if (!response.ok) {
-                    throw new Error('Erreur lors de la récupération des données');
+                    console.log(result);
+                    setData(result);
+                    if (result.images) setImageHotels(result.images);
+                    if (result.chambres) setChambre(result.chambres);
+                    if (result.accessoires) setAccessoires(result.accessoires);
+                    if (result.accessoires_haves) setAccessoiresHaves(result.accessoires_haves);
+                } catch (error) {
+                    console.error('Erreur:', error);
                 }
-                const result = await response.json();
-
-                console.log(result);
-                setData(result);
-                if (result.images) setImageHotels(result.images);
-                if (result.chambres) setChambre(result.chambres);
-                if (result.accessoires) setAccessoires(result.accessoires);
-                if (result.accessoires_haves) setAccessoiresHaves(result.accessoires_haves);
-            } catch (error) {
-                console.error('Erreur:', error);
-            }
         };
 
         fetchData();
