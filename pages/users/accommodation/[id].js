@@ -15,6 +15,10 @@ import DetailChambre from "@/components/modal/DetailChambre";
 import Filter from "@/components/Filter";
 import { useRouter } from "next/router";
 import { UrlConfig } from "@/util/config";
+import { FloatLabel } from 'primereact/floatlabel';
+import { InputNumber } from "primereact/inputnumber";
+import { Calendar } from "primereact/calendar";
+        
 
 
 const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
@@ -23,8 +27,14 @@ export default function HotelInfos() {
 
     const router = useRouter();
 
+    const [allAccessoirce,setAllAccessoire]= useState([]);
+    const [accessoireUtil,setAccessoireUtil]= useState([]);
+
 
     const { id } = router.query;
+
+    const [guest,setGuest] = useState(null);
+    const [check,setCheck] = useState(null);
 
     const [discount,setDiscount] = useState(0);
     const [chambreSelected,setChambreSelected] = useState([]);
@@ -37,6 +47,17 @@ export default function HotelInfos() {
     const [chambre_id, setChambre_id] = useState(false);
     const [accessoires, setAccessoires] = useState({});
     const [accessoiresHaves, setAccessoiresHaves] = useState([]);
+
+
+    const checkAvailability = () =>{
+        guest && console.log("Guest :",guest);
+        if (check!=null && check.length!=0) {
+            console.log("Date check in",new Date(check[0]));
+            console.log("Date check out",new Date(check[1]));
+        }
+    }
+
+    
     
     useEffect(() => {
         const fetchData = async () => {
@@ -50,6 +71,35 @@ export default function HotelInfos() {
 
                     console.log(result);
                     setData(result);
+                    if(result.accessoires && result.accessoires_haves.length!=0 && result.accessoires_haves) {
+                        setAllAccessoire(result.accessoires);
+                        let accessoireData =[];
+                        let accValue = [];
+                        result.accessoires_haves.map((a)=>{
+                            let type=a.type_accessoire_nom;
+                            if (type) {
+                                if (!accessoireData.includes(type)) {
+                                    accessoireData.push(type);
+                                }
+                            }
+                        })
+                        accessoireData.map((a)=>{
+                            let accessoireDataID=[];
+                            result.accessoires_haves.map((have)=>{
+                                let type=have.type_accessoire_nom;
+                                if (type) {
+                                    if (a == type) {
+                                        accessoireDataID.push(have);
+                                    }
+                                }
+                            })
+                            accValue.push({
+                                type:a,
+                                id:accessoireDataID
+                            });
+                        })
+                        setAccessoireUtil(accValue);
+                    }
                     if (result.images) setImageHotels(result.images);
                     if (result.chambres) setChambre(result.chambres);
                     if (result.accessoires) setAccessoires(result.accessoires);
@@ -69,19 +119,6 @@ export default function HotelInfos() {
             return style.tab;
     }
 
-   const checkAmenity = (amenity) => {
-            // Check if the amenity is in the hotel's accessories
-            if (accessoiresHaves.some(item => item.nom_accessoire === amenity.nom_accessoire)) {
-                return true;
-            }
-            // Check if the amenity is in any of the rooms' accessories
-            for (let room of chambre) {
-                if (room.accessoires && room.accessoires.some(item => item.nom_accessoire === amenity.nom_accessoire)) {
-                    return true;
-                }
-            }
-            return false;
-    };
 
     
     
@@ -114,19 +151,19 @@ export default function HotelInfos() {
     }
 
     const renderAmenities = () => {
-        if (!Object.keys(accessoires).length) return <p>No amenities available.</p>;
+        if (!accessoireUtil.length) return <p>No amenities available.</p>;
 
-        return Object.keys(accessoires).map((category, index) => (
+        return accessoireUtil.map((acc, index) => (
             <div key={index} className={style.amenties}>
                 <span className={style.amenties_title}>
                     <i className="pi pi-lock" />
-                    {category}
+                    {acc.type}
                 </span>
                 <div className={style.amenties_detail_container}>
-                    {accessoires[category].length > 0 ? (
-                        accessoires[category].map((item, i) => (
+                    {acc.id.length > 0 ? (
+                        acc.id.map((item, i) => (
                             <span key={i} className={style.amenties_detail}>
-                                <i className={checkAmenity(item) ? "pi pi-check" : "pi pi-times"} />
+                                <i className={"pi pi-check"} />
                                 {item.nom_accessoire}
                             </span>
                         ))
@@ -397,24 +434,18 @@ export default function HotelInfos() {
                                 <div className={style.card_check_header_right}>
                                     <Image src="/images/star_filled.svg" alt="star" />
                                     <span>4</span>
-                                    <span style={{textDecoration:"underline"}}>(1.5k reviews)</span>
+                                    <span style={{textDecoration:"underline"}}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                                 </div>
                             </div>
                             <div className={style.check_parent}>
-                                <div className={style.check_in_container}>
-                                    <div className={style.check_cadre_container}>
-                                        <span className={style.check_cadre_label}>Check-in</span>
-                                        <span className={style.check_cadre_value}>2024, Jul 03</span>
-                                    </div>
-                                    <div className={style.check_cadre_container}>
-                                        <span className={style.check_cadre_label}>Check-in</span>
-                                        <span className={style.check_cadre_value}>2024, Jul 07</span>
-                                    </div>
-                                </div>
-                                <div className={style.check_cadre_container}>
-                                    <span className={style.check_cadre_label}>Guest</span>
-                                    <span className={style.check_cadre_value}>2</span>
-                                </div>
+                                    <FloatLabel>
+                                    <Calendar dateFormat="dd-mm-yy" className={style.input_number} id="check" value={check} onChange={(e) => setCheck(e.value)} selectionMode="range" readOnlyInput hideOnRangeSelection />
+                                        <label htmlFor="check">Check in | Check out</label>
+                                    </FloatLabel>
+                                    <FloatLabel>
+                                        <InputNumber className={style.input_number} id="guest" value={guest} onChange={(e)=>setGuest(e.value)}/>
+                                        <label htmlFor="guest">Guest</label>
+                                    </FloatLabel>
                             </div>
                             <div className={style.check_detail_price_container}>
                                 <div className={style.check_detail_price}>
