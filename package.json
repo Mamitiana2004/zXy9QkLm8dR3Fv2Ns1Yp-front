@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
@@ -16,7 +18,9 @@
     "@fullcalendar/resource-timegrid": "^6.1.15",
     "@fullcalendar/resource-timeline": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
+    "@mui/lab": "^5.0.0-alpha.173",
     "@react-google-maps/api": "^2.19.3",
+    "aftrip": "file:",
     "chart.js": "^4.4.3",
     "data-fns": "^1.1.0",
     "firebase": "^10.12.3",
