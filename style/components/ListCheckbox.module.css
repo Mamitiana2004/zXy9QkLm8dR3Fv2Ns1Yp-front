@@ -66,3 +66,10 @@
 .checkbox_label{
     font-size: 14px;
 }
+
+.price{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+}
