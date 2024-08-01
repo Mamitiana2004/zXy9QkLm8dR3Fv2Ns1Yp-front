@@ -12,6 +12,8 @@ import { appWithTranslation } from "next-i18next";
 import ResponsableLayout from "@/layouts/responsable/ResponsableLayout";
 import { ResponsableLayoutProvider } from "@/layouts/context/responsableLayoutContext";
 import 'react-calendar/dist/Calendar.css';
+import { Button } from "primereact/button";
+import ChatBot from "@/components/ChatBot";
 const Loader = dynamic(()=> import('@/layouts/Loader'),{ssr:false});
 
 
@@ -19,6 +21,7 @@ const Loader = dynamic(()=> import('@/layouts/Loader'),{ssr:false});
 function MyApp({ Component, pageProps }) {
 
     const [loading,setLoading]=useState(false);
+    const [visible,setVisible] = useState(false);
     const router = useRouter();
 
     useEffect(()=>{
@@ -42,6 +45,8 @@ function MyApp({ Component, pageProps }) {
                 <ResponsableLayoutProvider>
                     <ResponsableLayout>
                         {loading && <Loader/>}
+                        <Button onClick={()=>setVisible(true)} className="chat_bot_btn" icon="pi pi-comment"/>
+                        <ChatBot  visible={visible} onHide={()=>setVisible(false)}/>
                         <Component {...pageProps}/>
                     </ResponsableLayout>
                 </ResponsableLayoutProvider>
@@ -53,6 +58,8 @@ function MyApp({ Component, pageProps }) {
             <PrimeReactProvider>
                 <LayoutProvider>
                     {loading && <Loader/>}
+                    <Button onClick={()=>setVisible(true)} className="chat_bot_btn" icon="pi pi-comment"/>
+                    <ChatBot  visible={visible} onHide={()=>setVisible(false)}/>
                     {Component.getLayout(<Component {...pageProps}/>)}
                 </LayoutProvider>
             </PrimeReactProvider>
@@ -63,6 +70,8 @@ function MyApp({ Component, pageProps }) {
             <PrimeReactProvider>
                 <LayoutProvider>
                     {loading && <Loader/>}
+                    <Button onClick={()=>setVisible(true)} className="chat_bot_btn" icon="pi pi-comment"/>
+                    <ChatBot  visible={visible} onHide={()=>setVisible(false)}/>
                     <Layout>
                         <Component {...pageProps}/>
                     </Layout>
