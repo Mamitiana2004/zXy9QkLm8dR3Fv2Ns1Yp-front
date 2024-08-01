@@ -11,45 +11,42 @@ import { UrlConfig } from "@/util/config";
 import React, { useState, useEffect } from 'react';
 
 export default function Tour() {
-
     const router = useRouter();
     const { t } = useTranslation();
     
-    // Recupere tous les listes des voyages populaires
+    // States
     const [popular_voyage, setPopular_voyage] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [popular_operateur, setPopular_operateur] = useState([]);
+    const [loadingVoyages, setLoadingVoyages] = useState(true);
+    const [loadingOperators, setLoadingOperators] = useState(true);
 
+    // Fetch popular voyages
     useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages-populaire/`)
         .then(res => res.json())
         .then(data => {
             setPopular_voyage(data);
-            setLoading(false);
+            setLoadingVoyages(false);
         })
         .catch(error => console.log(error));
-    }, [])
-    if(!popular_voyage){
-        return <div>Loading...</div>
-    }
+    }, []);
 
-
-    // Pour recuperer les operateurs populaires
-    const [popular_operateur, setPopular_operateur] = useState([]);
+    // Fetch popular operators
     useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/tour/operateurs-populaires/`)
             .then(res => res.json())
             .then(data => {
                 setPopular_operateur(data);
-                
+                setLoadingOperators(false);
             })
             .catch(error => console.log(error));
-        
-    }, [])
-    if (!popular_operateur) {
-        return <div>Loading...</div>
+    }, []);
+
+    if (loadingVoyages || loadingOperators) {
+        return <div>Loading...</div>;
     }
 
-    return(
+    return (
         <>
             <Head>
                 <title>Tour</title>
@@ -70,7 +67,7 @@ export default function Tour() {
                     <div className={style.categorie_top}>
                         <span className={style.categorie_title}>{t("discover_mada_another_way")}</span>
                         <span className={style.categorie_subtitle}>{t("dont_wait_tommorow_tour")}</span>
-                        <Button onClick={()=>router.push("/users/tour/filter")} label={t("explore_all_available_trip")} style={{width:"320px"}} className="button-primary"/>
+                        <Button onClick={() => router.push("/users/tour/filter")} label={t("explore_all_available_trip")} style={{ width: "320px" }} className="button-primary"/>
                     </div>
 
                     <div className={style.image_categorie_container}>
@@ -113,8 +110,6 @@ export default function Tour() {
                             </div>
                         </Link>
                     </div>
-
-
                 </div>
                 
                 <div className={style.top_value_container}>
@@ -125,7 +120,6 @@ export default function Tour() {
 
                     <div className={style.top_value_body}>
                         <div className={style.top_value_body_left}>
-                        
                             <div className={style.top_value_left_detail_container}>
                                 <Image src="/images/artisanat/bousole.svg" alt="bousole" imageClassName={style.top_value_left_detail_image}/>
                                 <div className={style.top_value_left_detail}>
@@ -149,12 +143,12 @@ export default function Tour() {
                             </div>
                         </div>
                     </div>
-
                 </div>
+
                 <div className={style.suggestion_container}>
                     <div className={style.suggestion_title_container}>
                         <span className={style.suggestion_title}>Popular trip at the moment</span>
-                        <span className={style.suggestion_subtitle}>Don’t wait until tomorrow ! Discover your adventure now and feel the sensation of closeness to nature around you here in Madagascar, to get the best adventureyou just need to leaveand go where you like </span>
+                        <span className={style.suggestion_subtitle}>Don’t wait until tomorrow! Discover your adventure now and feel the sensation of closeness to nature around you here in Madagascar. To get the best adventure, you just need to leave and go where you like.</span>
                     </div>
                     <div className={style.suggestion_item_container}>
                         {popular_voyage.map(voyage => (
@@ -166,42 +160,40 @@ export default function Tour() {
                     </div>
                 </div>
 
-
                 <div className={style.group_trip_container}>
                     <Image src="/images/tours/group.png" alt="group" imageClassName={style.image_group_trip}/>
                     <div className={style.group_trip_detail}>
                         <span className={style.group_trip_title}>{t("discover_and_enjoy_group_trip")}</span>
                         <span className={style.group_trip_subtitle}>{t("join_on_group_expedition")}</span>
-                        <Button label={t("see_available_group_trip")} className="button-primary" style={{width:"350px"}}/>
+                        <Button label={t("see_available_group_trip")} className="button-primary" style={{ width: "350px" }}/>
                     </div>
                 </div>
 
-
                 <div className={style.list_operator_container}>
-            <span className={style.list_operator_title}>{t("popular_operator_tour")}</span>
-            <div className={style.list_operator}>
-                {popular_operateur.map((operator) => {
-                    const imageUrl = operator.images_tour.find(image => image.couverture)?.image || '/images/tours/default.png';
-                    const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${UrlConfig.apiBaseUrl}${imageUrl}`;
-                    
-                    return (
-                        <Link key={operator.id} href={`/users/tour/operator/${operator.id}`} className={style.operator}>
-                            <Image
-                                className={style.image_operator}
-                                src={fullImageUrl}
-                                alt={operator.nom_operateur}
-                                width={400} 
-                                height={250} 
-                            />
-                            <div className={style.operator_detail}>
-                                <span>{operator.nom_operateur}</span>
-                            </div>
-                        </Link>
-                    );
-                })}
-            </div>
-        </div>
+                    <span className={style.list_operator_title}>{t("popular_operator_tour")}</span>
+                    <div className={style.list_operator}>
+                        {popular_operateur.map((operator) => {
+                            const imageUrl = operator.images_tour.find(image => image.couverture)?.image || '/images/tours/default.png';
+                            const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${UrlConfig.apiBaseUrl}${imageUrl}`;
+                            
+                            return (
+                                <Link key={operator.id} href={`/users/tour/operator/${operator.id}`} className={style.operator}>
+                                    <Image
+                                        className={style.image_operator}
+                                        src={fullImageUrl}
+                                        alt={operator.nom_operateur}
+                                        width={400} 
+                                        height={250} 
+                                    />
+                                    <div className={style.operator_detail}>
+                                        <span>{operator.nom_operateur}</span>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
             </div>
         </>
-    )
+    );
 }
