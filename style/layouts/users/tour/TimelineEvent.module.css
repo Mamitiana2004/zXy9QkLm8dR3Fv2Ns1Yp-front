@@ -1,5 +1,6 @@
 .container{
     background-color: transparent;
+    align-items: flex-start;
 }
 
 .numero{

@@ -21,41 +21,6 @@ const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 
 export default function HotelInfos() {
 
-        // let images = [
-        //     {
-        //         id:1,
-        //         imageLink:"/images/hotel/chambre.jpg"
-        //     },
-        //     {
-        //         id:2,
-        //         imageLink:"/images/hotel/hotel2.jpg"
-        //     },
-        //     {
-        //         id:3,
-        //         imageLink:"/images/hotel/hotel3.jpg"
-        //     },
-        //     {
-        //         id:4,
-        //         imageLink:"/images/hotel/hotel4.jpg"
-        //     },
-        //     {
-        //         id:5,
-        //         imageLink:"/images/hotel/hotel.jpg"
-        //     },
-        //     {
-        //         id:6,
-        //         imageLink:"/images/hotel/chambre.jpg"
-        //     },
-        //     {
-        //         id:7,
-        //         imageLink:"/images/hotel/hotel.jpg"
-        //     },
-        //     {
-        //         id:8,
-        //         imageLink:"/images/hotel/hotel.jpg"
-        //     }
-        // ]
-
     const router = useRouter();
     const { id } = router.query;
 
@@ -70,7 +35,7 @@ export default function HotelInfos() {
     
     useEffect(() => {
         const fetchData = async () => {
-            if (!id) return; 
+            if (!id) return;
 
             try {
                 const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
@@ -78,24 +43,12 @@ export default function HotelInfos() {
                     throw new Error('Erreur lors de la récupération des données');
                 }
                 const result = await response.json();
-                // console.log(result);
 
                 setData(result);
-                if (result.images) {
-                    setImageHotels(result.images);
-                    // console.log(result.images);
-                }
-                if (result.chambres) {
-                    setChambre(result.chambres);
-                    console.log(result.chambres[0].images_chambre[0].images);
-              
-                }
-                if (result.accessoires) {
-                    setAccessoires(result.accessoires);
-                }
-                if (result.accessoires_haves) {
-                    setAccessoiresHaves(result.accessoires_haves);
-                }
+                if (result.images) setImageHotels(result.images);
+                if (result.chambres) setChambre(result.chambres);
+                if (result.accessoires) setAccessoires(result.accessoires);
+                if (result.accessoires_haves) setAccessoiresHaves(result.accessoires_haves);
             } catch (error) {
                 console.error('Erreur:', error);
             }
@@ -111,7 +64,24 @@ export default function HotelInfos() {
             return style.tab;
     }
 
+   const checkAmenity = (amenity) => {
+            // Check if the amenity is in the hotel's accessories
+            if (accessoiresHaves.some(item => item.nom_accessoire === amenity.nom_accessoire)) {
+                return true;
+            }
+            // Check if the amenity is in any of the rooms' accessories
+            for (let room of chambre) {
+                if (room.accessoires && room.accessoires.some(item => item.nom_accessoire === amenity.nom_accessoire)) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+
     const renderAmenities = () => {
+        if (!Object.keys(accessoires).length) return <p>No amenities available.</p>;
+
         return Object.keys(accessoires).map((category, index) => (
             <div key={index} className={style.amenties}>
                 <span className={style.amenties_title}>
@@ -119,12 +89,16 @@ export default function HotelInfos() {
                     {category}
                 </span>
                 <div className={style.amenties_detail_container}>
-                    {accessoires[category].map((item, i) => (
-                        <span key={i} className={style.amenties_detail}>
-                            <i className="pi pi-check" />
-                            {item.nom_accessoire}
-                        </span>
-                    ))}
+                    {accessoires[category].length > 0 ? (
+                        accessoires[category].map((item, i) => (
+                            <span key={i} className={style.amenties_detail}>
+                                <i className={checkAmenity(item) ? "pi pi-check" : "pi pi-times"} />
+                                {item.nom_accessoire}
+                            </span>
+                        ))
+                    ) : (
+                        <p>No items available.</p>
+                    )}
                 </div>
             </div>
         ));
@@ -192,13 +166,13 @@ export default function HotelInfos() {
                             header="Overview"
                         >
                         <div className={style.overview}>
-                            <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Description</span>
-                                <div className={style.paragraphe}>
-                                {data.description_hebergement}
-                                </div>
-                            </div>
                              <div className={style.accommodation_detail}>
+                            <span className={style.accommodation_detail_title}>Description</span>
+                            <div className={style.paragraphe}>
+                                {data?.description_hebergement || 'No description available'}
+                            </div>
+                        </div>
+                              <div className={style.accommodation_detail}>
                                 <span className={style.accommodation_detail_title}>Amenities</span>
                                 <div className={style.amenties_container}>
                                     {renderAmenities()}
@@ -364,16 +338,12 @@ export default function HotelInfos() {
                             }}
                             header="Map"
                         >
-                            {data.localisation?.latitude && data.localisation?.longitude ? (
-                                    <Map 
-                                        style={{ width: "100%", height: 500 }}
-                                        lat={data.localisation.latitude}
-                                    lng={data.localisation.longitude}
-                                    name = {data.nom_hebergement}
-                                    />
-                                ) : (
-                                    <p>Loading map...</p>
-                                )}
+                            <Map 
+                                style={{width:"100%",height:500}}
+                                lat={-18.9433924}
+                                lng={47.5288271}
+                                name="Hotel le Louvre & spa"
+                            />
                         </TabPanel>
                     </TabView>
                     <div className={style.accommodation_card_container}>

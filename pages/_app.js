@@ -2,13 +2,16 @@ import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import 'primeicons/primeicons.css';
 import './../style/globals.css';
+import './i18n';
 import Layout from "@/layouts/layout";
-import 'leaflet/dist/leaflet.css';
-import { useEffect, useState } from "react";
-import { Router } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { Router, useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import { LayoutProvider } from "@/layouts/context/layoutContext";
-
+import { appWithTranslation } from "next-i18next";
+import ResponsableLayout from "@/layouts/responsable/ResponsableLayout";
+import { ResponsableLayoutProvider } from "@/layouts/context/responsableLayoutContext";
+import 'react-calendar/dist/Calendar.css';
 const Loader = dynamic(()=> import('@/layouts/Loader'),{ssr:false});
 
 
@@ -16,6 +19,7 @@ const Loader = dynamic(()=> import('@/layouts/Loader'),{ssr:false});
 function MyApp({ Component, pageProps }) {
 
     const [loading,setLoading]=useState(false);
+    const router = useRouter();
 
     useEffect(()=>{
         const handleStart = () => setLoading(true);
@@ -32,6 +36,18 @@ function MyApp({ Component, pageProps }) {
     },[])
 
 
+    if(router.asPath.includes("/responsable") && !Component.getLayout){
+        return(
+            <PrimeReactProvider>
+                <ResponsableLayoutProvider>
+                    <ResponsableLayout>
+                        {loading && <Loader/>}
+                        <Component {...pageProps}/>
+                    </ResponsableLayout>
+                </ResponsableLayoutProvider>
+            </PrimeReactProvider>
+        )
+    }
     if (Component.getLayout) {
         return(
             <PrimeReactProvider>
@@ -55,4 +71,4 @@ function MyApp({ Component, pageProps }) {
         );
     }
 }
-export default MyApp;
+export default appWithTranslation(MyApp);

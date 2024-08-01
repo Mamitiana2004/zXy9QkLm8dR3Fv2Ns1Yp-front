@@ -8,7 +8,7 @@ export default function Responsable() {
     
     return(
         <div className={style.container}>
-
+            
         </div>
     );
 }
