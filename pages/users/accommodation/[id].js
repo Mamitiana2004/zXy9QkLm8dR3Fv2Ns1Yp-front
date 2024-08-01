@@ -126,16 +126,17 @@ export default function HotelInfos() {
     const selectChambre = (room)=>{
         let chambreCopy = [];
         let find=false;
+        let isDelete = false;
         chambreSelected.map((c)=>{
-            console.log(c.id,room.id);
             if (c.id != room.id) {
                 chambreCopy.push(c);
             }
             else{
                 find=true;
+                isDelete=true;
             }
         })
-        if (chambreCopy.length==0 || !find) {
+        if (chambre.length==0 || !find) {
             chambreCopy.push(room);
         }
         console.log(chambreCopy);
