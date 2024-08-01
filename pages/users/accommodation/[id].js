@@ -51,10 +51,22 @@ export default function HotelInfos() {
 
     const checkAvailability = () =>{
         guest && console.log("Guest :",guest);
-        if (check!=null && check.length!=0) {
+        if (check!=null && check.length==2 && check[1]!=null) {
             console.log("Date check in",new Date(check[0]));
             console.log("Date check out",new Date(check[1]));
         }
+    }
+
+    const getNombreJour = () =>{
+        if (check!=null && check.length==2 && check[1]!=null) {
+            let date1 = new Date(check[0]);
+            let date2 = new Date(check[1]);
+            let dateMin = date1 < date2 ? date1 : date2;
+            let dateMax = date1 > date2 ? date1 : date2;
+            const differenceInTime = dateMax.getTime() - dateMin.getTime();
+            return (differenceInTime / (1000 * 3600 * 24))+1;
+        }
+        return 1;
     }
 
     
@@ -176,12 +188,14 @@ export default function HotelInfos() {
         ));
     };
 
-    const applyDiscount=()=> {
-        if (getPriceChambreSelected() < 0 || discount < 0 || discount > 100) {
+    const getPriceTotal=()=> {
+        console.log(getNombreJour());
+        let priceTotal = getPriceChambreSelected()*getNombreJour(); 
+        if (priceTotal < 0 || discount < 0 || discount > 100) {
           throw new Error("Invalid input: getPriceChambreSelected() and discount must be non-negative, and discount must be between 0 and 100.");
         }
-        const discountAmount = (getPriceChambreSelected() * discount) / 100;
-        const finalPrice = getPriceChambreSelected() - discountAmount;
+        const discountAmount = (priceTotal * discount) / 100;
+        const finalPrice = priceTotal - discountAmount;
         return finalPrice;
     }
 
@@ -283,28 +297,6 @@ export default function HotelInfos() {
                                             </div>
                                         </div>
                                         <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
-                                    </div>
-                                    <div className={style.note_content_container}>
-                                        <NoteBar
-                                            label="Value for money"
-                                            value={4}
-                                            valueMax={5}
-                                        />
-                                        <NoteBar
-                                            label="Staff"
-                                            value={2.8}
-                                            valueMax={5}
-                                        />
-                                        <NoteBar
-                                            label="Comfort"
-                                            value={3.2}
-                                            valueMax={5}
-                                        />
-                                        <NoteBar
-                                            label="Facilitites"
-                                            value={2.1}
-                                            valueMax={5}
-                                        />
                                     </div>
                                 </div>
                                 <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
@@ -460,7 +452,7 @@ export default function HotelInfos() {
                                 <Divider/>
                                 <div className={style.check_detail_price}>
                                     <span className={style.check_detail_price_total_label}>Total</span>
-                                    <span className={style.check_detail_price_total_value}>${applyDiscount()}</span>
+                                    <span className={style.check_detail_price_total_value}>${getPriceTotal()}</span>
                                 </div>
                             </div>
                             <Button onClick={()=>setBookingVisible(true)} className="button-primary" label="Book now"/>
@@ -505,7 +497,17 @@ export default function HotelInfos() {
             </div>
 
 
-            <BookingModal visible={bookingVisible} onHide={()=>setBookingVisible(false)} />
+            <BookingModal 
+                hotel_location={data.localisation?.adresse+","+data.localisation?.ville}
+                hotel_name={data.nom_hebergement} 
+                hotel_image={imageHotel.length > 0 && imageHotel[0]}
+                check_in={check!=null ? check[0] : null}
+                check_out={check!=null ? check[1] : null}
+                guest={guest}
+                visible={bookingVisible}
+                rooms={chambreSelected} 
+                onHide={()=>setBookingVisible(false)} 
+            />
             <DetailChambre visible={availability} id={chambre_id} onHide={()=>setAvailability(false)}/>
 
         </>

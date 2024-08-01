@@ -27,6 +27,13 @@ function MyApp({ Component, pageProps }) {
     useEffect(()=>{
         const handleStart = () => setLoading(true);
         const handleEnd = () => setLoading(false);
+        
+        // document.addEventListener('contextmenu', (event) => event.preventDefault());
+        // document.addEventListener('keydown', (event) => {
+        //     if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && event.key === 'C')) {
+        //       event.preventDefault();
+        //     }
+        // });
 
         Router.events.on("routeChangeStart",handleStart);
         Router.events.on("routeChangeComplete",handleEnd);
