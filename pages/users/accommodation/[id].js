@@ -22,7 +22,12 @@ const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
 export default function HotelInfos() {
 
     const router = useRouter();
+
+
     const { id } = router.query;
+
+    const [discount,setDiscount] = useState(0);
+    const [chambreSelected,setChambreSelected] = useState([]);
 
     const [bookingVisible,setBookingVisible]=useState(false);
     const [availability, setAvailability] = useState(false);
@@ -44,6 +49,7 @@ export default function HotelInfos() {
                 }
                 const result = await response.json();
 
+                console.log(result);
                 setData(result);
                 if (result.images) setImageHotels(result.images);
                 if (result.chambres) setChambre(result.chambres);
@@ -76,8 +82,37 @@ export default function HotelInfos() {
                 }
             }
             return false;
-        };
+    };
 
+    
+    
+
+    const selectChambre = (room)=>{
+        let chambreCopy = [];
+        let find=false;
+        chambreSelected.map((c)=>{
+            console.log(c.id,room.id);
+            if (c.id != room.id) {
+                chambreCopy.push(c);
+            }
+            else{
+                find=true;
+            }
+        })
+        if (chambreCopy.length==0 || !find) {
+            chambreCopy.push(room);
+        }
+        console.log(chambreCopy);
+        setChambreSelected(chambreCopy);
+    }
+
+    const getPriceChambreSelected = () =>{
+        let price =0;
+        chambreSelected.map((c)=>{
+            price+=parseFloat(c.prix_nuit_chambre);
+        })
+        return price;
+    }
 
     const renderAmenities = () => {
         if (!Object.keys(accessoires).length) return <p>No amenities available.</p>;
@@ -103,6 +138,16 @@ export default function HotelInfos() {
             </div>
         ));
     };
+
+    const applyDiscount=()=> {
+        if (getPriceChambreSelected() < 0 || discount < 0 || discount > 100) {
+          throw new Error("Invalid input: getPriceChambreSelected() and discount must be non-negative, and discount must be between 0 and 100.");
+        }
+        const discountAmount = (getPriceChambreSelected() * discount) / 100;
+        const finalPrice = getPriceChambreSelected() - discountAmount;
+        return finalPrice;
+    }
+
     return(
         <>
             <Head>
@@ -345,7 +390,7 @@ export default function HotelInfos() {
                                 name="Hotel le Louvre & spa"
                             />
                         </TabPanel>
-                    </TabView>
+                    </TabView>  
                     <div className={style.accommodation_card_container}>
                         <div className={style.accommodation_card}>
                             <div className={style.card_check_header}>
@@ -375,16 +420,16 @@ export default function HotelInfos() {
                             <div className={style.check_detail_price_container}>
                                 <div className={style.check_detail_price}>
                                     <span className={style.check_detail_price_label}>Price</span>
-                                    <span className={style.check_detail_price_value}>$150</span>
+                                    <span className={style.check_detail_price_value}>${getPriceChambreSelected()}</span>
                                 </div>
                                 <div className={style.check_detail_price}>
                                     <span className={style.check_detail_price_label}>Discount</span>
-                                    <span className={style.check_detail_price_value}>0%</span>
+                                    <span className={style.check_detail_price_value}>{discount}%</span>
                                 </div>
                                 <Divider/>
                                 <div className={style.check_detail_price}>
                                     <span className={style.check_detail_price_total_label}>Total</span>
-                                    <span className={style.check_detail_price_total_value}>$150</span>
+                                    <span className={style.check_detail_price_total_value}>${applyDiscount()}</span>
                                 </div>
                             </div>
                             <Button onClick={()=>setBookingVisible(true)} className="button-primary" label="Book now"/>
@@ -400,7 +445,7 @@ export default function HotelInfos() {
                                             <div className={style.chambre_container}>
                                                 <div className={style.chambre_top}>
                                                     <div className={style.checkbox_container}>
-                                                        <input type='checkbox' className={style.checkbox}/>
+                                                        <input onChange={()=>selectChambre(roomData)} type='checkbox' className={style.checkbox}/>
                                                         <span className={style.checkbox_label}>{roomData.chambre.type_chambre}</span>
                                                     </div>
                                                     <span className={style.chambre_price}>${roomData.prix_nuit_chambre}</span>
