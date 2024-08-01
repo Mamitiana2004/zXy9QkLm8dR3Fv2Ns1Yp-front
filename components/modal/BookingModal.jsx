@@ -11,6 +11,16 @@ export default function BookingModal(props) {
             </div>
         )
     }
+
+    const getNombreJour = (date1,date2) =>{
+        if (check!=null && check.length==2 && check[1]!=null) {
+            let dateMin = date1 < date2 ? date1 : date2;
+            let dateMax = date1 > date2 ? date1 : date2;
+            const differenceInTime = dateMax.getTime() - dateMin.getTime();
+            return (differenceInTime / (1000 * 3600 * 24))+1;
+        }
+        return 1;
+    }
     
     return(
         <Dialog draggable={false} header={headerTemplate} className={style.dialog_container} visible={props.visible} onHide={props.onHide}>
@@ -69,7 +79,15 @@ export default function BookingModal(props) {
                         </div>
                     </div>
                     <div className={style.body_right}>
-                        <BookingHotelCard/>
+                        <BookingHotelCard
+                            hotel_name={props.hotel_name}
+                            hotel_image={props.hotel_image}
+                            hotel_location={props.hotel_location}
+                            check_in={props.check_out!=null ? new Date(props.check_in) : null}
+                            check_out={props.check_out!=null ? new Date(props.check_out): null}
+                            guest={props.guest}
+                            rooms={props.rooms}
+                        />
                         <div className={style.ground_rule_container}>
                             <span className={style.ground_rule_title}>Ground rules</span>
                             <div className={style.ground_rule_body}>
