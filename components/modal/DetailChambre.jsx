@@ -3,6 +3,7 @@ import { Dialog } from 'primereact/dialog';
 import style from '../../style/components/modal/DetailChambre.module.css';
 import { Image } from 'primereact/image';
 import { UrlConfig } from '@/util/config';
+import { Masonry } from '@mui/lab';
 
 export default function DetailChambre(props) {
     const [roomData, setRoomData] = useState(null);
@@ -34,17 +35,33 @@ export default function DetailChambre(props) {
                 <div className={style.left}>
                     {roomData.images_chambre.map((image, index) => {
                         const imageUrl = `${UrlConfig.apiBaseUrl}${image.images}`;
-                        return (
-                            <div key={image.id} className={index === 0 ? style.firstImage : style.otherImage_container}>
-                                <img
-                                    className={index === 0 ? style.firstImage : style.otherImage}
-                                    src={imageUrl}
-                                    alt={`Room Image ${index}`}
-                                    onError={(e) => e.target.src = '/path/to/placeholder-image.jpg'} // Optionnel: image de remplacement en cas d'erreur
-                                />
-                            </div>
-                        );
+                        if (index===0) {
+                            return <div key={image.id} className={style.firstImage}>
+                                        <Image
+                                            className={style.firstImage_container}
+                                            imageClassName={style.firstImage}
+                                            src={imageUrl}
+                                            alt={`Room Image ${index}`}
+                                            onError={(e) => e.target.src = '/path/to/placeholder-image.jpg'} // Optionnel: image de remplacement en cas d'erreur
+                                        />
+                                    </div>
+                        }
                     })}
+                    <Masonry className={style.mansory_container} columns={2} spacing={2}>
+                        {roomData.images_chambre.map((image,index)=>{
+                            const imageUrl = `${UrlConfig.apiBaseUrl}${image.images}`;
+                            if (index!=0) {
+                                return <Image
+                                                key={index}
+                                                className={style.otherImage_container}
+                                                imageClassName={style.otherImage}
+                                                src={imageUrl}
+                                                alt={`Room Image ${index}`}
+                                                onError={(e) => e.target.src = '/path/to/placeholder-image.jpg'} // Optionnel: image de remplacement en cas d'erreur
+                                        />
+                            }
+                        })}
+                    </Masonry>
                 </div>
                 <div className={style.right}>
                     <div className={style.title_container}>

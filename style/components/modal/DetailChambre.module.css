@@ -10,14 +10,18 @@
 .left{
     display: flex;
     gap: 20px;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    flex-flow: wrap;
+    flex-direction: column;
     width: 50%;
+}
+
+.mansory_container{
+    width: 100%;
 }
 
 .firstImage{
     width: 100%;
+    height: 550px;
+    object-fit: cover;
 }
 
 .otherImage{
@@ -25,7 +29,7 @@
 }
 
 .otherImage_container{
-    width: 40%;
+    width: 50%;
 }
 
 .right{
