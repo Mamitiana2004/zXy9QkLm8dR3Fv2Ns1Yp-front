@@ -2,6 +2,7 @@ import { Dialog } from "primereact/dialog";
 import style from './../style/components/ChatBot.module.css';
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { UrlConfig } from "@/util/config";
 
 export default function ChatBot(props) {
     const [messageInput, setMessageInput] = useState("");
@@ -22,17 +23,17 @@ export default function ChatBot(props) {
         );
     };
 
-    useEffect(()=>{
-        const chatBotMessage=localStorage.getItem("message_chat_bot");
-        if(chatBotMessage){
+    useEffect(() => {
+        const chatBotMessage = localStorage.getItem("message_chat_bot");
+        if (chatBotMessage) {
             setMessages(JSON.parse(chatBotMessage));
         }
-    },[])
+    }, [])
 
     useEffect(() => {
         if (isTyping) {
             const typingInterval = setInterval(() => {
-                if (messages[messages.length - 1].message.length!=null) {
+                if (messages[messages.length - 1].message.length != null) {
                     if (currentResponse.length < messages[messages.length - 1].message.length) {
                         setCurrentResponse(messages[messages.length - 1].message.substring(0, currentResponse.length + 1));
                     } else {
@@ -51,26 +52,26 @@ export default function ChatBot(props) {
         const messageCopy = [...messages];
         messageCopy.push({ type: 0, message: messageInput });
         setMessages(messageCopy);
-        localStorage.setItem("message_chat_bot",JSON.stringify(messageCopy));
-        
+        localStorage.setItem("message_chat_bot", JSON.stringify(messageCopy));
 
-        fetch("http://192.168.88.57:8000/api/chatbot/prompt/", {
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/chatbot/prompt/`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ message: messageInput })
         })
-        .then(res => res.json())
-        .then(data => {
+            .then(res => res.json())
+            .then(data => {
                 messageCopy.push({ type: 1, message: data.response });
                 setMessages(messageCopy);
-                localStorage.setItem("message_chat_bot",JSON.stringify(messageCopy));
+                localStorage.setItem("message_chat_bot", JSON.stringify(messageCopy));
                 setIsTyping(true);
-        })
-        .catch((error) => {
+            })
+            .catch((error) => {
                 console.log(error);
-        });
+            });
         setMessageInput("");
     };
     const footerTemplate = () => {
@@ -88,7 +89,7 @@ export default function ChatBot(props) {
     const renderMessageWithLinks = (text) => {
         const linkRegexHttp = /\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g;
         if (text) {
-            const parts =text.split(linkRegexHttp);
+            const parts = text.split(linkRegexHttp);
             return parts.map((part, index) => {
                 if (index % 3 === 1) {
                     const link = parts[index + 1];
@@ -128,7 +129,7 @@ export default function ChatBot(props) {
                     } else {
                         return (
                             <div key={index} className={style.chat_message}>
-                                {isTyping  && index === messages.length-1 ? currentResponse : renderMessageWithLinks(message.message)}
+                                {isTyping && index === messages.length - 1 ? currentResponse : renderMessageWithLinks(message.message)}
                             </div>
                         );
                     }
