@@ -45,7 +45,7 @@ export default function DetailHandcraft() {
                     <div className={style.suggestion_body}>
                         {handcrafts.length > 0 ? (
                             handcrafts.map((product, index) => (
-                                <ProductCard
+                                <ProductCard 
                                     key={product.id}
                                     id={product.id}
                                     nb_like={product.total_likes}

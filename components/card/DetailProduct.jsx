@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Image } from 'primereact/image';
 import style from '../../style/components/card/DetailProduct.module.css';
 import ViewProduct from '../images/ViewProduct';
@@ -5,16 +6,52 @@ import { Rating } from 'primereact/rating';
 import { Button } from 'primereact/button';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { InputNumber } from 'primereact/inputnumber';
+import { UrlConfig } from '@/util/config';
+import { useRouter } from "next/router";
+
+// Fonction pour formater les critiques en notation lisible
+const formatReviews = (count) => {
+    if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'k';
+    }
+    return count;
+};
+
+// Fonction pour calculer la note moyenne
+const calculateAverageRating = (reviews) => {
+    if (reviews.length === 0) return 0;
+    const totalRating = reviews.reduce((sum, review) => sum + review.note, 0);
+    return (totalRating / reviews.length).toFixed(1);
+};
 
 export default function DetailProduct(props) {
+    const [product, setProduct] = useState(null);
+    const router = useRouter();
+    const { id } = router.query;
 
+    useEffect(() => {
+        if (id) {
+            fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produit/${id}/`)
+                .then(response => response.json())
+                .then(data => setProduct(data))
+                .catch(error => console.error('Error fetching product:', error));
+        }
+    }, [id]);
 
+    if (!product) {
+        return <div>Loading...</div>;
+    }
+
+    // Calculer la note moyenne
+    const averageRating = calculateAverageRating(product.avis_clients);
+    // Compter le nombre de critiques
+    const reviewCount = formatReviews(product.avis_clients.length || 0);
 
     return (
         <div className={style.container}>
             <div className={style.left}>
                 <div className={style.image_view_container}>
-                    <ViewProduct/>
+                    <ViewProduct images={product.images} />
                 </div>
                 <div className={style.legend_image}>
                     <span className={style.legend}>
@@ -28,10 +65,10 @@ export default function DetailProduct(props) {
                 </div>
                 <div className={style.review_container}>
                     <div className={style.note_container}>
-                        <span className={style.note}>4</span>
+                        <span className={style.note}>{averageRating}</span>
                         <div className={style.detail_note}>
                             <Rating 
-                                value={4} 
+                                value={averageRating} 
                                 disabled 
                                 cancel={false}
                                 pt={{
@@ -42,7 +79,7 @@ export default function DetailProduct(props) {
                                     })
                                 }}
                             />
-                            <span className={style.review_detail}>1.5k reviews</span>
+                            <span className={style.review_detail}>{reviewCount} reviews</span>
                         </div>
                     </div>
                     <Button className='button-primary' label='See reviews'/>
@@ -52,49 +89,50 @@ export default function DetailProduct(props) {
                 <div className={style.right_head_container}>
                     <div className={style.right_head_left_container}>
                         <span className={style.breadcrumd}>Handcraft / Basketry / Sac</span>
-                        <span className={style.right_head_title}>Raffia Bag ysl trend 2024</span>
+                        <span className={style.right_head_title}>{product.nom_produit_artisanal}</span>
                         <div className={style.right_head_detail}>
-                            <span>Store : Tik’Art</span>
-                            <span>Ivato - Antananarivo 101</span>
+                            <span>Store : {product.artisanat.nom_artisanat}</span>
+                            <span>{product.artisanat.localisation_artisanat.ville} - {product.artisanat.localisation_artisanat.adresse}</span>
                         </div>
                     </div>
-                    <span className={style.price}>$25.5</span>
+                    <span className={style.price}>${product.prix_artisanat}</span>
                 </div>
                 <ScrollPanel style={{height:"245px"}}>
                     <div className={style.description}>
-                    Lorem ipsum dolor emet si Lorem ipsum dolor emet si Lorem ipsum dol
-                    or emet si Lorem ipsum dolor emet si Lorem ipsum dolor emet si Lorem
-                    ipsum dolor emet si Lorem ipsum dolor emet si Lorem ipsum dolor eme
-                    t si Lorem ipsum dolor emet si Lorem ipsum dolor emet si Lorem ipsu
-                    m dolor emet si Lorem ipsum dolor emet siLorem ipsum dolor emet siLo
-                    rem ipsum dolor emet si Lorem ipsum dolor emet si Lorem ipsum dolor
-                    emet si Lorem ipsum dolor emet si Lorem ipsum dolor emet siLorem i
-                    psum dolor emet si Lorem ipsum dolor emet si Lorem ipsum dolor eme
-                    t si Lorem ipsum dolor eme t si Lorem ipsum dolor emet si Lorem ipsu
-                    m dolor emet si Lorem ipsum dolor emet si Lorem ipsum dolor emet si 
-                    Lorem ipsum dolor emet si Lorem ipsum dolor emet si Lorem ipsum dolo
-                    r emet si Lorem ipsum dolor emet si Lorem ipsum dolor emet siLorem i
-                    psum dolor emet si Lorem ipsum dolor emet si Lorem ipsum dolor emet 
-                    si Lorem ipsum dolor emet si Lorem ipsum dolor emet si
+                        {product.description_artisanat}
                     </div>
                 </ScrollPanel>
                 <div className={style.specification_container}>
-                    <span className={style.specification_title}>Specificication</span>
-                    <div className={style.specification_body}>
-                        <ul>
-                            <li>Lorem ipsum dolor emet si</li>
-                            <li>Lorem ipsum dolor emet si</li>
-                            <li>Lorem ipsum dolor emet si</li>
-                            <li>Lorem ipsum dolor emet si</li>
+                    {/* Specification gauche */}
+                    <div className={style.specification_column}>
+                        <div className={style.specification_title}>Specification</div>
+                        <ul className={style.specification_list}>
+                            {product.specifications
+                                .filter((_, index) => index % 2 === 0) 
+                                .map((spec, index) => (
+                                    <li key={index} className={style.specification_item}>
+                                        {spec.type_specification}
+                                    </li>
+                                ))}
                         </ul>
-                        <ul>
-                            <li>Lorem ipsum dolor emet si</li>
-                            <li>Lorem ipsum dolor emet si</li>
-                            <li>Lorem ipsum dolor emet si</li>
-                            <li>Lorem ipsum dolor emet si</li>
+                    </div>
+
+                    {/* Specification droite */}
+                    <div className={style.specification_column}>
+                        <div className={style.specification_title}>Specification</div>
+                        <ul className={style.specification_list}>
+                            {product.specifications
+                                .filter((_, index) => index % 2 !== 0)
+                                .map((spec, index) => (
+                                    <li key={index} className={style.specification_item}>
+                                        {spec.type_specification}
+                                    </li>
+                                ))}
                         </ul>
                     </div>
                 </div>
+
+
                 <div className={style.right_bottom_container}>
                     <div className={style.quantity_container}>
                         <span className={style.quantity_label}>Quantity :</span>
@@ -107,5 +145,5 @@ export default function DetailProduct(props) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
