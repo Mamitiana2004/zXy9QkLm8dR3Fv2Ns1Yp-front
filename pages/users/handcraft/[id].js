@@ -10,21 +10,21 @@ import { UrlConfig } from '@/util/config';
 export default function DetailHandcraft() {
 
     const { t } = useTranslation();
-    const [handcrafts,setHandcrafts]= useState([]);
+    const [handcrafts, setHandcrafts] = useState([]);
 
-    
+
     // Recuperer tous les liste des produits artisanaux
-    useEffect(()=>{
+    useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
-        .then(res=>res.json())
-        .then(data=>setHandcrafts(data))
-        .catch(error=>console.log(error));
+            .then(res => res.json())
+            .then(data => setHandcrafts(data))
+            .catch(error => console.log(error));
     }, [])
-    
+
     if (!handcrafts) {
         return <div>Loading...</div>
     }
-    return(
+    return (
         <>
             <Head>
                 <title>Detail of the product</title>
@@ -36,51 +36,25 @@ export default function DetailHandcraft() {
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
-                        <FilterHandcraft/>
+                        <FilterHandcraft />
                     </div>
                 </div>
-                <DetailProduct/>
+                <DetailProduct />
                 <div className={style.suggestion_container}>
                     <span className={style.suggestion_title}>You will definitely like to see</span>
                     <div className={style.suggestion_body}>
-                        {/* <ProductCard
-                            discount="10"
-                            nom_produit="Raphia Bag"
-                            by="Tik'Art"
-                            prix="$25"
-                            location="Ivato, Antananarivo 105"
-                        />
-                        <ProductCard
-                            discount="10"
-                            nom_produit="Raphia Bag"
-                            by="Tik'Art"
-                            prix="$25"
-                            location="Ivato, Antananarivo 105"
-                        />
-                        <ProductCard
-                            discount="10"
-                            nom_produit="Raphia Bag"
-                            by="Tik'Art"
-                            prix="$25"
-                            location="Ivato, Antananarivo 105"
-                        />
-                        <ProductCard
-                            discount="10"
-                            nom_produit="Raphia Bag"
-                            by="Tik'Art"
-                            prix="$25"
-                            location="Ivato, Antananarivo 105"
-                        /> */}
                         {handcrafts.length > 0 ? (
                             handcrafts.map((product, index) => (
                                 <ProductCard
-                                    key={index}
+                                    key={product.id}
+                                    id={product.id}
+                                    nb_like={product.total_likes}
                                     nom_produit={product.nom_produit_artisanal}
                                     by={product.artisanat.nom_artisanat}
                                     location={`${product.artisanat.localisation_artisanat.ville} ${product.artisanat.localisation_artisanat.adresse}`}
                                     prix={`$ ${product.prix_artisanat}`}
                                     discount={product.discount}
-                                    href={product.href}
+                                    href={`/users/handcraft/${product.id}`}
                                     images={product.images}
                                 />
                             ))

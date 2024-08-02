@@ -1,5 +1,5 @@
 const UrlConfig = {
-    apiBaseUrl: 'http://34.122.163.41',
+    apiBaseUrl: 'http://127.0.0.1:8000',
     adminUrl: '/admin',
 }
 const apikey = process.env.NEXT_PUBLIC_GOOGLE_API_FIREBASE;

@@ -3,7 +3,7 @@ import { getNewAccess } from "./Cookies";
 import { UrlConfig } from "./config";
 import Cookies from "js-cookie";
 
-const LikeProduct = (idProduct) => {
+const LikeProduct = async (idProduct) => {
     let access = Cookies.get('accessToken');
 
     // Fonction pour gérer le "like"
@@ -15,57 +15,56 @@ const LikeProduct = (idProduct) => {
                 'Authorization': `Bearer ${accessToken}`,
             },
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error('Error during like operation: ' + (errorData.error || 'Unknown error'));
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Vérifie le message retourné pour déterminer si le "like" a été ajouté ou retiré
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        throw new Error('Error during like operation: ' + (errorData.error || 'Unknown error'));
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Vérifie le message retourné pour déterminer si le "like" a été ajouté ou retiré
 
-            const liked = data.message.includes('ajouté');
+                const liked = data.message.includes('ajouté');
 
-            if (liked) {
-            console.log(data.message);
+                if (liked) {
+                    console.log(data.message);
 
-                return true;
-                
-            }
-            else {
-            console.log(data.message);
+                    return true;
 
-                return false;
-            }
-            // return liked;
-        })
-        .catch(error => {
-            console.error('Error during like operation:', error);
-            return false; // En cas d'erreur, retourner false
-        });
+                }
+                else {
+                    console.log(data.message);
+
+                    return false;
+                }
+                // return liked;
+            })
+            .catch(error => {
+                console.error('Error during like operation:', error);
+                return false; // En cas d'erreur, retourner false
+            });
     };
 
     if (!access) {
-        return getNewAccess().then(() => {
+        try {
+            await getNewAccess();
             access = Cookies.get('accessToken');
             if (!access) {
                 console.error('No access token available');
                 return false; // Aucun token d'accès disponible
             }
-            return handleLikeOperation(access);
-        }).catch(error => {
+        } catch (error) {
             console.error('Error fetching new access token:', error);
             return false; // En cas d'erreur, retourner false
-        });
-    } else {
-        // Si le token d'accès est déjà disponible
-        return handleLikeOperation(access);
+        }
     }
+    return await handleLikeOperation(access);
 };
 
 const checkIfClientLikedProduct = async (produitId) => {
+    await getNewAccess();
     let access = Cookies.get('accessToken');
 
     if (!access) {
@@ -92,7 +91,7 @@ const checkIfClientLikedProduct = async (produitId) => {
         }
 
         const data = await response.json();
-        return data.liked; 
+        return data.liked;
     } catch (error) {
         console.error('Error checking like status:', error);
         return false;

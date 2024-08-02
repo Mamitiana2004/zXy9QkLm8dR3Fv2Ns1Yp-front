@@ -31,7 +31,7 @@ export default function Handcraft() {
 
             <div className={style.container}>
                 <div className={style.handcraft_filter_container}>
-                    <Image src="/images/tours/tour.png" imageClassName={style.image_header_filter} />
+                    <Image src="/images/tours/tour.png" imageClassName={style.image_header_filter} alt="tour" />
                     <div className={style.right_container}>
                         <div className={style.right_title_container}>
                             <span className={style.right_title}>{t("handcraft_header_title")}</span>
@@ -130,12 +130,13 @@ export default function Handcraft() {
                                 <ProductCard
                                     key={product.id}
                                     id={product.id}
+                                    nb_like={product.total_likes}
                                     nom_produit={product.nom_produit_artisanal}
                                     by={product.artisanat.nom_artisanat}
                                     location={`${product.artisanat.localisation_artisanat.ville} ${product.artisanat.localisation_artisanat.adresse}`}
                                     prix={`$ ${product.prix_artisanat}`}
                                     discount={product.discount}
-                                    href={product.href}
+                                    href={`/users/handcraft/${product.id}`}
                                     images={product.images}
                                 />
                             ))
