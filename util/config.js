@@ -1,5 +1,5 @@
 const UrlConfig = {
-    apiBaseUrl: 'http://192.168.88.57:8000',
+    apiBaseUrl: 'https://admin-server.craft-aftrip.com',
     adminUrl: '/admin',
 }
 const apikey = process.env.NEXT_PUBLIC_GOOGLE_API_FIREBASE;
