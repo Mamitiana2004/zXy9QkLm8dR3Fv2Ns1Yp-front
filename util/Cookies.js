@@ -24,7 +24,7 @@ const setTokensInCookies = (refreshToken, accessToken) => {
 
 
 
-const getNewAccess = () => {
+const getNewAccess = async () => {
     const refreshToken = Cookies.get('refreshToken');
 
     if (!refreshToken) {
@@ -43,9 +43,11 @@ const getNewAccess = () => {
             if (!response.ok) {
                 throw new Error('Failed to refresh access token');
             }
+
             return response.json();
         })
         .then(data => {
+
             const { access } = data;
 
             Cookies.set('accessToken', access, {

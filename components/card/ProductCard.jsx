@@ -10,9 +10,21 @@ import LayoutContext from '@/layouts/context/layoutContext';
 
 export default function ProductCard(props) {
     const router = useRouter();
-    const [isLiked, setIsLiked] = useState(false); 
+    const [isLiked, setIsLiked] = useState(false);
     const toast = useRef(null);
     const { user } = useContext(LayoutContext);
+    const [nbLike, setNbLike] = useState(props.nb_like);
+
+
+    const handleButtonClick = () => {
+        console.log(props.href);
+        if (!props.href) {
+            console.error('URL is undefined');
+            return;
+        }
+        router.push(props.href);
+    };
+
 
     // Always call useEffect, but add condition inside
     useEffect(() => {
@@ -29,8 +41,8 @@ export default function ProductCard(props) {
     }, [props.id, user]); // Include `user` in dependencies
 
     const coverImage = props.images.find(img => img.couverture)?.image;
-    const usedImage = coverImage ? coverImage : props.images[0].image;
-    const imageUrl = usedImage ? `${UrlConfig.apiBaseUrl}${usedImage}` : '/images/artisanat/artisanat.jpg';
+    const usedImage = coverImage ? `${UrlConfig.apiBaseUrl}${coverImage}` : props.images[0] ? `${UrlConfig.apiBaseUrl}${props.images[0].image}` : '/images/artisanat/artisanat.jpg';
+    const imageUrl = `${usedImage}`;
 
     const handleLikeClick = () => {
         if (!user) {
@@ -40,6 +52,7 @@ export default function ProductCard(props) {
         if (props.id) {
             LikeProduct(props.id); // Assuming LikeProduct is synchronous
             setIsLiked(prev => !prev);
+            setNbLike(prevNbLike => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
         } else {
             console.error('Product ID is undefined');
         }
@@ -60,11 +73,12 @@ export default function ProductCard(props) {
                         <span>-{props.discount}%</span>
                     </div>
                 )}
-                <Toast ref={toast} /> 
+                <Toast ref={toast} />
                 <button
                     onClick={handleLikeClick}
                     className={style.like_container}
                 >
+                    <span>{nbLike}</span>
                     <i className={`pi ${isLiked ? 'pi-heart-fill' : 'pi-heart'}`} />
                 </button>
                 <div className={style.product_detail}>
@@ -81,7 +95,7 @@ export default function ProductCard(props) {
                             {props.location}
                         </span>
                     </div>
-                    <Button onClick={() => router.push(props.href)} className={style.button} label='View' />
+                    <Button onClick={handleButtonClick} className={style.button} label='View' />
                 </div>
             </div>
         </div>
