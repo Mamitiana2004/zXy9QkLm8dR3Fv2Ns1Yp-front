@@ -1,5 +1,5 @@
 const UrlConfig = {
-    apiBaseUrl: 'http://127.0.0.1:8000',
+    apiBaseUrl: 'https://admin-server.craft-aftrip.com',
     adminUrl: '/admin',
 }
 const apikey = process.env.NEXT_PUBLIC_GOOGLE_API_FIREBASE;
@@ -14,5 +14,6 @@ const firebaseConfig = {
     appId: "1:758626351874:web:4e0e954eb74dde33c3a01b",
     measurementId: "G-9B4HNZLJ79",
 };
+export default UrlConfig;
 
 export { UrlConfig, firebaseConfig };

@@ -27,7 +27,7 @@ export default function DetailHandcraft() {
     return (
         <>
             <Head>
-                <title>Detail of the product</title>
+                <title>Product Detail</title>
             </Head>
             <div className={style.container}>
                 <div className={style.filter_header_top}>

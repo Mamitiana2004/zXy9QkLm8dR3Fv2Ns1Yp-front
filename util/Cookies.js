@@ -24,15 +24,15 @@ const setTokensInCookies = (refreshToken, accessToken) => {
 
 
 
-const getNewAccess = async () => {
+const getNewAccess = () => {
     const refreshToken = Cookies.get('refreshToken');
 
     if (!refreshToken) {
         console.error('No refresh token found in cookies');
-        return;
+        return Promise.reject('No refresh token found in cookies');
     }
 
-    fetch(`${UrlConfig.apiBaseUrl}/api/token/refresh/`, {
+    return fetch(`${UrlConfig.apiBaseUrl}/api/token/refresh/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -43,11 +43,9 @@ const getNewAccess = async () => {
             if (!response.ok) {
                 throw new Error('Failed to refresh access token');
             }
-
             return response.json();
         })
         .then(data => {
-
             const { access } = data;
 
             Cookies.set('accessToken', access, {

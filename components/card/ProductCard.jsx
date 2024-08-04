@@ -28,17 +28,20 @@ export default function ProductCard(props) {
 
     // Always call useEffect, but add condition inside
     useEffect(() => {
-        const fetchLikeStatus = async () => {
+        const fetchLikeStatus = () => {
             if (props.id) {
-                const liked = await checkIfClientLikedProduct(props.id);
-                setIsLiked(liked);
+                checkIfClientLikedProduct(props.id).then((liked) => {
+                    setIsLiked(liked);
+                }).catch((error) => {
+                    console.error('Error fetching like status:', error);
+                });
             }
         };
 
         if (user) {
             fetchLikeStatus();
         }
-    }, [props.id, user]); // Include `user` in dependencies
+    }, [props.id, user]);
 
     const coverImage = props.images.find(img => img.couverture)?.image;
     const usedImage = coverImage ? `${UrlConfig.apiBaseUrl}${coverImage}` : props.images[0] ? `${UrlConfig.apiBaseUrl}${props.images[0].image}` : '/images/artisanat/artisanat.jpg';
@@ -50,9 +53,12 @@ export default function ProductCard(props) {
             return;
         }
         if (props.id) {
-            LikeProduct(props.id); // Assuming LikeProduct is synchronous
-            setIsLiked(prev => !prev);
-            setNbLike(prevNbLike => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
+            LikeProduct(props.id).then(() => {
+                setIsLiked((prev) => !prev);
+                setNbLike((prevNbLike) => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
+            }).catch((error) => {
+                console.error('Error liking the product:', error);
+            });
         } else {
             console.error('Product ID is undefined');
         }

@@ -169,3 +169,34 @@
     flex-direction: column;
     gap: 10px;
 }
+
+/* Daniel  emplacement specifiaction */
+.specification_container {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Deux colonnes de largeur égale */
+    gap: 20px;
+}
+
+.specification_column {
+    display: flex;
+    flex-direction: column;
+}
+
+.specification_title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.specification_list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.specification_item {
+    margin-bottom: 10px;
+}
+
+
+

@@ -7,32 +7,29 @@ import dynamic from "next/dynamic";
 import ProductCard from "@/components/card/ProductCard";
 import { DataView } from 'primereact/dataview';
 import { useEffect, useState } from "react";
-import { classNames } from "primereact/utils";
 import { useRouter } from "next/router";
 import { UrlConfig } from "@/util/config";
 
 const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false });
 
-export default function FilterHandCraft() {
+export default function FilterHandCraftPage() {
     const { t } = useTranslation();
     const [handcrafts, setHandcrafts] = useState([]);
-
     const router = useRouter();
-
     const { location, store, type } = router.query;
 
     let itemTemplate = (handcraft) => {
         return <ProductCard
-            key={product.id}
-            id={product.id}
-            nb_like={product.total_likes}
-            nom_produit={product.nom_produit_artisanal}
-            by={product.artisanat.nom_artisanat}
-            location={`${product.artisanat.localisation_artisanat.ville} ${product.artisanat.localisation_artisanat.adresse}`}
-            prix={`$ ${product.prix_artisanat}`}
-            discount={product.discount}
-            href={`/users/handcraft/${product.id}`}
-            images={product.images}
+            key={handcraft.id}
+            id={handcraft.id}
+            nb_like={handcraft.total_likes}
+            nom_produit={handcraft.nom_produit_artisanal}
+            by={handcraft.artisanat.nom_artisanat}
+            location={`${handcraft.artisanat.localisation_artisanat.ville} ${handcraft.artisanat.localisation_artisanat.adresse}`}
+            prix={`$ ${handcraft.prix_artisanat}`}
+            discount={handcraft.discount}
+            href={`/users/handcraft/${handcraft.id}`}
+            images={handcraft.images}
         />
     }
 
@@ -93,9 +90,6 @@ export default function FilterHandCraft() {
                                 })
                             }}
                         />
-
-
-
                     </div>
                 </div>
             </div>
