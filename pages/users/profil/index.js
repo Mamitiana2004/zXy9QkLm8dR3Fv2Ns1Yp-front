@@ -5,9 +5,25 @@ import Link from "next/link";
 import { Avatar } from "primereact/avatar";
 import { TabPanel, TabView } from "primereact/tabview";
 import { Button } from "primereact/button";
+import { useEffect, useRef, useState } from "react";
+import { FetchUser } from "@/util/Cart";
+import UrlConfig from "@/util/config";
+import Cookies from "js-cookie";
+import { getNewAccess } from "@/util/Cookies";
+import { Toast } from "primereact/toast";
 
 
 export default function Profile() {
+    const [userInfo, setUserInfo] = useState(null);
+    const [firstname, setFirstname] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [username, setUsername] = useState("");
+    const [adresse, setAdresse] = useState("");
+    const [email, setEmail] = useState("");
+    const [numero, setNumero] = useState("");
+    const [bio, setBio] = useState("");
+    const toast = useRef(null);
+
 
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
@@ -15,6 +31,96 @@ export default function Profile() {
         else
             return style.tab;
     }
+    useEffect(() => {
+        FetchUser()
+            .then((data) => {
+                setUserInfo(data);
+                setFirstname(data.first_name);
+                setLastname(data.last_name);
+                setEmail(data.email);
+                setUsername(data.username);
+                setAdresse(data.adresse);
+                setNumero(data.numero_client);
+                setBio(data.biographie)
+            })
+            .catch((error) => {
+                console.error('Error fetching user info:', error);
+            });
+    }, []);
+
+    const handleEditSubmit = (e) => {
+        e.preventDefault();
+        getNewAccess();
+
+        let token = Cookies.get("accessToken");
+
+        if (!token) {
+            getNewAccess();
+
+            token = Cookies.get("accessToken");
+
+            if (!token) {
+                console.error("No access token available");
+                return;
+            }
+        }
+        const updatedData = {
+            username,
+            email,
+            numero_client: numero,
+            biographie: bio,
+            first_name: firstname,
+            last_name: lastname,
+            adresse,
+        };
+        console.log(updatedData);
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/accounts/edit-client/`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData),
+        })
+            .then(async response => {
+                console.log("Response received");
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Error",
+                        detail: "Try again later",
+                        life: 5000
+                    });
+                    console.error("Error data:", errorData);
+                    throw new Error(`Error: ${errorData.message || "Unknown error"}`);
+
+                }
+
+
+                return response.json();
+            })
+            .then(data => {
+                console.log("User updated successfully:", data);
+                toast.current.show({
+                    severity: "success",
+                    summary: "Success",
+                    detail: "Profil updated successfully",
+                    life: 5000
+                });
+            })
+            .catch(error => {
+                console.error("Error updating user profile:", error);
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: "Try again later",
+                    life: 5000
+                });
+            });
+
+    };
 
     return (
         <div className={style.container}>
@@ -38,12 +144,12 @@ export default function Profile() {
 
             <div className={style.profil_container}>
                 <div className={style.profil_image_container}>
-                    <Avatar label="F" shape="circle" alt="user" className={style.profil_image} image="/images/users/user.jpg" />
+                    <Avatar label="F" shape="circle" alt="user" className={style.profil_image} image={userInfo ? `${UrlConfig.apiBaseUrl}userInfo.profilPic` : "/images/users/user.jpg"} />
                     <div className={style.profil_user_info}>
-                        <span className={style.profil_username}>Faneva Mamitana</span>
+                        <span className={style.profil_username}>{username}</span>
                         <span className={style.profil_adresse}>
                             <i className='pi pi-map-marker' />
-                            Antsirabe 110 , Madagascar MD
+                            {adresse}
                         </span>
                     </div>
                 </div>
@@ -68,16 +174,7 @@ export default function Profile() {
                             <div className={style.info_user}>
                                 <div className={style.info_user_title}>About</div>
                                 <div className={style.info_user_paragraphe}>
-                                    Lorem ipsum dolor sit amet dolore gubergren diam sit ut eum amet ea i
-                                    psum diam iriure magna. Quis lorem amet eum sea eos magna erat. Rebum
-                                    lorem dolore nonumy labore delenit ea ut est sadipscing amet labore era
-                                    t duis justo liber. Liber amet iusto labore magna aliquip clita labore.
-                                    Facer dolor te elitr duo labore dolore dolore sit
-                                    dolore. Stet sed invidunt magna ea invidunt commodo ea vulputate esse
-                                    accusam amet elitr. Duo duis sed lorem et ea vel sanctus amet vero accu
-                                    sam iriure clita. Vel ipsum aliquyam et et lorem odio in rebum. Ea amet
-                                    ipsum lorem eum eos et dolor aliquam justo ex. At labore rebum duo jus
-                                    to sanctus soluta stet sadipscing.
+                                    {bio}
                                 </div>
                             </div>
                             <div className={style.info_user}>
@@ -85,23 +182,23 @@ export default function Profile() {
                                 <div className={style.info_user_detail_container}>
                                     <div className={style.info_user_detail}>
                                         <span className={style.info_user_detail_label}>Firstname</span>
-                                        <span className={style.info_user_detail_value}>Faneva</span>
+                                        <span className={style.info_user_detail_value}>{firstname}</span>
                                     </div>
                                     <div className={style.info_user_detail}>
                                         <span className={style.info_user_detail_label}>Lastname</span>
-                                        <span className={style.info_user_detail_value}>Mamitiana</span>
+                                        <span className={style.info_user_detail_value}>{lastname}</span>
                                     </div>
                                     <div className={style.info_user_detail}>
                                         <span className={style.info_user_detail_label}>Address</span>
-                                        <span className={style.info_user_detail_value}>Antsirabe 110, Madagascar MD</span>
+                                        <span className={style.info_user_detail_value}>{adresse}</span>
                                     </div>
                                     <div className={style.info_user_detail}>
                                         <span className={style.info_user_detail_label}>Email</span>
-                                        <span className={style.info_user_detail_value}>mamitiana@gmail.com</span>
+                                        <span className={style.info_user_detail_value}>{email}</span>
                                     </div>
                                     <div className={style.info_user_detail}>
                                         <span className={style.info_user_detail_label}>Contact</span>
-                                        <span className={style.info_user_detail_value}>034 11 092 23</span>
+                                        <span className={style.info_user_detail_value}>{numero}</span>
                                     </div>
                                 </div>
                             </div>
@@ -117,6 +214,45 @@ export default function Profile() {
                             header: { className: style.tab_container }
                         }}
                     >
+                        {/* <div className={style.edit_user_container}>
+                            <div className={style.edit_image_container}>
+                                <div className={style.edit_image}>
+                                    <Avatar shape="circle" className={style.image_edit} image="/images/users/user.jpg" label="F" />
+                                    <Button icon="pi pi-pencil" className={style.button_image} rounded aria-label="Edit photo" />
+                                </div>
+                            </div>
+                            <div className={style.edit_user}>
+                                <span className={style.edit_title}>About</span>
+                                <div className={style.form_group_input}>
+                                    <span className={style.form_label}>Bio</span>
+                                    <textarea value={bio} className={style.form_textarea} />
+                                </div>
+                            </div>
+                            <div className={style.edit_user}>
+                                <span className={style.edit_title}>User Information</span>
+                                <div className={style.form_group_input}>
+                                    <span className={style.form_label}>Firstname</span>
+                                    <input type="text" value={firstname} className={style.form_input} />
+                                </div>
+                                <div className={style.form_group_input}>
+                                    <span className={style.form_label}>Lastname</span>
+                                    <input type="text" value={lastname} className={style.form_input} />
+                                </div>
+                                <div className={style.form_group_input}>
+                                    <span className={style.form_label}>Address</span>
+                                    <input type="text" value={adresse} className={style.form_input} />
+                                </div>
+                                <div className={style.form_group_input}>
+                                    <span className={style.form_label}>Email</span>
+                                    <input type="email" value={email} className={style.form_input} />
+                                </div>
+                                <div className={style.form_group_input}>
+                                    <span className={style.form_label}>Contact</span>
+                                    <input type="tel" value={numero} className={style.form_input} />
+                                </div>
+                            </div>
+                            <Button className="button-primary" label="Edit" icon="pi pi-pencil" />
+                        </div> */}
                         <div className={style.edit_user_container}>
                             <div className={style.edit_image_container}>
                                 <div className={style.edit_image}>
@@ -128,38 +264,69 @@ export default function Profile() {
                                 <span className={style.edit_title}>About</span>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Bio</span>
-                                    <textarea className={style.form_textarea} />
+                                    <textarea
+                                        value={bio}
+                                        onChange={(e) => setBio(e.target.value)}
+                                        className={style.form_textarea}
+                                    />
                                 </div>
                             </div>
                             <div className={style.edit_user}>
                                 <span className={style.edit_title}>User Information</span>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Firstname</span>
-                                    <input type="text" className={style.form_input} />
+                                    <input
+                                        type="text"
+                                        value={firstname}
+                                        onChange={(e) => setFirstname(e.target.value)}
+                                        className={style.form_input}
+                                    />
                                 </div>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Lastname</span>
-                                    <input type="text" className={style.form_input} />
+                                    <input
+                                        type="text"
+                                        value={lastname}
+                                        onChange={(e) => setLastname(e.target.value)}
+                                        className={style.form_input}
+                                    />
                                 </div>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Address</span>
-                                    <input type="text" className={style.form_input} />
+                                    <input
+                                        type="text"
+                                        value={adresse}
+                                        onChange={(e) => setAdresse(e.target.value)}
+                                        className={style.form_input}
+                                    />
                                 </div>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Email</span>
-                                    <input type="email" className={style.form_input} />
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className={style.form_input}
+                                    />
                                 </div>
                                 <div className={style.form_group_input}>
                                     <span className={style.form_label}>Contact</span>
-                                    <input type="tel" className={style.form_input} />
+                                    <input
+                                        type="tel"
+                                        value={numero}
+                                        onChange={(e) => setNumero(e.target.value)}
+                                        className={style.form_input}
+                                    />
                                 </div>
                             </div>
-                            <Button className="button-primary" label="Edit" icon="pi pi-pencil" />
+                            <Button onClick={handleEditSubmit} className="button-primary" label="Edit" icon="pi pi-pencil" />
                         </div>
 
                     </TabPanel>
                 </TabView>
             </div>
+            <Toast ref={toast} />
+
         </div>
     );
 }

@@ -12,6 +12,7 @@ export default function HotelCard(props) {
     console.log(props);
     const [nbLike, setNbLike] = useState(props.nb_like);
     const [isLiked, setIsLiked] = useState(false);
+    const [baseprice, setBaseprice] = useState();
     const { user } = useContext(LayoutContext);
     const router = useRouter();
     useEffect(() => {
@@ -29,7 +30,15 @@ export default function HotelCard(props) {
             fetchLikeStatus();
         }
     }, [props.id, user]);
+    useEffect(() => {
+        if (props.price) {
+            const base = `from ${props.price} $/night`
+            setBaseprice(base);
+        } else {
+            setBaseprice("Aucune chambre disponible");
 
+        }
+    }, [props.price]);
     const handleLikeClick = () => {
         if (!user) {
             router.push('/users/login');
@@ -68,7 +77,8 @@ export default function HotelCard(props) {
                         <span className={style.view}>{props.avis_hotel} ( reviews ){props.avis_hotel > 1 ? "s" : ""}</span>
                     </div>
                     <span className={style.hotel_container_top_right}>
-                        from {props.price}$/night
+                        {/* from {props.price}$/night */}
+                        {baseprice}
                     </span>
                 </div>
                 <div className={style.hotel_title_container}>
