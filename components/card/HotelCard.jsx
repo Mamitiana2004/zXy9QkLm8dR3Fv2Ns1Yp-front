@@ -9,7 +9,7 @@ import { useState, useContext, useEffect } from 'react';
 import LayoutContext from '@/layouts/context/layoutContext';
 
 export default function HotelCard(props) {
-    console.log(props);
+
     const [nbLike, setNbLike] = useState(props.nb_like);
     const [isLiked, setIsLiked] = useState(false);
     const [baseprice, setBaseprice] = useState();

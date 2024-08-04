@@ -92,7 +92,6 @@ export default function Accommodation() {
 
                 const data = await response.json();
                 setHotels(data.hebergements);
-                console.log(data.hebergements);
                 setAllHotels(data.hebergements);
                 setLoading(false);
             } catch (error) {

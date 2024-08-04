@@ -5,12 +5,13 @@ import Link from "next/link";
 import { Avatar } from "primereact/avatar";
 import { TabPanel, TabView } from "primereact/tabview";
 import { Button } from "primereact/button";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FetchUser } from "@/util/Cart";
 import UrlConfig from "@/util/config";
 import Cookies from "js-cookie";
 import { getNewAccess } from "@/util/Cookies";
 import { Toast } from "primereact/toast";
+import LayoutContext from "@/layouts/context/layoutContext";
 
 
 export default function Profile() {
@@ -23,6 +24,22 @@ export default function Profile() {
     const [numero, setNumero] = useState("");
     const [bio, setBio] = useState("");
     const toast = useRef(null);
+    const [profilePic, setProfilePic] = useState("");
+    const [file, setFile] = useState(null);
+    const [userProfil, setUsedProfil] = useState("");
+    const { user, setUser } = useContext(LayoutContext);
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfilePic(reader.result);
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    };
 
 
     const panelClassName = (parent, index) => {
@@ -41,7 +58,10 @@ export default function Profile() {
                 setUsername(data.username);
                 setAdresse(data.adresse);
                 setNumero(data.numero_client);
-                setBio(data.biographie)
+                setBio(data.biographie);
+                setProfilePic(`${UrlConfig.apiBaseUrl}${data.profilPic}`);
+                setUsedProfil(`${UrlConfig.apiBaseUrl}${data.profilPic}`);
+
             })
             .catch((error) => {
                 console.error('Error fetching user info:', error);
@@ -61,27 +81,35 @@ export default function Profile() {
 
             if (!token) {
                 console.error("No access token available");
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: "Please try again later",
+                    life: 5000
+                });
                 return;
             }
         }
-        const updatedData = {
-            username,
-            email,
-            numero_client: numero,
-            biographie: bio,
-            first_name: firstname,
-            last_name: lastname,
-            adresse,
-        };
-        console.log(updatedData);
+
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('email', email);
+        formData.append('numero_client', numero);
+        formData.append('biographie', bio);
+        formData.append('first_name', firstname);
+        formData.append('last_name', lastname);
+        formData.append('adresse', adresse);
+        if (file) {
+            formData.append('profilPic', file);
+        }
+
 
         fetch(`${UrlConfig.apiBaseUrl}/api/accounts/edit-client/`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(updatedData),
+            body: formData,
         })
             .then(async response => {
                 console.log("Response received");
@@ -97,12 +125,18 @@ export default function Profile() {
                     throw new Error(`Error: ${errorData.message || "Unknown error"}`);
 
                 }
-
-
                 return response.json();
             })
             .then(data => {
-                console.log("User updated successfully:", data);
+                setUsername(data.username)
+                setUsedProfil(profilePic);
+                setUser(
+                    {
+                        username: data.username,
+                        id: data.id,
+                        userImage: profilePic,
+                    }
+                );
                 toast.current.show({
                     severity: "success",
                     summary: "Success",
@@ -115,7 +149,7 @@ export default function Profile() {
                 toast.current.show({
                     severity: "error",
                     summary: "Error",
-                    detail: "Try again later",
+                    detail: "Please try again later",
                     life: 5000
                 });
             });
@@ -144,7 +178,7 @@ export default function Profile() {
 
             <div className={style.profil_container}>
                 <div className={style.profil_image_container}>
-                    <Avatar label="F" shape="circle" alt="user" className={style.profil_image} image={userInfo ? `${UrlConfig.apiBaseUrl}userInfo.profilPic` : "/images/users/user.jpg"} />
+                    <Avatar label="F" shape="circle" alt="user" className={style.profil_image} image={userProfil ? userProfil : ""} />
                     <div className={style.profil_user_info}>
                         <span className={style.profil_username}>{username}</span>
                         <span className={style.profil_adresse}>
@@ -214,50 +248,35 @@ export default function Profile() {
                             header: { className: style.tab_container }
                         }}
                     >
-                        {/* <div className={style.edit_user_container}>
-                            <div className={style.edit_image_container}>
-                                <div className={style.edit_image}>
-                                    <Avatar shape="circle" className={style.image_edit} image="/images/users/user.jpg" label="F" />
-                                    <Button icon="pi pi-pencil" className={style.button_image} rounded aria-label="Edit photo" />
-                                </div>
-                            </div>
-                            <div className={style.edit_user}>
-                                <span className={style.edit_title}>About</span>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Bio</span>
-                                    <textarea value={bio} className={style.form_textarea} />
-                                </div>
-                            </div>
-                            <div className={style.edit_user}>
-                                <span className={style.edit_title}>User Information</span>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Firstname</span>
-                                    <input type="text" value={firstname} className={style.form_input} />
-                                </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Lastname</span>
-                                    <input type="text" value={lastname} className={style.form_input} />
-                                </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Address</span>
-                                    <input type="text" value={adresse} className={style.form_input} />
-                                </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Email</span>
-                                    <input type="email" value={email} className={style.form_input} />
-                                </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Contact</span>
-                                    <input type="tel" value={numero} className={style.form_input} />
-                                </div>
-                            </div>
-                            <Button className="button-primary" label="Edit" icon="pi pi-pencil" />
-                        </div> */}
+
                         <div className={style.edit_user_container}>
                             <div className={style.edit_image_container}>
                                 <div className={style.edit_image}>
-                                    <Avatar shape="circle" className={style.image_edit} image="/images/users/user.jpg" label="F" />
-                                    <Button icon="pi pi-pencil" className={style.button_image} rounded aria-label="Edit photo" />
+                                    <Avatar
+                                        shape="circle"
+                                        className={style.image_edit}
+                                        image={profilePic}
+                                        label="F"
+                                    />
+                                    <input
+                                        type="file"
+                                        id="fileInput"
+                                        style={{ display: 'none' }}
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                    <Button
+                                        icon="pi pi-pencil"
+                                        className={style.button_image}
+                                        rounded
+                                        aria-label="Edit photo"
+                                        onClick={() => document.getElementById('fileInput').click()}
+                                    />
+                                    {/* {file && <Button
+                                        className="button-primary"
+                                        label="Upload"
+                                    // onClick={handleUpload}
+                                    />} */}
                                 </div>
                             </div>
                             <div className={style.edit_user}>
