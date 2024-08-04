@@ -1,15 +1,58 @@
 import Image from 'next/image';
 import style from '../../style/components/card/CardSuggestion.module.css'
 import { ScrollPanel } from 'primereact/scrollpanel';
+import { useState, useContext, useEffect } from 'react';
+import LayoutContext from '@/layouts/context/layoutContext';
+import { checkIfClientLikedAccomodation, LikeAccomodation } from '@/util/Like';
+
 export default function CardSuggestion(props) {
-    return(
+    const [nbLike, setNbLike] = useState(props.nb_like);
+    const [isLiked, setIsLiked] = useState(false);
+    const { user } = useContext(LayoutContext);
+
+
+
+    useEffect(() => {
+        const fetchLikeStatus = () => {
+            if (props.id) {
+                checkIfClientLikedAccomodation(props.id).then((liked) => {
+                    setIsLiked(liked);
+                }).catch((error) => {
+                    console.error('Error fetching like status:', error);
+                });
+            }
+        };
+
+        if (user) {
+            fetchLikeStatus();
+        }
+    }, [props.id, user]);
+
+    const handleLikeClick = () => {
+        if (!user) {
+            router.push('/users/login');
+            return;
+        }
+        if (props.id) {
+            LikeAccomodation(props.id).then(() => {
+                setIsLiked((prev) => !prev);
+                setNbLike((prevNbLike) => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
+            }).catch((error) => {
+                console.error('Error liking the product:', error);
+            });
+        } else {
+            console.error('Product ID is undefined');
+        }
+    };
+
+    return (
         <div className={style.container}>
             <Image className={style.image} src={props.image} alt={props.name} width={382} height={239} />
             <div className={style.wrapper}>
                 <div className={style.title_container}>
                     <span className={style.title}>{props.name}</span>
                     <div className={style.position}>
-                        <i style={{fontSize:"12px"}} className='pi pi-map-marker'/>
+                        <i style={{ fontSize: "12px" }} className='pi pi-map-marker' />
                         <span>{props.localisation}</span>
                     </div>
                 </div>
@@ -22,12 +65,22 @@ export default function CardSuggestion(props) {
             </div>
 
             <div className={style.rating}>
-                <Image src={"/images/star_filled.svg"} alt='star' width={14} height={14}/>
+                <Image src={"/images/star_filled.svg"} alt='star' width={14} height={14} />
                 <span>{props.note}</span>
             </div>
-            <div className={style.like}>
-                <Image src={"/images/heart.svg"} alt='star' width={14} height={14}/>
-            </div>
+            <button
+                onClick={handleLikeClick}
+                className={style.like_white}
+            >
+                <div
+                    className={style.like_container}
+                >
+                    <span>{nbLike} </span>
+                    <i className={`pi ${isLiked ? 'pi-heart-fill' : 'pi-heart'}`} />
+                </div>
+
+
+            </button>
         </div>
     );
 }

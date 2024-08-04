@@ -4,31 +4,68 @@ import { Rating } from 'primereact/rating';
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
+import { checkIfClientLikedAccomodation, LikeAccomodation } from '@/util/Like';
+import { useState, useContext, useEffect } from 'react';
+import LayoutContext from '@/layouts/context/layoutContext';
 
 export default function HotelCard(props) {
-
+    console.log(props);
+    const [nbLike, setNbLike] = useState(props.nb_like);
+    const [isLiked, setIsLiked] = useState(false);
+    const { user } = useContext(LayoutContext);
     const router = useRouter();
+    useEffect(() => {
+        const fetchLikeStatus = () => {
+            if (props.id) {
+                checkIfClientLikedAccomodation(props.id).then((liked) => {
+                    setIsLiked(liked);
+                }).catch((error) => {
+                    console.error('Error fetching like status:', error);
+                });
+            }
+        };
 
-    return(
+        if (user) {
+            fetchLikeStatus();
+        }
+    }, [props.id, user]);
+
+    const handleLikeClick = () => {
+        if (!user) {
+            router.push('/users/login');
+            return;
+        }
+        if (props.id) {
+            LikeAccomodation(props.id).then(() => {
+                setIsLiked((prev) => !prev);
+                setNbLike((prevNbLike) => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
+            }).catch((error) => {
+                console.error('Error liking the product:', error);
+            });
+        } else {
+            console.error('Accomodation is undefined');
+        }
+    };
+    return (
         <div className={style.container}>
             <Image alt='Hotel' src={props.img} imageClassName={style.image_container} />
             <div className={style.hotel_container}>
                 <div className={style.hotel_container_top}>
                     <div className={style.hotel_container_top_left}>
-                        <Rating 
-                            value={props.rate} 
-                            disabled 
+                        <Rating
+                            value={props.rate}
+                            disabled
                             cancel={false}
                             pt={{
-                                onIcon:()=>({
-                                    style:{
-                                        "color":"#FFD700"
+                                onIcon: () => ({
+                                    style: {
+                                        "color": "#FFD700"
                                     }
                                 })
                             }}
                         />
                         <span className={style.note}>{props.rate}</span>
-                        <span className={style.view}>{props.avis_hotel} ( reviews ){props.avis_hotel>1 ? "s":""}</span>
+                        <span className={style.view}>{props.avis_hotel} ( reviews ){props.avis_hotel > 1 ? "s" : ""}</span>
                     </div>
                     <span className={style.hotel_container_top_right}>
                         from {props.price}$/night
@@ -38,12 +75,12 @@ export default function HotelCard(props) {
                     <span className={style.hotel_title}>{props.name}</span>
                     <span className={style.hotel_title_label}>{props.localisation}</span>
                 </div>
-                <ScrollPanel style={{height:"56px"}}>
+                <ScrollPanel style={{ height: "56px" }}>
                     <span className={style.hotel_description}>{props.description}</span>
                 </ScrollPanel>
                 <div className={style.bottom}>
-                    <Button className='button-secondary' label='Like' icon="pi pi-heart" raised/>
-                    <Button onClick={()=>{router.push(props.href)}} className='button-primary' label='See availability'  raised/>
+                    <Button onClick={handleLikeClick} className='button-secondary' label='Like' icon={`pi ${isLiked ? 'pi-heart-fill' : 'pi-heart'}`} raised><span>{nbLike}</span></Button>
+                    <Button onClick={() => { router.push(props.href) }} className='button-primary' label='See availability' raised />
                 </div>
             </div>
         </div>
