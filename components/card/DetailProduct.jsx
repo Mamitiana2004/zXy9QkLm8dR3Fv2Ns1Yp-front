@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Image } from 'primereact/image';
 import style from '../../style/components/card/DetailProduct.module.css';
 import ViewProduct from '../images/ViewProduct';
@@ -8,6 +8,8 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 import { InputNumber } from 'primereact/inputnumber';
 import { UrlConfig } from '@/util/config';
 import { useRouter } from "next/router";
+import addToCart from '@/util/Cart';
+import { Toast } from 'primereact/toast';
 
 // Fonction pour formater les critiques en notation lisible
 const formatReviews = (count) => {
@@ -19,15 +21,20 @@ const formatReviews = (count) => {
 
 // Fonction pour calculer la note moyenne
 const calculateAverageRating = (reviews) => {
-    if (reviews.length === 0) return 0;
-    const totalRating = reviews.reduce((sum, review) => sum + review.note, 0);
-    return (totalRating / reviews.length).toFixed(1);
+    if (reviews) {
+        if (reviews.length === 0) return 0;
+        const totalRating = reviews.reduce((sum, review) => sum + review.note, 0);
+        return (totalRating / reviews.length).toFixed(1);
+    } else { return null }
+
 };
 
 export default function DetailProduct(props) {
     const [product, setProduct] = useState(null);
     const router = useRouter();
     const { id } = router.query;
+    const [quantity, setQuantity] = useState(1);
+    const toast = useRef(null);
 
     useEffect(() => {
         if (id) {
@@ -38,13 +45,31 @@ export default function DetailProduct(props) {
         }
     }, [id]);
 
+    function handleAddToCart() {
+        addToCart(product.id, quantity)
+            .then(result => {
+                if (result === null || result === undefined) {
+                    console.error("Failed to add to cart: No result returned.");
+                    return;
+                }
+
+                console.log("Added to cart:", result);
+                toast.current.show({
+                    severity: 'success', summary: 'Succès',
+                    detail: `${quantity} produit ajouté au panier.`
+                });
+
+            })
+            .catch(error => {
+                console.error("Error adding to cart:", error);
+            });
+    }
+
     if (!product) {
         return <div>Loading...</div>;
     }
 
-    // Calculer la note moyenne
     const averageRating = calculateAverageRating(product.avis_clients);
-    // Compter le nombre de critiques
     const reviewCount = formatReviews(product.avis_clients.length || 0);
 
     return (
@@ -54,27 +79,43 @@ export default function DetailProduct(props) {
                     <ViewProduct images={product.images} />
                 </div>
                 <div className={style.legend_image}>
-                    <span className={style.legend}>
-                        <Image src='/images/artisanat/garantie.svg'/>
-                        Guarantee for 30 days
-                    </span>
-                    <span className={style.legend}>
-                        <Image src='/images/artisanat/hand.svg'/>
-                        100% Malagasy home-made 
-                    </span>
+                    {product.specifications.length >= 2 ? (
+                        <>
+                            <span className={style.legend}>
+                                <Image src='/images/artisanat/garantie.svg' alt='Image Garantie' />
+                                {product.specifications[0].type_specification}
+                            </span>
+                            <span className={style.legend}>
+                                <Image src='/images/artisanat/hand.svg' alt='Image Hand' />
+                                {product.specifications[1].type_specification}
+                            </span>
+                        </>
+                    ) : (
+                        <>
+                            <span className={style.legend}>
+                                <Image src='/images/artisanat/garantie.svg' alt='Image Garantie' />
+                                Guarantee for 30 days
+                            </span>
+                            <span className={style.legend}>
+                                <Image src='/images/artisanat/hand.svg' alt='Image Hand' />
+                                100% Malagasy home-made
+                            </span>
+                        </>
+                    )}
                 </div>
+
                 <div className={style.review_container}>
                     <div className={style.note_container}>
                         <span className={style.note}>{averageRating}</span>
                         <div className={style.detail_note}>
-                            <Rating 
-                                value={averageRating} 
-                                disabled 
+                            <Rating
+                                value={averageRating}
+                                disabled
                                 cancel={false}
                                 pt={{
-                                    onIcon:()=>({
-                                        style:{
-                                            "color":"#FFD700"
+                                    onIcon: () => ({
+                                        style: {
+                                            "color": "#FFD700"
                                         }
                                     })
                                 }}
@@ -82,7 +123,7 @@ export default function DetailProduct(props) {
                             <span className={style.review_detail}>{reviewCount} reviews</span>
                         </div>
                     </div>
-                    <Button className='button-primary' label='See reviews'/>
+                    <Button className='button-primary' label='See reviews' />
                 </div>
             </div>
             <div className={style.right}>
@@ -97,7 +138,7 @@ export default function DetailProduct(props) {
                     </div>
                     <span className={style.price}>${product.prix_artisanat}</span>
                 </div>
-                <ScrollPanel style={{height:"245px"}}>
+                <ScrollPanel style={{ height: "245px" }}>
                     <div className={style.description}>
                         {product.description_artisanat}
                     </div>
@@ -108,7 +149,7 @@ export default function DetailProduct(props) {
                         <div className={style.specification_title}>Specification</div>
                         <ul className={style.specification_list}>
                             {product.specifications
-                                .filter((_, index) => index % 2 === 0) 
+                                .filter((_, index) => index % 2 === 0)
                                 .map((spec, index) => (
                                     <li key={index} className={style.specification_item}>
                                         {spec.type_specification}
@@ -119,7 +160,7 @@ export default function DetailProduct(props) {
 
                     {/* Specification droite */}
                     <div className={style.specification_column}>
-                        <div className={style.specification_title}>Specification</div>
+                        <div className={style.specification_title}> .</div>
                         <ul className={style.specification_list}>
                             {product.specifications
                                 .filter((_, index) => index % 2 !== 0)
@@ -136,14 +177,19 @@ export default function DetailProduct(props) {
                 <div className={style.right_bottom_container}>
                     <div className={style.quantity_container}>
                         <span className={style.quantity_label}>Quantity :</span>
-                        <InputNumber inputClassName={style.quantity}/>
+                        <InputNumber onChange={(e) => {
+                            setQuantity(e.value);
+                        }} inputClassName={style.quantity} />
                     </div>
                     <div className={style.button_group}>
-                        <Button icon="pi pi-shopping-cart" raised label='Add to cart' className='button-secondary'/>
-                        <Button icon="pi pi-shopping-bag" label='Buy now' className='button-primary'/>
+                        <Button icon="pi pi-shopping-cart" onClick={handleAddToCart} raised label='Add to cart' className='button-secondary' />
+                        <Button icon="pi pi-shopping-bag" label='Buy now' className='button-primary' />
                     </div>
                 </div>
             </div>
+            <Toast ref={toast} />
         </div>
+
+
     );
 }
