@@ -14,48 +14,101 @@ import { useRouter } from "next/router";
 import { Dialog } from "primereact/dialog";
 import { Chip } from 'primereact/chip';
 import { Tooltip } from "primereact/tooltip";
-        
+import UrlConfig from "@/util/config";
+
 
 export default function Accommodation() {
 
-    const [rateValue,setRateValue] = useState(0);
+    const [rateValue, setRateValue] = useState(0);
 
     const router = useRouter();
-    const [deleteChip,setDeleteChip] = useState(false);
+    const [deleteChip, setDeleteChip] = useState(false);
 
-    const [socialLink,setSocialLink] = useState([]);
-    const [visible,setVisible] = useState(false);
+    const [socialLink, setSocialLink] = useState([]);
+    const [visible, setVisible] = useState(false);
+    const [countryCode, setCountryCode] = useState('+261');
+    const [countryOptions, setCountryOptions] = useState();
 
+    useEffect(() => {
+        const fetchCountryCodes = async () => {
+            try {
+                const response = await fetch('/api/social/countryCodes');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setCountryOptions(data);
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        };
 
-    const [socialLabel,setSocialLabel] = useState();
-    const [socialSelected,setSocialSelected] = useState();
-    const [allSocial,setAllSocial] = useState([]);
-    const getAllSocial = () =>{
+        fetchCountryCodes();
+    }, []);
+
+    const [socialLabel, setSocialLabel] = useState();
+    const [socialSelected, setSocialSelected] = useState();
+    const [allSocial, setAllSocial] = useState([]);
+
+    const [name, setName] = useState('');
+    const [address, setAddress] = useState('');
+    const [phone, setPhone] = useState('');
+    const [nif, setNif] = useState('');
+    const [accommodationType, setAccommodationType] = useState('');
+    const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
+    const [stat, setStat] = useState('');
+    const [options, setOptions] = useState([]);
+    const getAllSocial = () => {
         fetch("/api/social")
-        .then(res=>res.json())
-        .then(data=>setAllSocial(data))
-        .catch(error=>console.log(error));
+            .then(res => res.json())
+            .then(data => setAllSocial(data))
+            .catch(error => console.log(error));
     }
-    
-    useEffect(()=>{
+    useEffect(() => {
         getAllSocial();
-    },[])
-
-    const [socialLabelUpdat,setSocialLabelUpdat] = useState();
+    }, [])
 
 
-    const informationAccommodationFini = () =>{
-        router.push("/users/etablissement/accommodation/addImage")
+    const [socialLabelUpdat, setSocialLabelUpdat] = useState();
+    function fetchTypeHebergement() {
+        return fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-hebergement/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setOptions(data.map(type => ({
+                    label: type.type_name,
+                    value: type.id
+                })));
+                return data;
+            })
+            .catch(error => {
+                console.error('Il y a eu un problème avec la requête fetch:', error);
+            });
     }
 
-    const addSocialLink = () =>{
+    useEffect(() => {
+        fetchTypeHebergement();
+    }, []);
+    // 
+    const informationAccommodationFini = () => {
+        // router.push("/users/etablissement/accommodation/addImage");
+        console.log(accommodationType);
+        console.log(countryCode);
+    }
+
+    const addSocialLink = () => {
         const allSocialCopy = [];
-        allSocial.map((social)=>{
+        allSocial.map((social) => {
             if (socialSelected != social) {
                 allSocialCopy.push({
-                    id:social.id,
-                    label:social.label,
-                    icon:social.icon
+                    id: social.id,
+                    label: social.label,
+                    icon: social.icon
                 });
             }
         })
@@ -63,47 +116,47 @@ export default function Accommodation() {
         setSocialSelected();
         const socialLinkCopy = [...socialLink];
         socialLinkCopy.push({
-            icon:socialSelected.icon,
-            label:socialLabel,
-            visible:false
+            icon: socialSelected.icon,
+            label: socialLabel,
+            visible: false
         });
         setSocialLabel();
         setSocialLink(socialLinkCopy);
         setVisible(false);
     }
 
-    const updateSocialLink = (social) =>{
+    const updateSocialLink = (social) => {
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             if (social == s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:socialLabelUpdat,
-                    visible:false
+                    icon: s.icon,
+                    label: socialLabelUpdat,
+                    visible: false
                 });
                 setSocialLabelUpdat();
             }
-            else{
+            else {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
         setSocialLink(socialLinkCopy);
     }
-    
-    const deleteSocialLink = (social) =>{
+
+    const deleteSocialLink = (social) => {
         setDeleteChip(true);
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             setSocialLabelUpdat();
             if (social != s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
@@ -111,27 +164,27 @@ export default function Accommodation() {
         setDeleteChip(false);
     }
 
-    const detailSocial = (social,event) =>{
+    const detailSocial = (social, event) => {
         if (event.ctrlKey) {
             router.push(social.label);
         }
-        else{
+        else {
             if (!deleteChip) {
                 const socialLinkCopy = [];
-                socialLink.map((s)=>{
+                socialLink.map((s) => {
                     if (social == s) {
                         socialLinkCopy.push({
-                            icon:s.icon,
-                            label:s.label,
-                            visible:true
+                            icon: s.icon,
+                            label: s.label,
+                            visible: true
                         });
                         setSocialLabelUpdat(s.label);
                     }
-                    else{
+                    else {
                         socialLinkCopy.push({
-                            icon:s.icon,
-                            label:s.label,
-                            visible:s.visible
+                            icon: s.icon,
+                            label: s.label,
+                            visible: s.visible
                         });
                     }
                 })
@@ -140,21 +193,21 @@ export default function Accommodation() {
         }
     }
 
-    const hideSocialDetail = (social) =>{
+    const hideSocialDetail = (social) => {
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             if (social == s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:false
+                    icon: s.icon,
+                    label: s.label,
+                    visible: false
                 });
             }
-            else{
+            else {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
@@ -165,20 +218,20 @@ export default function Accommodation() {
 
     const socialOptionTemplate = (option) => {
         return (
-            <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
-                <i className={option.icon}/>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <i className={option.icon} />
                 {option.label}
             </div>
         );
     };
 
 
-    return(
+    return (
         <>
             <div className={style.container}>
                 <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png"/>
-                    <Stepper activeStep={2}  linear className={style.stepper}>
+                    <Image alt="logo" src="/images/logo-aftrip.png" />
+                    <Stepper activeStep={2} linear className={style.stepper}>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
@@ -193,81 +246,118 @@ export default function Accommodation() {
                     </div>
 
                     <div className={style.accommodation_1_parent}>
+
                         <div className={style.accommodation_1_container}>
                             <div className={style.left_accommodation_1}>
                                 <FloatLabel>
                                     <InputText
                                         id="input_name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-warehouse"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_name">
+                                        <i className="pi pi-warehouse" />
                                         Name
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
                                     <InputText
                                         id="input_address"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_address">
-                                        <i className="pi pi-map-marker"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_address">
+                                        <i className="pi pi-map-marker" />
                                         Address
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
-                                    <InputText
-                                        id="input_phone"
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_phone">
-                                        <i className="pi pi-phone"/>
-                                        Phone
-                                    </label>
+                                    <div className="phone-input-container" style={{ display: "flex", alignItems: "center" }}>
+                                        <Dropdown
+                                            pt={{
+                                                trigger: { style: { display: "none", width: "100%" } }
+                                            }}
+                                            value={countryCode}
+                                            options={countryOptions}
+                                            onChange={(e) => { setCountryCode(e.value); }}
+                                            style={{ width: "100px", marginRight: "15px" }}
+
+                                            optionLabel="label"
+                                            optionValue="value"
+                                        />
+                                        <FloatLabel>
+                                            <InputText
+                                                id="input_phone"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                            />
+                                            <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_phone">
+                                                <i className="pi pi-phone" />
+                                                Phone
+                                            </label>
+                                        </FloatLabel>
+                                    </div>
                                 </FloatLabel>
                                 <FloatLabel>
                                     <InputText
-                                        id="input_phone"
+                                        id="input_nif"
+                                        value={nif}
+                                        onChange={(e) => setNif(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_phone">
-                                        <i className="pi pi-credit-card"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_nif">
+                                        <i className="pi pi-credit-card" />
                                         NIF
                                     </label>
                                 </FloatLabel>
                             </div>
                             <div className={style.right_accommodation_1}>
                                 <FloatLabel>
-                                    <Dropdown 
+                                    <Dropdown
                                         pt={{
-                                            trigger: { style: {display:"none"} }
-                                        }} style={{width:"100%"}}
+                                            trigger: { style: { display: "none" } }
+                                        }}
+                                        style={{ width: "100%" }}
+                                        value={accommodationType}
+                                        options={options}
+                                        onChange={(e) => setAccommodationType(e.value)} // Mettez à jour l'état lorsque la sélection change
+                                        optionLabel="label" // Assurez-vous que l'étiquette de l'option est correctement définie
+                                        optionValue="value" // Assurez-vous que la valeur de l'option est correctement définie
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-warehouse"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_accommodation_type">
+                                        <i className="pi pi-warehouse" />
                                         Accommodation type
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
                                     <InputText
-                                        id="input_name"
+                                        id="input_city"
+                                        value={city}
+                                        onChange={(e) => setCity(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-map-marker"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_city">
+                                        <i className="pi pi-map-marker" />
                                         City
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
                                     <InputText
-                                        id="input_name"
+                                        id="input_country"
+                                        value={country}
+                                        onChange={(e) => setCountry(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-map-marker"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_country">
+                                        <i className="pi pi-map-marker" />
                                         Country
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
                                     <InputText
-                                        id="input_name"
+                                        id="input_stat"
+                                        value={stat}
+                                        onChange={(e) => setStat(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-credit-card"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_stat">
+                                        <i className="pi pi-credit-card" />
                                         STAT
                                     </label>
                                 </FloatLabel>
@@ -278,53 +368,56 @@ export default function Accommodation() {
                             <div className={style.rate_input}>
                                 <Rating
                                     value={rateValue}
-                                    onChange={(e)=>setRateValue(e.value)}
+                                    onChange={(e) => setRateValue(e.value)}
                                     cancel={false}
                                     pt={{
-                                        onIcon:()=>({
-                                            style:{
-                                                "color":"#FFD700"
+                                        onIcon: () => ({
+                                            style: {
+                                                "color": "#FFD700"
                                             }
                                         })
                                     }}
                                 />
-                                <span className={style.rate_input_label}>Lorem ipsum dolor sit amet vero ullamcorper odio et sed no dolore sadipscing ipsum et facilisis elitr ut. Et no aliquam lorem ipsum et sit sit sed ad accumsan sadipscing eirmod hendrerit.</span>
+                                <span className={style.rate_input_label}>
+                                    Lorem ipsum dolor sit amet vero ullamcorper odio et sed no dolore sadipscing ipsum et facilisis elitr ut. Et no aliquam lorem ipsum et sit sit sed ad accumsan sadipscing eirmod hendrerit.
+                                </span>
                             </div>
                         </div>
-                        <Button onClick={()=>setVisible(true)} className={style.addSocial} label="Add social link" icon="pi pi-plus"/>
+
+                        <Button onClick={() => setVisible(true)} className={style.addSocial} label="Add social link" icon="pi pi-plus" />
                         <div className={style.chip_container}>
-                            {socialLink.map((social,key)=>{
+                            {socialLink.map((social, key) => {
                                 return (<>
-                                <Tooltip target="#chip"/>
-                                        <Chip id="chip" data-pr-tooltip="Ctrl+Key : aperçu" data-pr-position="right" data-pr-at="right+5 top" data-pr-my="left center-2" style={{cursor:"pointer"}} onClick={(event)=>detailSocial(social,event)} label={social.label} icon={social.icon} removable onRemove={()=>deleteSocialLink(social)}/>
+                                    <Tooltip target="#chip" />
+                                    <Chip id="chip" data-pr-tooltip="Ctrl+Key : aperçu" data-pr-position="right" data-pr-at="right+5 top" data-pr-my="left center-2" style={{ cursor: "pointer" }} onClick={(event) => detailSocial(social, event)} label={social.label} icon={social.icon} removable onRemove={() => deleteSocialLink(social)} />
                                 </>
                                 )
                             })}
                         </div>
-                        <Button onClick={informationAccommodationFini} style={{width:"60%"}} className="button-primary" label="Continue"/>
+                        <Button onClick={informationAccommodationFini} style={{ width: "60%" }} className="button-primary" label="Continue" />
                     </div>
 
                 </div>
             </div>
 
-            <Dialog visible={visible} onHide={()=>setVisible(false)}>
+            <Dialog visible={visible} onHide={() => setVisible(false)}>
                 <Dropdown
                     value={socialSelected}
-                    onChange={(e)=>setSocialSelected(e.value)}
+                    onChange={(e) => setSocialSelected(e.value)}
                     placeholder="Social link"
                     options={allSocial}
                     optionLabel="label"
                     itemTemplate={socialOptionTemplate}
                 />
-                <InputText value={socialLabel} onChange={(e)=>setSocialLabel(e.target.value)}/>
-                <Button label="test" onClick={addSocialLink}/>
+                <InputText value={socialLabel} onChange={(e) => setSocialLabel(e.target.value)} />
+                <Button label="test" onClick={addSocialLink} />
             </Dialog>
 
-            {socialLink.map((social,index)=>{
-                return(
-                    <Dialog draggable={false} key={index} visible={social.visible} onHide={()=>hideSocialDetail(social)}>
-                        <InputText value={socialLabelUpdat} onChange={(e)=>setSocialLabelUpdat(e.target.value)}/>
-                        <Button onClick={()=>updateSocialLink(social)} icon="pi pi-pencil" label="Upadte"/>
+            {socialLink.map((social, index) => {
+                return (
+                    <Dialog draggable={false} key={index} visible={social.visible} onHide={() => hideSocialDetail(social)}>
+                        <InputText value={socialLabelUpdat} onChange={(e) => setSocialLabelUpdat(e.target.value)} />
+                        <Button onClick={() => updateSocialLink(social)} icon="pi pi-pencil" label="Upadte" />
                     </Dialog>
                 )
             })}
@@ -333,12 +426,12 @@ export default function Accommodation() {
 }
 
 Accommodation.getLayout = function getLayout(page) {
-    return(
+    return (
         <>
             <Head>
                 <title>Accommodation</title>
             </Head>
-            <AppTopbar/>
+            <AppTopbar />
             {page}
         </>
     )
