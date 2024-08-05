@@ -3,7 +3,7 @@ import style from './../../../style/pages/users/accommodation/filter.module.css'
 import styleDropdown from './../../../style/components/ListCheckbox.module.css';
 import ListCheckbox from "@/components/ListCheckbox";
 import HotelCard from "@/components/card/HotelCard";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getCsrfTokenDirect } from "@/util/csrf";
 import Filter from "@/components/Filter";
 import { UrlConfig } from "@/util/config";
@@ -22,6 +22,7 @@ export default function Accommodation() {
         longitude: 47
     });
 
+    const toast = useRef(null);
 
     const [distanceChoice, setDistanceChoice] = useState(0);
 
@@ -248,7 +249,6 @@ export default function Accommodation() {
         const minValue = 5;
         const maxValue = 600;
 
-        // Vérifier que le pourcentage est entre 0 et 100
         if (percentage < 0 || percentage > 100) {
             throw new Error("Le pourcentage doit être entre 0 et 100.");
         }
@@ -301,7 +301,7 @@ export default function Accommodation() {
             setHotels(hotelCopy);
         }
         else {
-            console.log("ato");
+
             setHotels(allHotels);
         }
     }
