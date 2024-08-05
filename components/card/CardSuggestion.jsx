@@ -1,14 +1,17 @@
 import Image from 'next/image';
 import style from '../../style/components/card/CardSuggestion.module.css'
 import { ScrollPanel } from 'primereact/scrollpanel';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import LayoutContext from '@/layouts/context/layoutContext';
 import { checkIfClientLikedAccomodation, LikeAccomodation } from '@/util/Like';
+import Link from 'next/link';
+import { Toast } from 'primereact/toast';
 
 export default function CardSuggestion(props) {
     const [nbLike, setNbLike] = useState(props.nb_like);
     const [isLiked, setIsLiked] = useState(false);
     const { user } = useContext(LayoutContext);
+    const toast = useRef(null);
 
 
 
@@ -30,7 +33,12 @@ export default function CardSuggestion(props) {
 
     const handleLikeClick = () => {
         if (!user) {
-            router.push('/users/login');
+            toast.current.show({
+                severity: 'info',
+                summary: 'Not Connecter',
+                detail: <>No user connected <Link href="/users/login">Login here</Link>.</>,
+                life: 5000
+            });
             return;
         }
         if (props.id) {
@@ -80,7 +88,8 @@ export default function CardSuggestion(props) {
                 </div>
 
 
-            </button>
+            </button>            <Toast ref={toast} />
+
         </div>
     );
 }

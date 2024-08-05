@@ -16,7 +16,7 @@ export default function NewPassword() {
 
     const router = useRouter();
     const toast = useRef(null);
-    const [timer, setTimer] = useState(0);
+
 
     const { canAccessForgotPage, setCanAccessForgotPage } = useNavigation();
 
@@ -42,15 +42,7 @@ export default function NewPassword() {
 
     }, [canAccessForgotPage, router, setCanAccessForgotPage]);
 
-    // useEffect(() => {
-    //     if (typeof window !== "undefined") {
-    //         if (localStorage.getItem("timer")) {
-    //             setTimer(localStorage.getItem("timer"));
-    //             setIsButtonDisabled(true);
-    //         }
-    //     }
-    //     setEmail(sessionStorage.getItem("email_in_signup"));
-    // }, [])
+
 
     const checkChacun = (password) => {
         setCheckLenght(password.length > 8);

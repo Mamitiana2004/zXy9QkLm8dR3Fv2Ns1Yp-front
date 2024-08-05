@@ -5,10 +5,14 @@ import { ScrollPanel } from 'primereact/scrollpanel';
 import { Button } from 'primereact/button';
 import { useRouter } from 'next/router';
 import { checkIfClientLikedAccomodation, LikeAccomodation } from '@/util/Like';
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import LayoutContext from '@/layouts/context/layoutContext';
+import { Toast } from 'primereact/toast';
+import Link from 'next/link';
 
 export default function HotelCard(props) {
+    const toast = useRef(null);
+
 
     const [nbLike, setNbLike] = useState(props.nb_like);
     const [isLiked, setIsLiked] = useState(false);
@@ -41,7 +45,12 @@ export default function HotelCard(props) {
     }, [props.price]);
     const handleLikeClick = () => {
         if (!user) {
-            router.push('/users/login');
+            toast.current.show({
+                severity: 'info',
+                summary: 'Not Connecter',
+                detail: <>No user connected <Link href="/users/login">Login here</Link>.</>,
+                life: 5000
+            });
             return;
         }
         if (props.id) {
@@ -93,6 +102,7 @@ export default function HotelCard(props) {
                     <Button onClick={() => { router.push(props.href) }} className='button-primary' label='See availability' raised />
                 </div>
             </div>
+            <Toast ref={toast} />
         </div>
     )
 }
