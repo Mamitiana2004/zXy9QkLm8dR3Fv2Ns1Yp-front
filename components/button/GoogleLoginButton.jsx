@@ -55,11 +55,11 @@ const verifyUserInfo = (firebaseInfoUser, setIsLoggedIn, toast, setUser) => {
                 if (info) {
                     const parsedInfo = JSON.parse(info);
                     setUser({
-                        username: parsedInfo.displayName,
+                        username: body.username,
                         id: body.id,
-                        userImage: parsedInfo.photoURL,
+                        userImage: UrlConfig.apiBaseUrl + body.profilPic,
                     });
-                    Cookies.set("profile_user", parsedInfo.photoURL, { expires: 1, secure: true, sameSite: 'Strict' });
+                    Cookies.set("profile_user", body.profilPic, { expires: 1, secure: true, sameSite: 'Strict' });
                     Cookies.set("username", parsedInfo.displayName, { expires: 1, secure: true, sameSite: 'Strict' });
 
                 }

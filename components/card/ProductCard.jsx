@@ -7,6 +7,7 @@ import { UrlConfig } from '@/util/config';
 import { LikeProduct, checkIfClientLikedProduct } from '@/util/Like';
 import { Toast } from 'primereact/toast';
 import LayoutContext from '@/layouts/context/layoutContext';
+import Link from 'next/link';
 
 export default function ProductCard(props) {
     const router = useRouter();
@@ -49,8 +50,12 @@ export default function ProductCard(props) {
 
     const handleLikeClick = () => {
         if (!user) {
-            router.push('/users/login');
-            return;
+            toast.current.show({
+                severity: 'info',
+                summary: 'Not Connecter',
+                detail: <>No user connected <Link href="/users/login">Login here</Link>.</>,
+                life: 5000
+            }); return;
         }
         if (props.id) {
             LikeProduct(props.id).then(() => {
@@ -103,7 +108,7 @@ export default function ProductCard(props) {
                     </div>
                     <Button onClick={handleButtonClick} className={style.button} label='View' />
                 </div>
-            </div>
+            </div>  <Toast ref={toast} />
         </div>
     );
 }

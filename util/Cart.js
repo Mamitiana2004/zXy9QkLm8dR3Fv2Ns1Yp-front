@@ -1,6 +1,52 @@
 import Cookies from 'js-cookie';
 import UrlConfig from './config';
 import { getNewAccess } from './Cookies';
+import { getCsrfTokenDirect } from './csrf';
+
+
+const FetchUser = () => {
+    let access = Cookies.get('accessToken');
+
+    const handleFetch = (accessToken) => {
+        return fetch(`${UrlConfig.apiBaseUrl}/api/accounts/profil-client/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    return response.json().then((errorData) => {
+                        throw new Error('Error during user fetch operation: ' + (errorData.error || 'Unknown error'));
+                    });
+                }
+                return response.json();
+            })
+            .catch((error) => {
+                console.error('Error during user fetch operation:', error);
+                return null;
+            });
+    };
+
+    if (!access) {
+        return getNewAccess()
+            .then(() => {
+                access = Cookies.get('accessToken');
+                if (!access) {
+                    console.error('No access token available');
+                    return null;
+                }
+                return handleFetch(access);
+            })
+            .catch((error) => {
+                console.error('Error fetching new access token:', error);
+                return null;
+            });
+    }
+
+    return handleFetch(access);
+};
 
 const addToCart = async (produitId, quantite) => {
     // Vérifie si le token d'accès est disponible
@@ -49,3 +95,4 @@ const addToCart = async (produitId, quantite) => {
 
 
 export default addToCart;
+export { FetchUser };
