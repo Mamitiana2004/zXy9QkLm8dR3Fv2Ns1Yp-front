@@ -71,7 +71,7 @@ export default function ResponsableLayout(props) {
                 {
                     icon:"pi pi-users",
                     label:"Customers",
-                    link:"/responsable/handcraft/customers"
+                    link:"/responsable/handcraft/customer"
                 },
                 {
                     icon:"pi pi-envelope",
@@ -82,6 +82,47 @@ export default function ResponsableLayout(props) {
                     icon:"pi pi-cog",
                     label:"Setting",
                     link:"/responsable/handcraft/setting"
+                },
+                {
+                    icon:"pi pi-sign-out",
+                    label:"Log out",
+                    link:"/users"
+                },
+                
+            ]
+            setLink(links);
+        }
+        if (router.asPath.includes("/responsable/tour")) {
+            let links = [
+                {
+                    icon:"pi pi-home",
+                    label:"Dashboard",
+                    link:"/responsable/tour/dashboard"
+                },
+                {
+                    icon:"pi pi-bookmark-fill",
+                    label:"Booking",
+                    link:"/responsable/tour/booking"
+                },
+                {
+                    icon:"pi pi-objects-column",
+                    label:"Trip",
+                    link:"/responsable/tour/trip"
+                },
+                {
+                    icon:"pi pi-users",
+                    label:"Travelers",
+                    link:"/responsable/tour/travelers"
+                },
+                {
+                    icon:"pi pi-envelope",
+                    label:"Message",
+                    link:"/responsable/tour/message"
+                },
+                {
+                    icon:"pi pi-cog",
+                    label:"Setting",
+                    link:"/responsable/tour/setting"
                 },
                 {
                     icon:"pi pi-sign-out",

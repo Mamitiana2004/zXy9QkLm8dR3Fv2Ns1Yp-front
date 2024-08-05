@@ -22,7 +22,7 @@ export default function AppTopBarResponsable(props) {
     let items = [];
 
     return(
-        <div div style={props.style} className={style.container}>
+        <div style={props.style} className={style.container}>
             <div className={style.navbar}>
                     <div className={style.nav_title}>
                         <Link href={"/users"}>

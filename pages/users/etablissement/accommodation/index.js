@@ -21,6 +21,7 @@ export default function Accommodation() {
     const [rateValue,setRateValue] = useState(0);
 
     const router = useRouter();
+    const [deleteChip,setDeleteChip] = useState(false);
 
     const [socialLink,setSocialLink] = useState([]);
     const [visible,setVisible] = useState(false);
@@ -44,7 +45,7 @@ export default function Accommodation() {
 
 
     const informationAccommodationFini = () =>{
-        router.push("/users/etablissement/accommodation/")
+        router.push("/users/etablissement/accommodation/addImage")
     }
 
     const addSocialLink = () =>{
@@ -94,6 +95,7 @@ export default function Accommodation() {
     }
     
     const deleteSocialLink = (social) =>{
+        setDeleteChip(true);
         const socialLinkCopy = [];
         socialLink.map((s)=>{
             setSocialLabelUpdat();
@@ -106,6 +108,7 @@ export default function Accommodation() {
             }
         })
         setSocialLink(socialLinkCopy);
+        setDeleteChip(false);
     }
 
     const detailSocial = (social,event) =>{
@@ -113,25 +116,27 @@ export default function Accommodation() {
             router.push(social.label);
         }
         else{
-            const socialLinkCopy = [];
-            socialLink.map((s)=>{
-                if (social == s) {
-                    socialLinkCopy.push({
-                        icon:s.icon,
-                        label:s.label,
-                        visible:true
-                    });
-                    setSocialLabelUpdat(s.label);
-                }
-                else{
-                    socialLinkCopy.push({
-                        icon:s.icon,
-                        label:s.label,
-                        visible:s.visible
-                    });
-                }
-            })
-            setSocialLink(socialLinkCopy);
+            if (!deleteChip) {
+                const socialLinkCopy = [];
+                socialLink.map((s)=>{
+                    if (social == s) {
+                        socialLinkCopy.push({
+                            icon:s.icon,
+                            label:s.label,
+                            visible:true
+                        });
+                        setSocialLabelUpdat(s.label);
+                    }
+                    else{
+                        socialLinkCopy.push({
+                            icon:s.icon,
+                            label:s.label,
+                            visible:s.visible
+                        });
+                    }
+                })
+                setSocialLink(socialLinkCopy);
+            }
         }
     }
 
@@ -287,13 +292,15 @@ export default function Accommodation() {
                             </div>
                         </div>
                         <Button onClick={()=>setVisible(true)} className={style.addSocial} label="Add social link" icon="pi pi-plus"/>
-                        {socialLink.map((social,key)=>{
-                            return (<>
-                            <Tooltip target="#chip"/>
-                                    <Chip id="chip" data-pr-tooltip="Ctrl+Key : aperçu" data-pr-position="right" data-pr-at="right+5 top" data-pr-my="left center-2" style={{cursor:"pointer"}} onClick={(event)=>detailSocial(social,event)} label={social.label} icon={social.icon} removable onRemove={()=>deleteSocialLink(social)}/>
-                            </>
-                            )
-                        })}
+                        <div className={style.chip_container}>
+                            {socialLink.map((social,key)=>{
+                                return (<>
+                                <Tooltip target="#chip"/>
+                                        <Chip id="chip" data-pr-tooltip="Ctrl+Key : aperçu" data-pr-position="right" data-pr-at="right+5 top" data-pr-my="left center-2" style={{cursor:"pointer"}} onClick={(event)=>detailSocial(social,event)} label={social.label} icon={social.icon} removable onRemove={()=>deleteSocialLink(social)}/>
+                                </>
+                                )
+                            })}
+                        </div>
                         <Button onClick={informationAccommodationFini} style={{width:"60%"}} className="button-primary" label="Continue"/>
                     </div>
 

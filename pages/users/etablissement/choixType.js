@@ -24,7 +24,7 @@ export default function ChoixType() {
             choix="handcraft";
         }
         else if (choixEtablissement==3) {
-            choix="trip";
+            choix="tour";
         }
         if (choixEtablissement!=0) {
             router.push("/users/etablissement/"+choix);

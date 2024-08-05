@@ -12,41 +12,41 @@ export default function Room() {
     const router = useRouter();
 
     const [booking,setBooking] = useState([
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"}
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:false,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:false,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"},
+        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",available:true,price:"$132"}
     ])
 
     const buttonTemplate = (item) =>{
@@ -68,6 +68,23 @@ export default function Room() {
             accept
         });
     };
+
+    const availableTemplate = (item) =>{
+        if (item.available) {
+            return(
+                <>
+                    <span><i className="pi pi-check"/> available</span>
+                </>
+            )
+        }
+        else{
+            return(
+                <>
+                    <span><i className="pi pi-times"/> available</span>
+                </>
+            )
+        }
+    }
 
     const accept = () =>{
 
@@ -95,8 +112,8 @@ export default function Room() {
                         <Column sortable field="name" header="Name"/>
                         <Column sortable field="room" header="Room"/>
                         <Column sortable field="guests" header="Guests"/>
-                        <Column sortable field="check_in" header="Check in"/>
-                        <Column sortable field="check_out" header="Check out"/>
+                        <Column sortable body={availableTemplate} header="Status"/>
+                        <Column sortable field="price" header="Price"/>
                         <Column header="Action" body={buttonTemplate}/>
                     </DataTable>
                 </div>

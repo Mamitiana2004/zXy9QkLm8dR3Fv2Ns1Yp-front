@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
@@ -16,6 +18,8 @@
     "@fullcalendar/resource-timegrid": "^6.1.15",
     "@fullcalendar/resource-timeline": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
+    "@mui/lab": "^5.0.0-alpha.173",
+    "@mui/material": "^5.16.5",
     "@react-google-maps/api": "^2.19.3",
     "chart.js": "^4.4.3",
     "data-fns": "^1.1.0",
@@ -33,7 +37,7 @@
     "react-dom": "^18",
     "react-i18next": "^15.0.0",
     "react-leaflet": "^4.2.1",
-    "react-masonry-css": "^1.0.16"
+    "sharp": "^0.33.4"
   },
   "devDependencies": {
     "eslint": "^8",

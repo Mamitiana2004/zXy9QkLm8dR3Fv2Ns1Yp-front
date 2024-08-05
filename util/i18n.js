@@ -25,4 +25,4 @@ i18n.use(initReactI18next) // passes i18n down to react-i18next
 
 
 
-export {i18n};
+export default i18n;
