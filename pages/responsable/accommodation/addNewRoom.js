@@ -14,11 +14,11 @@ import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext
 
 export default function AddNewRoom() {
     const [typeChambre, setTypeChambre] = useState([]);
-    const [imageFile, setImageFile] = useState(null);
+    const [imageFile, setImageFile] = useState();
     const inputRef = useRef(null);
-    const [selectedType, setSelectedType] = useState(null);
-    const [selectedStatus, setSelectedStatus] = useState(null);
-    const [price, setPrice] = useState(null);
+    const [selectedType, setSelectedType] = useState();
+    const [selectedStatus, setSelectedStatus] = useState();
+    const [price, setPrice] = useState("");
     const [fileImages, setFileImages] = useState([]);
     const [amenities, setAmenities] = useState([]);
     const [listImage, setListImage] = useState([]);
@@ -105,10 +105,10 @@ export default function AddNewRoom() {
 
                 setTimeout(() => {
                     setTypeChambre([]);
-                    setImageFile(null);
-                    setSelectedType(null);
-                    setSelectedStatus(null);
-                    setPrice(null);
+                    setImageFile();
+                    setSelectedType();
+                    setSelectedStatus();
+                    setPrice();
                     setFileImages([]);
                     setAmenities([]);
                     setListImage([]);
