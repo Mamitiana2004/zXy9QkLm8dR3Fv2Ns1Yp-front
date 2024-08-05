@@ -10,6 +10,9 @@ import { FetchUser } from "@/util/Cart";
 
 import LayoutContext from "@/layouts/context/layoutContext";
 import UrlConfig from "@/util/config";
+import { getNewAccess } from "@/util/Cookies";
+import Cookies from "js-cookie";
+import { Toast } from "primereact/toast";
 
 export default function Profile() {
     const [userInfo, setUserInfo] = useState(null);
@@ -29,6 +32,19 @@ export default function Profile() {
     const [city, setCity] = useState("dsfsd");
     const [edit, setEdit] = useState(false);
 
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setEdit(true);
+                setProfilePic(reader.result);
+                setUsedProfil(reader.result);
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+    };
 
     useEffect(() => {
         FetchUser()
@@ -89,6 +105,8 @@ export default function Profile() {
         formData.append('first_name', firstname);
         formData.append('last_name', lastname);
         formData.append('adresse', adresse);
+        formData.append('ville', city);
+
         if (file) {
             formData.append('profilPic', file);
         }
@@ -127,6 +145,8 @@ export default function Profile() {
                         userImage: profilePic,
                     }
                 );
+                setEdit((prev) => !prev);
+
                 toast.current.show({
                     severity: "success",
                     summary: "Success",
@@ -184,7 +204,16 @@ export default function Profile() {
                             </span>
                         </div>
                     </div>
-                    <Button className={style.edit_button} label="Edit" icon="pi pi-pen-to-square" />
+                    <Button className={style.edit_button} onClick={() => document.getElementById('fileInput').click()}
+                        label="Upload" icon="pi pi-pen-to-square" >
+                        <input
+                            type="file"
+                            id="fileInput"
+                            style={{ display: 'none' }}
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                    </Button>
                 </div>
                 <div className={style.separateur}></div>
                 <div className={style.profil_detail_container}>
@@ -196,7 +225,7 @@ export default function Profile() {
                                     <span className={style.label}>First name</span>
                                     <input
                                         type="text"
-                                        value={firstname}
+                                        value={firstname || ''}
                                         onChange={(e) => setFirstname(e.target.value)}
                                         className={style.inputField}
                                     />
@@ -205,7 +234,7 @@ export default function Profile() {
                                     <span className={style.label}>Last name</span>
                                     <input
                                         type="text"
-                                        value={lastname}
+                                        value={lastname || ''}
                                         onChange={(e) => setLastname(e.target.value)}
                                         className={style.inputField}
                                     />
@@ -214,7 +243,7 @@ export default function Profile() {
                                     <span className={style.label}>Email</span>
                                     <input
                                         type="text"
-                                        value={email}
+                                        value={email || ''}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className={style.inputField}
                                     />
@@ -223,7 +252,7 @@ export default function Profile() {
                                     <span className={style.label}>Contact</span>
                                     <input
                                         type="text"
-                                        value={numero}
+                                        value={numero || ''}
                                         onChange={(e) => setNumero(e.target.value)}
                                         className={style.inputField}
                                     />
@@ -232,7 +261,7 @@ export default function Profile() {
                                     <span className={style.label}>Adresse</span>
                                     <input
                                         type="text"
-                                        value={adresse}
+                                        value={adresse || ''}
                                         onChange={(e) => setAdresse(e.target.value)}
                                         className={style.inputField}
                                     />
@@ -241,15 +270,14 @@ export default function Profile() {
                                     <span className={style.label}>City</span>
                                     <input
                                         type="text"
-                                        value={city}
+                                        value={city || ''}
                                         onChange={(e) => setCity(e.target.value)}
                                         className={style.inputField}
                                     />
                                 </div>
-                                <Button className={style.edit_button} onClick={() => {
-                                    // setEdit((prev) => !prev);
+                                <Button className={style.edit_button} onClick={
                                     handleEditSubmit
-                                }} label="Save" icon="pi pi-pen-to-square" />
+                                } label="Save" icon="pi pi-pen-to-square" />
                             </div>
                         </div>
                     ) : (<div className={style.profil_detail}>
@@ -292,6 +320,8 @@ export default function Profile() {
                     }} label="Edit" icon="pi pi-pen-to-square" />
                 </div>
             </div>
+            <Toast ref={toast} />
+
         </div>
     );
 }
