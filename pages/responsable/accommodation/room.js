@@ -53,14 +53,14 @@ export default function Room() {
             })
             .catch(error => console.error('Error deleting room:', error));
     }
-    const confirm = (event) => {
+    const confirm = (event, id_chambre) => {
         confirmPopup({
             target: event.currentTarget,
             message: 'Do you want to delete this item?',
             icon: 'pi pi-info-circle',
             defaultFocus: 'reject',
             acceptClassName: 'p-button-danger',
-            accept
+            accept: () => deleteRoom(id_chambre)
         });
     };
 
