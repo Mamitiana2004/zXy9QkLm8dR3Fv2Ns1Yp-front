@@ -23,14 +23,19 @@ export default function InfoTour() {
 
     const [voyage, setVoyage] = useState(null);
     const [popularVoyages, setPopularVoyages] = useState([]);
+    const [tour, setTour] = useState(null);
     const [loading, setLoading] = useState(true);
 
+ 
     // Fetch voyage details when ID changes
     useEffect(() => {
         if (id) {
             fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages/${id}/`)
                 .then(res => res.json())
-                .then(data => setVoyage(data))
+                .then(data => {
+                    setVoyage(data);
+                    setLoading(false);
+                })
                 .catch(error => console.error('Error fetching voyage details:', error));
         }
     }, [id]);
@@ -45,6 +50,20 @@ export default function InfoTour() {
             })
             .catch(error => console.error('Error fetching popular voyages:', error));
     }, []);
+
+    // Fetch Partenire Tour
+    useEffect(() => {
+        if (id) {
+            fetch(`${UrlConfig.apiBaseUrl}/api/tour/partenaire/{id}`)
+                .then(res => res.json())
+                .then(data => {
+                    setTour(data);
+                    setLoading(false);
+                }
+                )
+                .catch(error => console.error('Error fetching partenaire Tour:', error));
+        }
+    } ,[id])
 
     if (loading) {
         return <div>Loading...</div>;
