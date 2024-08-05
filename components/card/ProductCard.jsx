@@ -7,6 +7,7 @@ import { UrlConfig } from '@/util/config';
 import { LikeProduct, checkIfClientLikedProduct } from '@/util/Like';
 import { Toast } from 'primereact/toast';
 import LayoutContext from '@/layouts/context/layoutContext';
+import Link from 'next/link';
 
 export default function ProductCard(props) {
     const router = useRouter();
@@ -28,17 +29,20 @@ export default function ProductCard(props) {
 
     // Always call useEffect, but add condition inside
     useEffect(() => {
-        const fetchLikeStatus = async () => {
+        const fetchLikeStatus = () => {
             if (props.id) {
-                const liked = await checkIfClientLikedProduct(props.id);
-                setIsLiked(liked);
+                checkIfClientLikedProduct(props.id).then((liked) => {
+                    setIsLiked(liked);
+                }).catch((error) => {
+                    console.error('Error fetching like status:', error);
+                });
             }
         };
 
         if (user) {
             fetchLikeStatus();
         }
-    }, [props.id, user]); // Include `user` in dependencies
+    }, [props.id, user]);
 
     const coverImage = props.images.find(img => img.couverture)?.image;
     const usedImage = coverImage ? `${UrlConfig.apiBaseUrl}${coverImage}` : props.images[0] ? `${UrlConfig.apiBaseUrl}${props.images[0].image}` : '/images/artisanat/artisanat.jpg';
@@ -46,13 +50,20 @@ export default function ProductCard(props) {
 
     const handleLikeClick = () => {
         if (!user) {
-            router.push('/users/login');
-            return;
+            toast.current.show({
+                severity: 'info',
+                summary: 'Not Connecter',
+                detail: <>No user connected <Link href="/users/login">Login here</Link>.</>,
+                life: 5000
+            }); return;
         }
         if (props.id) {
-            LikeProduct(props.id); // Assuming LikeProduct is synchronous
-            setIsLiked(prev => !prev);
-            setNbLike(prevNbLike => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
+            LikeProduct(props.id).then(() => {
+                setIsLiked((prev) => !prev);
+                setNbLike((prevNbLike) => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
+            }).catch((error) => {
+                console.error('Error liking the product:', error);
+            });
         } else {
             console.error('Product ID is undefined');
         }
@@ -97,7 +108,7 @@ export default function ProductCard(props) {
                     </div>
                     <Button onClick={handleButtonClick} className={style.button} label='View' />
                 </div>
-            </div>
+            </div>  <Toast ref={toast} />
         </div>
     );
 }

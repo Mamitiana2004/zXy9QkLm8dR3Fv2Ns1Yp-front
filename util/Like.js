@@ -7,7 +7,7 @@ const LikeProduct = async (idProduct) => {
     let access = Cookies.get('accessToken');
 
     // Fonction pour gérer le "like"
-    const handleLikeOperation = (accessToken) => {
+    const handleLikeOperation = async (accessToken) => {
         return fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produit/${idProduct}/like/`, {
             method: 'POST',
             headers: {
@@ -24,7 +24,6 @@ const LikeProduct = async (idProduct) => {
                 return response.json();
             })
             .then(data => {
-                // Vérifie le message retourné pour déterminer si le "like" a été ajouté ou retiré
 
                 const liked = data.message.includes('ajouté');
 
@@ -63,40 +62,163 @@ const LikeProduct = async (idProduct) => {
     return await handleLikeOperation(access);
 };
 
-const checkIfClientLikedProduct = async (produitId) => {
-    await getNewAccess();
+
+const LikeAccomodation = async (idAccomodation) => {
     let access = Cookies.get('accessToken');
 
-    if (!access) {
-        await getNewAccess();
-        access = Cookies.get('accessToken');
-    }
-
-    if (!access) {
-        console.error('No access token available');
-        return false; // Return false if no token is available
-    }
-
-    try {
-        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits/${produitId}/liked/`, {
-            method: 'GET',
+    const handleLikeOperation = async (accessToken) => {
+        return fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${idAccomodation}/like/`, {
+            method: 'POST',
             headers: {
-                'Authorization': `Bearer ${access}`,
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
             },
-        });
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error('Error during like operation: ' + (errorData.error || 'Unknown error'));
+                }
+                return response.json();
+            })
+            .then(data => {
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error('Failed to check if product is liked: ' + (errorData.error || 'Unknown error'));
+                const liked = data.message.includes('ajouté');
+
+                if (liked) {
+                    console.log(data.message);
+
+                    return true;
+
+                }
+                else {
+                    console.log(data.message);
+
+                    return false;
+                }
+                // return liked;
+            })
+            .catch(error => {
+                console.error('Error during like operation:', error);
+                return false;
+            });
+    };
+
+    if (!access) {
+        try {
+            await getNewAccess();
+            access = Cookies.get('accessToken');
+            if (!access) {
+                console.error('No access token available');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error fetching new access token:', error);
+            return false;
         }
-
-        const data = await response.json();
-        return data.liked;
-    } catch (error) {
-        console.error('Error checking like status:', error);
-        return false;
     }
+    return await handleLikeOperation(access);
+};
+const checkIfClientLikedProduct = (produitId) => {
+    return getNewAccess()
+        .then(() => {
+            let access = Cookies.get('accessToken');
+
+            if (!access) {
+                return getNewAccess()
+                    .then(() => {
+                        access = Cookies.get('accessToken');
+                        if (!access) {
+                            console.error('No access token available');
+                            return false;
+                        }
+                        return access;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching new access token:', error);
+                        return false;
+                    });
+            }
+            return access;
+        })
+        .then(access => {
+            if (!access) return false;
+
+            return fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits/${produitId}/liked/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${access}`,
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error('Failed to check if product is liked: ' + (errorData.error || 'Unknown error'));
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => data.liked)
+                .catch(error => {
+                    console.error('Error checking like status:', error);
+                    return false;
+                });
+        })
+        .catch(error => {
+            console.error('Error in initial access token request:', error);
+            return false;
+        });
+};
+const checkIfClientLikedAccomodation = async (produitId) => {
+    return getNewAccess()
+        .then(() => {
+            let access = Cookies.get('accessToken');
+
+            if (!access) {
+                return getNewAccess()
+                    .then(() => {
+                        access = Cookies.get('accessToken');
+                        if (!access) {
+                            console.error('No access token available');
+                            return false;
+                        }
+                        return access;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching new access token:', error);
+                        return false;
+                    });
+            }
+            return access;
+        })
+        .then(access => {
+            if (!access) return false;
+
+            return fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${produitId}/liked/`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${access}`,
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            throw new Error('Failed to check if product is liked: ' + (errorData.error || 'Unknown error'));
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => data.liked)
+                .catch(error => {
+                    console.error('Error checking like status:', error);
+                    return false;
+                });
+        })
+        .catch(error => {
+            console.error('Error in initial access token request:', error);
+            return false;
+        });
 };
 
 // Export functions (Toast reference needs to be used in a component)
-export { LikeProduct, checkIfClientLikedProduct };
+export { LikeProduct, checkIfClientLikedProduct, LikeAccomodation, checkIfClientLikedAccomodation };

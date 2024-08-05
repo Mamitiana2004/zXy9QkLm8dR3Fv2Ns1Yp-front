@@ -1,10 +1,35 @@
+// next.config.js
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['127.0.0.1', '192.168.88.57', '192.168.88.23', '34.122.163.41', '192.168.88.13', 'admin-server.craft-aftrip.com'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.88.57',
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.88.23',
+      },
+      {
+        protocol: 'http',
+        hostname: '34.122.163.41',
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.88.13',
+      },
+      {
+        protocol: 'https',
+        hostname: 'admin-server.craft-aftrip.com',
+      },
+    ],
   },
 };
-
-// next.config.js
 
 export default nextConfig;

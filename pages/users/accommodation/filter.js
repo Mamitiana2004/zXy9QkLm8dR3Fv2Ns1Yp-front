@@ -17,52 +17,55 @@ import { Chip } from "primereact/chip";
 
 export default function Accommodation() {
 
-    const [positionActuel,setPositionActuel] = useState({
-        latitude:-18,
-        longitude:47
+    const [positionActuel, setPositionActuel] = useState({
+        latitude: -18,
+        longitude: 47
     });
 
 
-    const [distanceChoice,setDistanceChoice] = useState(0);
+    const [distanceChoice, setDistanceChoice] = useState(0);
 
-    const [allAmmenities,setAllAmmenities] = useState([]);
-    const [ammenitieSelected,setAmmenitieSelected] = useState([]);
+    const [allAmmenities, setAllAmmenities] = useState([]);
+    const [ammenitieSelected, setAmmenitieSelected] = useState([]);
 
-    const [priceIntervalle,setPriceIntervalle] = useState([0,100]);
+    const [priceIntervalle, setPriceIntervalle] = useState([0, 100]);
 
-    const [rate,setRate] = useState(0);
+    const [rate, setRate] = useState(0);
 
     const [hotels, setHotels] = useState([]);
-    const [allHotels,setAllHotels] = useState([]);
+    const [allHotels, setAllHotels] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const [positions,setPositions] = useState([]);
+    const [positions, setPositions] = useState([]);
 
     const router = useRouter();
     const { type, location, check_in, check_out, invite } = router.query;
-    
+
 
     const itemTemplate = (hotel) => {
-    const baseUrl = `${UrlConfig.apiBaseUrl}`;
-
-    const imageUrl = hotel.images && hotel.images.length > 0 ? `${baseUrl}${hotel.images[0].image}` : "";
+        const baseUrl = `${UrlConfig.apiBaseUrl}`;
+        console.log(hotel);
+        const imageUrl = hotel.images && hotel.images.length > 0 ? `${baseUrl}${hotel.images[0].image}` : "";
         return (
+
             <HotelCard
                 href={`/users/accommodation/${hotel.id}`}
+                id={hotel.id}
+                nb_like={hotel.total_likes}
                 rate={hotel.nombre_etoile_hebergement}
                 img={imageUrl}
                 price={hotel.min_prix_nuit_chambre}
                 name={hotel.nom_hebergement}
-                localisation={hotel.localisation && hotel.localisation.adresse+" "+hotel.localisation.ville}
+                localisation={hotel.localisation && hotel.localisation.adresse + " " + hotel.localisation.ville}
                 description={hotel.description_hebergement}
             />
         );
     };
-  
+
 
     useEffect(() => {
-        if('geolocation' in navigator){
+        if ('geolocation' in navigator) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     setPositionActuel(position.coords);
@@ -89,7 +92,6 @@ export default function Accommodation() {
 
                 const data = await response.json();
                 setHotels(data.hebergements);
-                console.log(data.hebergements);
                 setAllHotels(data.hebergements);
                 setLoading(false);
             } catch (error) {
@@ -128,28 +130,28 @@ export default function Accommodation() {
     }, []);
 
 
-    useEffect(()=>{
+    useEffect(() => {
         const positionCopy = [];
-        hotels.length!=0 & hotels.map((d)=>{
-            d.localisation!=null && positionCopy.push({
-                adresse:d.nom_hebergement,
-                latitude:d.localisation.latitude,
-                longitude:d.localisation.longitude
+        hotels.length != 0 & hotels.map((d) => {
+            d.localisation != null && positionCopy.push({
+                adresse: d.nom_hebergement,
+                latitude: d.localisation.latitude,
+                longitude: d.localisation.longitude
             });
         });
         setPositions(positionCopy);
-    },[hotels])
+    }, [hotels])
 
     function calculateDistance(lat2, lon2) {
         const R = 6371; // Rayon de la Terre en kilomètres
         const toRad = (angle) => angle * (Math.PI / 180);
-      
+
         const dLat = toRad(lat2 - positionActuel.latitude);
         const dLon = toRad(lon2 - positionActuel.longitude);
         const a = Math.sin(dLat / 2) ** 2 +
-                  Math.cos(toRad(positionActuel.latitude)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+            Math.cos(toRad(positionActuel.latitude)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      
+
         return R * c; // Distance en kilomètres
     }
 
@@ -161,28 +163,28 @@ export default function Accommodation() {
     // },[])
 
 
-    const checkDistance = (choix) =>{
-        if (choix==distanceChoice) {
+    const checkDistance = (choix) => {
+        if (choix == distanceChoice) {
             setDistanceChoice(0);
             setHotels(allHotels);
         }
-        else{
+        else {
             setDistanceChoice(choix);
             getHotelByDistance(choix);
         }
     }
 
-    const checkRate = (choix) =>{
-        if (choix==rate) {
+    const checkRate = (choix) => {
+        if (choix == rate) {
             setRate(0);
             setHotels(allHotels);
         }
-        else{
-            const hotelCopy=[];
+        else {
+            const hotelCopy = [];
             setRate(choix);
-            allHotels.map((hotel)=>{
+            allHotels.map((hotel) => {
                 if (hotel.nombre_etoile_hebergement) {
-                    if (choix==hotel.nombre_etoile_hebergement) {
+                    if (choix == hotel.nombre_etoile_hebergement) {
                         hotelCopy.push(hotel);
                     }
                 }
@@ -192,101 +194,101 @@ export default function Accommodation() {
     }
 
 
-    const getHotelByDistance = (choix) =>{
-        const hotelCopy=[];
-        if(choix==1){
-            allHotels.map((hotel)=>{
+    const getHotelByDistance = (choix) => {
+        const hotelCopy = [];
+        if (choix == 1) {
+            allHotels.map((hotel) => {
                 if (hotel.localisation) {
-                    let distance = calculateDistance(hotel.localisation.latitude,hotel.localisation.longitude);
-                    console.log("distance",distance);
-                    if (distance<1) {
+                    let distance = calculateDistance(hotel.localisation.latitude, hotel.localisation.longitude);
+                    console.log("distance", distance);
+                    if (distance < 1) {
                         hotelCopy.push(hotel);
                     }
                 }
             });
         }
-        if(choix==2){
-            allHotels.map((hotel)=>{
+        if (choix == 2) {
+            allHotels.map((hotel) => {
                 if (hotel.localisation) {
-                    let distance = calculateDistance(hotel.localisation.latitude,hotel.localisation.longitude);
-                    console.log("distance",distance);
-                    if (distance<5 && distance>=1) {
+                    let distance = calculateDistance(hotel.localisation.latitude, hotel.localisation.longitude);
+                    console.log("distance", distance);
+                    if (distance < 5 && distance >= 1) {
                         hotelCopy.push(hotel);
                     }
                 }
             });
         }
-        if(choix==3){
-            allHotels.map((hotel)=>{
+        if (choix == 3) {
+            allHotels.map((hotel) => {
                 if (hotel.localisation) {
-                    let distance = calculateDistance(hotel.localisation.latitude,hotel.localisation.longitude);
-                    console.log("distance",distance);
-                    if (distance>5 && distance<=10) {
+                    let distance = calculateDistance(hotel.localisation.latitude, hotel.localisation.longitude);
+                    console.log("distance", distance);
+                    if (distance > 5 && distance <= 10) {
                         hotelCopy.push(hotel);
                     }
                 }
             });
         }
-        if(choix==4){
-            allHotels.map((hotel)=>{
+        if (choix == 4) {
+            allHotels.map((hotel) => {
                 if (hotel.localisation) {
-                    let distance = calculateDistance(hotel.localisation.latitude,hotel.localisation.longitude);
-                    console.log("distance",distance);
-                    if (distance>10) {
+                    let distance = calculateDistance(hotel.localisation.latitude, hotel.localisation.longitude);
+                    console.log("distance", distance);
+                    if (distance > 10) {
                         hotelCopy.push(hotel);
                     }
                 }
             });
         }
-        setHotels(hotelCopy); 
+        setHotels(hotelCopy);
     }
 
-    const priceByPourcentage = (percentage) =>{
+    const priceByPourcentage = (percentage) => {
         // Les valeurs de base
         const minValue = 5;
         const maxValue = 600;
-        
+
         // Vérifier que le pourcentage est entre 0 et 100
         if (percentage < 0 || percentage > 100) {
             throw new Error("Le pourcentage doit être entre 0 et 100.");
         }
-        
+
         // Calculer la valeur en utilisant l'interpolation linéaire
         const value = minValue + (percentage / 100) * (maxValue - minValue);
-        
+
         // Arrondir à 2 chiffres après la virgule
         return value.toFixed(2);
     }
 
 
-    const filterPrice = (e) =>{
+    const filterPrice = (e) => {
         setPriceIntervalle(e.value);
-        let priceMin = priceByPourcentage(e.value[0]<e.value[1] ? e.value[0] : e.value[1]);
-        let priceMax = priceByPourcentage(e.value[0]>e.value[1] ? e.value[0] : e.value[1]);
+        let priceMin = priceByPourcentage(e.value[0] < e.value[1] ? e.value[0] : e.value[1]);
+        let priceMax = priceByPourcentage(e.value[0] > e.value[1] ? e.value[0] : e.value[1]);
 
-        let hotelCopy=[];
-        allHotels.map((hotel)=>{
-            if (hotel.min_prix_nuit_chambre>=priceMin && hotel.min_prix_nuit_chambre<=priceMax) {
+        let hotelCopy = [];
+        allHotels.map((hotel) => {
+            if (hotel.min_prix_nuit_chambre >= priceMin && hotel.min_prix_nuit_chambre <= priceMax) {
                 hotelCopy.push(hotel);
             }
         });
         setHotels(hotelCopy);
     }
 
-    const filterAmmenties = (e) =>{
+    const filterAmmenties = (e) => {
         setAmmenitieSelected(e.value);
-        if(e.value.length!=0){
-            let hotelCopy=[];
-            allHotels.map(hotel=>{
-                if (hotel.accessoires.lenght!=0) {
-                    let find=false;
+        if (e.value.length != 0) {
+            let hotelCopy = [];
+            allHotels.map(hotel => {
+                if (hotel.accessoires.lenght != 0) {
+                    let find = false;
                     for (let i = 0; i < hotel.accessoires.length; i++) {
                         const accessoire = hotel.accessoires[i];
                         for (let j = 0; j < e.value.length; j++) {
                             const ammenities = e.value[j];
-                            if(ammenities.id == accessoire) {
+                            if (ammenities.id == accessoire) {
                                 hotelCopy.push(hotel);
-                                find=true;
+                                find = true;
                                 break;
                             }
                         }
@@ -298,13 +300,13 @@ export default function Accommodation() {
             })
             setHotels(hotelCopy);
         }
-        else{
+        else {
             console.log("ato");
             setHotels(allHotels);
         }
     }
 
-   
+
 
     return (
         <>
@@ -319,15 +321,15 @@ export default function Accommodation() {
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
-                    <Filter
-                        locationSelected={location && location}
-                        typeSelected={type && type}
-                    />
+                        <Filter
+                            locationSelected={location && location}
+                            typeSelected={type && type}
+                        />
                     </div>
                 </div>
                 <div className={style.filter_header_container}>
                     <span className={style.filter_header_left}>
-                        Properties  :    
+                        Properties  :
                         <span className={style.filter_header_left_bold}> {hotels.length} properties found</span>
                     </span>
                     <div></div>
@@ -340,10 +342,10 @@ export default function Accommodation() {
                         <div className={styleDropdown.container}>
                             <span className={styleDropdown.title}>Price per night</span>
                             <div className={styleDropdown.listCheck}>
-                                <div style={{display:"flex",flexDirection:"column"}} className={styleDropdown.checkbox_container}>
-                                    <Slider style={{width:"100%"}} value={priceIntervalle} onChange={filterPrice} range/>
+                                <div style={{ display: "flex", flexDirection: "column" }} className={styleDropdown.checkbox_container}>
+                                    <Slider style={{ width: "100%" }} value={priceIntervalle} onChange={filterPrice} range />
                                     <div className={styleDropdown.price}>
-                                        <span>${priceByPourcentage(priceIntervalle[0])}</span>  
+                                        <span>${priceByPourcentage(priceIntervalle[0])}</span>
                                         <span>${priceByPourcentage(priceIntervalle[1])}</span>
                                     </div>
                                 </div>
@@ -352,14 +354,14 @@ export default function Accommodation() {
                         <div className={styleDropdown.container}>
                             <span className={styleDropdown.title}>Ammenities</span>
                             <div className={styleDropdown.listCheck}>
-                                <div style={{display:"flex",flexDirection:"column"}} className={styleDropdown.checkbox_container}>
-                                    <div style={{display:"flex",gap:"5px",flexWrap:"wrap"}}>
+                                <div style={{ display: "flex", flexDirection: "column" }} className={styleDropdown.checkbox_container}>
+                                    <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
                                         {
-                                            ammenitieSelected.map((ammenties,key)=>{
+                                            ammenitieSelected.map((ammenties, key) => {
                                                 return <Chip
-                                                        key={key}
-                                                        label={ammenties.nom_accessoire}    
-                                                    />
+                                                    key={key}
+                                                    label={ammenties.nom_accessoire}
+                                                />
                                             })
                                         }
                                     </div>
@@ -377,19 +379,19 @@ export default function Accommodation() {
                             <span className={styleDropdown.title}>Distance from your position</span>
                             <div className={styleDropdown.listCheck}>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkDistance(1)} checked={distanceChoice==1} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkDistance(1)} checked={distanceChoice == 1} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>Less than 1 km</span>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkDistance(2)} checked={distanceChoice==2} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkDistance(2)} checked={distanceChoice == 2} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>1 to 5km</span>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkDistance(3)} checked={distanceChoice==3} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkDistance(3)} checked={distanceChoice == 3} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>5 to 10km</span>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkDistance(4)} checked={distanceChoice==4} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkDistance(4)} checked={distanceChoice == 4} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>More than 10km</span>
                                 </div>
                             </div>
@@ -398,30 +400,30 @@ export default function Accommodation() {
                             <span className={styleDropdown.title}>Property rate</span>
                             <div className={styleDropdown.listCheck}>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkRate(1)} checked={rate==1} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkRate(1)} checked={rate == 1} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>1 star</span>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkRate(2)} checked={rate==2} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkRate(2)} checked={rate == 2} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>2 star</span>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkRate(3)} checked={rate==3} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkRate(3)} checked={rate == 3} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>3 star</span>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkRate(4)} checked={rate==4} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkRate(4)} checked={rate == 4} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>4 star</span>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input onChange={()=>checkRate(5)} checked={rate==5} type='checkbox' className={styleDropdown.checkbox}/>
+                                    <input onChange={() => checkRate(5)} checked={rate == 5} type='checkbox' className={styleDropdown.checkbox} />
                                     <span className={styleDropdown.checkbox_label}>5 star</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className={style.filter_right}>
-                        <DataView 
+                        <DataView
                             emptyMessage="No hotel found"
                             itemTemplate={itemTemplate}
                             value={hotels}
