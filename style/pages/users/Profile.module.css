@@ -218,7 +218,7 @@
     resize: none;
 }
 
-.form_input{
+.form_input, .inputField{
     position: relative;
     align-self: stretch;
     background-color: transparent;
