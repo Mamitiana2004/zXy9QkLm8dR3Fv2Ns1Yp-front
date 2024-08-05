@@ -212,12 +212,12 @@ export default function InfoTour() {
                                     className={style.operator_avatar}
                                 />
                                 <div className={style.operator_detail_title_container}>
-                                    <span className={style.operator_detail_title}>ZTrip Mada</span>
-                                    <span className={style.operator_detail_subtitle}>Ivato</span>
+                                    <span className={style.operator_detail_title}>{voyage.tour_operateur.nom_operateur}</span>
+                                    <span className={style.operator_detail_subtitle}>{voyage.tour_operateur.adresse_operateur}</span>
                                 </div>
                             </div>
                             <div className={style.paragraphe}>
-                                Lorem ipsum dolor sit amet dolor sadipscing. Dolores diam no eos vel gubergren consequat erat accusam sit eum at stet ea et. Amet sed at voluptua voluptua diam lorem rebum elitr et dolore qui diam elitr ipsum accusam takimata et suscipit. Duo esse possim dolore consectetuer blandit. In eu voluptua id vero diam facilisis accusam tempor est dolores ipsum amet consequat. Zzril vulputate ipsum duo vel erat elitr. Labore et no elitr soluta no nisl at dolore elitr lorem stet ea kasd dolor molestie at. Accusam et ut nonumy.
+                                {voyage.tour_operateur.description_operateur}
                             </div>
                             <Button onClick={() => router.push("/users/tour/operator/1")} className="button-primary" label="About the operator"/>
                         </div>
