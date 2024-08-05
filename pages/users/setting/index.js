@@ -1,31 +1,47 @@
 import Head from "next/head";
-import UserTopbar from "@/layouts/users/UserTopbar";
-import style from '@/style/pages/users/Setting.module.css';
+import style from '@/style/pages/users/Profile.module.css';
 import Link from "next/link";
-export default function Setting() {
+import { Avatar } from "primereact/avatar";
+import { TabPanel, TabView } from "primereact/tabview";
+import { Button } from "primereact/button";
+import AppTopbar from "@/layouts/AppTopbar";
+export default function Profile() {
 
 
 
+    const panelClassName = (parent, index) => {
+        if (parent.state.activeIndex === index)
+            return style.tab_active;
+        else 
+            return style.tab;
+    }
     
     return(
         <div className={style.container}>
             <div className={style.menu_container}>
                 <Link style={{textDecoration:"none"}} href={"/users/profil"}>
-                    <span className={style.menu_item}>Profil</span>
+                    <span className={style.menu_item}><i className="pi pi-user"/> Profil</span>
                 </Link>
                 <Link style={{textDecoration:"none"}} href={"/users/cart"}>
-                    <span className={style.menu_item}>Shopping cart</span>
+                    <span className={style.menu_item}><i className="pi pi-shopping-cart"/> Cart</span>
                 </Link>
-                <Link style={{textDecoration:"none"}} href={"/responsable"}>
-                    <span className={style.menu_item}>Responsable</span>
+                <Link style={{textDecoration:"none"}} href={"/users/cart"}>
+                    <span className={style.menu_item}><i className="pi pi-clock"/> History</span>
                 </Link>
-                <Link style={{textDecoration:"none"}} href={"/users/setting"}>
-                    <span className={style.menu_active}>Setting</span>
+                <Link style={{textDecoration:"none"}} href={"/users/cart"}>
+                    <span className={style.menu_item}><i className="pi pi-bell"/> Notification</span>
                 </Link>
-                <Link style={{textDecoration:"none"}} href={"/users"}>
-                    <span className={style.menu_item}>Return to home</span>
+                <Link style={{textDecoration:"none"}} href={"/users/cart"}>
+                    <span className={style.menu_item}><i className="pi pi-shield"/> Security</span>
+                </Link>
+                <Link style={{textDecoration:"none"}}  href={"/users/setting"}>
+                    <span className={style.menu_active}><i className="pi pi-cog"/> Setting</span>
+                </Link>
+                <Link style={{textDecoration:"none"}} href={"/users/login"}>
+                    <span className={style.menu_item}><i className="pi pi-sign-out"/> Log out</span>
                 </Link>
             </div>
+ 
         </div>
     );
 }
@@ -33,13 +49,13 @@ export default function Setting() {
 
 
 
-Setting.getLayout = function getLayout(page) {
+Profile.getLayout = function getLayout(page) {
     return(
         <>
             <Head>
-                <title>User Setting</title>
+                <title>User profile</title>
             </Head>
-            <UserTopbar/>
+            <AppTopbar/>
             {page}
         </>
     );

@@ -19,6 +19,7 @@
     "@fullcalendar/resource-timeline": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
     "@mui/lab": "^5.0.0-alpha.173",
+    "@mui/material": "^5.16.5",
     "@react-google-maps/api": "^2.19.3",
     "aftrip": "file:",
     "chart.js": "^4.4.3",

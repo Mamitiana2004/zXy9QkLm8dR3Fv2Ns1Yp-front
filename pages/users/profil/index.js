@@ -1,18 +1,18 @@
 import Head from "next/head";
-import UserTopbar from "@/layouts/users/UserTopbar";
 import style from '@/style/pages/users/Profile.module.css';
 import Link from "next/link";
 import { Avatar } from "primereact/avatar";
 import { TabPanel, TabView } from "primereact/tabview";
 import { Button } from "primereact/button";
+import AppTopbar from "@/layouts/AppTopbar";
 import { useContext, useEffect, useRef, useState } from "react";
 import { FetchUser } from "@/util/Cart";
-import UrlConfig from "@/util/config";
-import Cookies from "js-cookie";
-import { getNewAccess } from "@/util/Cookies";
-import { Toast } from "primereact/toast";
-import LayoutContext from "@/layouts/context/layoutContext";
 
+import LayoutContext from "@/layouts/context/layoutContext";
+import UrlConfig from "@/util/config";
+import { getNewAccess } from "@/util/Cookies";
+import Cookies from "js-cookie";
+import { Toast } from "primereact/toast";
 
 export default function Profile() {
     const [userInfo, setUserInfo] = useState(null);
@@ -20,14 +20,17 @@ export default function Profile() {
     const [lastname, setLastname] = useState("");
     const [username, setUsername] = useState("");
     const [adresse, setAdresse] = useState("");
+    const [accId, setId] = useState("");
     const [email, setEmail] = useState("");
     const [numero, setNumero] = useState("");
     const [bio, setBio] = useState("");
     const toast = useRef(null);
     const [profilePic, setProfilePic] = useState("");
-    const [file, setFile] = useState(null);
+    const [file, setFile] = useState();
     const [userProfil, setUsedProfil] = useState("");
     const { user, setUser } = useContext(LayoutContext);
+    const [city, setCity] = useState("dsfsd");
+    const [edit, setEdit] = useState(false);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -35,28 +38,25 @@ export default function Profile() {
             setFile(selectedFile);
             const reader = new FileReader();
             reader.onloadend = () => {
+                setEdit(true);
                 setProfilePic(reader.result);
+                setUsedProfil(reader.result);
             };
             reader.readAsDataURL(selectedFile);
         }
     };
 
-
-    const panelClassName = (parent, index) => {
-        if (parent.state.activeIndex === index)
-            return style.tab_active;
-        else
-            return style.tab;
-    }
     useEffect(() => {
         FetchUser()
             .then((data) => {
                 setUserInfo(data);
+                setId(data.id)
                 setFirstname(data.first_name);
                 setLastname(data.last_name);
                 setEmail(data.email);
                 setUsername(data.username);
                 setAdresse(data.adresse);
+                setCity(data.ville);
                 setNumero(data.numero_client);
                 setBio(data.biographie);
                 setProfilePic(`${UrlConfig.apiBaseUrl}${data.profilPic}`);
@@ -68,6 +68,12 @@ export default function Profile() {
             });
     }, []);
 
+    const panelClassName = (parent, index) => {
+        if (parent.state.activeIndex === index)
+            return style.tab_active;
+        else
+            return style.tab;
+    }
     const handleEditSubmit = (e) => {
         e.preventDefault();
         getNewAccess();
@@ -99,6 +105,8 @@ export default function Profile() {
         formData.append('first_name', firstname);
         formData.append('last_name', lastname);
         formData.append('adresse', adresse);
+        formData.append('ville', city);
+
         if (file) {
             formData.append('profilPic', file);
         }
@@ -137,6 +145,8 @@ export default function Profile() {
                         userImage: profilePic,
                     }
                 );
+                setEdit((prev) => !prev);
+
                 toast.current.show({
                     severity: "success",
                     summary: "Success",
@@ -155,194 +165,160 @@ export default function Profile() {
             });
 
     };
-
     return (
         <div className={style.container}>
             <div className={style.menu_container}>
                 <Link style={{ textDecoration: "none" }} href={"/users/profil"}>
-                    <span className={style.menu_active}>Profil</span>
+                    <span className={style.menu_active}><i className="pi pi-user" /> Profil</span>
                 </Link>
                 <Link style={{ textDecoration: "none" }} href={"/users/cart"}>
-                    <span className={style.menu_item}>Shopping cart</span>
+                    <span className={style.menu_item}><i className="pi pi-shopping-cart" /> Cart</span>
                 </Link>
-                <Link style={{ textDecoration: "none" }} href={"/responsable"}>
-                    <span className={style.menu_item}>Responsable</span>
+                <Link style={{ textDecoration: "none" }} href={"/users/cart"}>
+                    <span className={style.menu_item}><i className="pi pi-clock" /> History</span>
+                </Link>
+                <Link style={{ textDecoration: "none" }} href={"/users/cart"}>
+                    <span className={style.menu_item}><i className="pi pi-bell" /> Notification</span>
+                </Link>
+                <Link style={{ textDecoration: "none" }} href={"/users/cart"}>
+                    <span className={style.menu_item}><i className="pi pi-shield" /> Security</span>
                 </Link>
                 <Link style={{ textDecoration: "none" }} href={"/users/setting"}>
-                    <span className={style.menu_item}>Setting</span>
+                    <span className={style.menu_item}><i className="pi pi-cog" /> Setting</span>
                 </Link>
-                <Link style={{ textDecoration: "none" }} href={"/users"}>
-                    <span className={style.menu_item}>Return to home</span>
+                <Link style={{ textDecoration: "none" }} href={"/users/login"}>
+                    <span className={style.menu_item}><i className="pi pi-sign-out" /> Log out</span>
                 </Link>
             </div>
 
             <div className={style.profil_container}>
+                <Link href={"/users"} className={style.back}><i className="pi pi-arrow-left" /> Back</Link>
                 <div className={style.profil_image_container}>
-                    <Avatar label="F" shape="circle" alt="user" className={style.profil_image} image={userProfil ? userProfil : ""} />
-                    <div className={style.profil_user_info}>
-                        <span className={style.profil_username}>{username}</span>
-                        <span className={style.profil_adresse}>
-                            <i className='pi pi-map-marker' />
-                            {adresse}
-                        </span>
+                    <div className={style.profil_image_wrapper}>
+                        <Avatar label={firstname[0]} shape="circle" alt="user" className={style.profil_image} image={userProfil ? userProfil : ""} />
+                        <div className={style.profil_user_info}>
+                            <span className={style.profil_username}>{username}</span>
+                            <span className={style.profil_adresse}>
+                                <span>Account ID :</span>
+                                <span>#{accId}</span>
+                            </span>
+                        </div>
                     </div>
+                    <Button className={style.edit_button} onClick={() => document.getElementById('fileInput').click()}
+                        label="Upload" icon="pi pi-pen-to-square" >
+                        <input
+                            type="file"
+                            id="fileInput"
+                            style={{ display: 'none' }}
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                    </Button>
                 </div>
-                <TabView
-                    pt={{
-                        root: { className: style.tab_container },
-                        panelContainer: { className: style.tab_container },
-                        navContainer: { className: style.tab_container }
-                    }}
-                >
-                    <TabPanel
-                        header="Information"
-                        leftIcon="pi pi-user"
-                        pt={{
-                            headerAction: ({ parent }) => ({
-                                className: panelClassName(parent, 0)
-                            }),
-                            header: { className: style.tab_container }
-                        }}
-                    >
-                        <div className={style.info_user_container}>
-                            <div className={style.info_user}>
-                                <div className={style.info_user_title}>About</div>
-                                <div className={style.info_user_paragraphe}>
-                                    {bio}
-                                </div>
-                            </div>
-                            <div className={style.info_user}>
-                                <div className={style.info_user_title}>User information</div>
-                                <div className={style.info_user_detail_container}>
-                                    <div className={style.info_user_detail}>
-                                        <span className={style.info_user_detail_label}>Firstname</span>
-                                        <span className={style.info_user_detail_value}>{firstname}</span>
-                                    </div>
-                                    <div className={style.info_user_detail}>
-                                        <span className={style.info_user_detail_label}>Lastname</span>
-                                        <span className={style.info_user_detail_value}>{lastname}</span>
-                                    </div>
-                                    <div className={style.info_user_detail}>
-                                        <span className={style.info_user_detail_label}>Address</span>
-                                        <span className={style.info_user_detail_value}>{adresse}</span>
-                                    </div>
-                                    <div className={style.info_user_detail}>
-                                        <span className={style.info_user_detail_label}>Email</span>
-                                        <span className={style.info_user_detail_value}>{email}</span>
-                                    </div>
-                                    <div className={style.info_user_detail}>
-                                        <span className={style.info_user_detail_label}>Contact</span>
-                                        <span className={style.info_user_detail_value}>{numero}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </TabPanel>
-                    <TabPanel
-                        header="Edit profil"
-                        leftIcon="pi pi-pencil"
-                        pt={{
-                            headerAction: ({ parent }) => ({
-                                className: panelClassName(parent, 1)
-                            }),
-                            header: { className: style.tab_container }
-                        }}
-                    >
-
-                        <div className={style.edit_user_container}>
-                            <div className={style.edit_image_container}>
-                                <div className={style.edit_image}>
-                                    <Avatar
-                                        shape="circle"
-                                        className={style.image_edit}
-                                        image={profilePic}
-                                        label="F"
-                                    />
-                                    <input
-                                        type="file"
-                                        id="fileInput"
-                                        style={{ display: 'none' }}
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                    />
-                                    <Button
-                                        icon="pi pi-pencil"
-                                        className={style.button_image}
-                                        rounded
-                                        aria-label="Edit photo"
-                                        onClick={() => document.getElementById('fileInput').click()}
-                                    />
-                                    {/* {file && <Button
-                                        className="button-primary"
-                                        label="Upload"
-                                    // onClick={handleUpload}
-                                    />} */}
-                                </div>
-                            </div>
-                            <div className={style.edit_user}>
-                                <span className={style.edit_title}>About</span>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Bio</span>
-                                    <textarea
-                                        value={bio}
-                                        onChange={(e) => setBio(e.target.value)}
-                                        className={style.form_textarea}
-                                    />
-                                </div>
-                            </div>
-                            <div className={style.edit_user}>
-                                <span className={style.edit_title}>User Information</span>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Firstname</span>
+                <div className={style.separateur}></div>
+                <div className={style.profil_detail_container}>
+                    {edit ? (
+                        <div className={style.profil_detail}>
+                            <span className={style.title}>Personnal information</span>
+                            <div className={style.profil}>
+                                <div className={style.detail}>
+                                    <span className={style.label}>First name</span>
                                     <input
                                         type="text"
-                                        value={firstname}
+                                        value={firstname || ''}
                                         onChange={(e) => setFirstname(e.target.value)}
-                                        className={style.form_input}
+                                        className={style.inputField}
                                     />
                                 </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Lastname</span>
+                                <div className={style.detail}>
+                                    <span className={style.label}>Last name</span>
                                     <input
                                         type="text"
-                                        value={lastname}
+                                        value={lastname || ''}
                                         onChange={(e) => setLastname(e.target.value)}
-                                        className={style.form_input}
+                                        className={style.inputField}
                                     />
                                 </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Address</span>
+                                <div className={style.detail}>
+                                    <span className={style.label}>Email</span>
                                     <input
                                         type="text"
-                                        value={adresse}
-                                        onChange={(e) => setAdresse(e.target.value)}
-                                        className={style.form_input}
-                                    />
-                                </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Email</span>
-                                    <input
-                                        type="email"
-                                        value={email}
+                                        value={email || ''}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className={style.form_input}
+                                        className={style.inputField}
                                     />
                                 </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Contact</span>
+                                <div className={style.detail}>
+                                    <span className={style.label}>Contact</span>
                                     <input
-                                        type="tel"
-                                        value={numero}
+                                        type="text"
+                                        value={numero || ''}
                                         onChange={(e) => setNumero(e.target.value)}
-                                        className={style.form_input}
+                                        className={style.inputField}
                                     />
                                 </div>
+                                <div className={style.detail}>
+                                    <span className={style.label}>Adresse</span>
+                                    <input
+                                        type="text"
+                                        value={adresse || ''}
+                                        onChange={(e) => setAdresse(e.target.value)}
+                                        className={style.inputField}
+                                    />
+                                </div>
+                                <div className={style.detail}>
+                                    <span className={style.label}>City</span>
+                                    <input
+                                        type="text"
+                                        value={city || ''}
+                                        onChange={(e) => setCity(e.target.value)}
+                                        className={style.inputField}
+                                    />
+                                </div>
+                                <Button className={style.edit_button} onClick={
+                                    handleEditSubmit
+                                } label="Save" icon="pi pi-pen-to-square" />
                             </div>
-                            <Button onClick={handleEditSubmit} className="button-primary" label="Edit" icon="pi pi-pencil" />
                         </div>
+                    ) : (<div className={style.profil_detail}>
 
-                    </TabPanel>
-                </TabView>
+                        <span className={style.title}>Personnal information</span>
+                        <div className={style.profil}>
+                            <div className={style.detail}>
+                                <span className={style.label}>First name</span>
+                                <span>{firstname} </span>
+                            </div>
+                            <div className={style.detail}>
+                                <span className={style.label}>Last name</span>
+                                <span>{lastname} </span>
+                            </div>
+                            <div className={style.detail}>
+                                <span className={style.label}>Email</span>
+                                <span>{email} </span>
+                            </div>
+                            <div className={style.detail}>
+                                <span className={style.label}>Contact</span>
+                                <span>{numero} </span>
+                            </div>
+                            <div className={style.detail}>
+                                <span className={style.label}>Adresse</span>
+                                <span>{adresse} </span>
+                            </div>
+                            <div className={style.detail}>
+                                <span className={style.label}>City</span>
+                                <span>{city} </span>
+                            </div>
+                        </div>
+                    </div>
+                    )}
+
+
+
+                    <Button className={style.edit_button} onClick={() => {
+                        setEdit((prev) => !prev);
+                        console.log(edit);
+                    }} label="Edit" icon="pi pi-pen-to-square" />
+                </div>
             </div>
             <Toast ref={toast} />
 
@@ -359,7 +335,7 @@ Profile.getLayout = function getLayout(page) {
             <Head>
                 <title>User profile</title>
             </Head>
-            <UserTopbar />
+            <AppTopbar />
             {page}
         </>
     );

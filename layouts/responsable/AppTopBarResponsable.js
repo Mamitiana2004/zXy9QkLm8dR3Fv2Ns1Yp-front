@@ -20,9 +20,9 @@ export default function AppTopBarResponsable(props) {
         return '';
     }
     let items = [];
-    // console.log(user.id_etablissement);
-    return (
-        <div div style={props.style} className={style.container}>
+
+    return(
+        <div style={props.style} className={style.container}>
             <div className={style.navbar}>
                 <div className={style.nav_title}>
                     <Link href={"/users"}>

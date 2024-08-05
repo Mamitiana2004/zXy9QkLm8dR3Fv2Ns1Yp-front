@@ -27,7 +27,6 @@ export default function AppTopbar(props) {
         return str && str.length > 0 ? str.charAt(0) : '';
     };
 
-    // Définir la fonction logOut avant de l'utiliser dans le tableau items
     const logOut = () => {
         Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
@@ -76,16 +75,16 @@ export default function AppTopbar(props) {
                 <div className={style.right_container}>
                     <Button onClick={(e) => menuLang.current.toggle(e)} className={style.icon_cog} label={lang} />
                     <Menu ref={menuLang} model={langMenu} popup />
-
-                    {user == null ? (
+                    {user == null && (
                         <div className={style.nav_right}>
                             <div className={style.button_group}>
                                 <button onClick={() => router.push("/users/login")} className='button-secondary'>{t("login")}</button>
                                 <button onClick={() => router.push("/users/register")} className={props.home ? 'button-secondary' : 'button-primary'}>{t("register")}</button>
-                                <button onClick={() => router.push("/users/etablissement/add")} className={props.home ? 'button-secondary' : 'button-primary'}>+ add etablissement</button>
+                                <button onClick={() => router.push("/users/etablissement/addEmail")} className={props.home ? 'button-secondary' : 'button-primary'}>+ add etablissement</button>
                             </div>
                         </div>
-                    ) : (
+                    )}
+                    {user != null && (
                         <>
                             <div aria-controls="popup_menu_right" aria-haspopup onClick={(event) => menu.current.toggle(event)} className={style.user_container}>
                                 <Avatar

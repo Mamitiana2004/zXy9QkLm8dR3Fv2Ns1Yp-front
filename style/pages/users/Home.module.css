@@ -97,6 +97,9 @@
 
 .right_body{
     width: 40%;
-    background-color: #202020;
     height: 500px;
+}
+
+.image{
+    width: 100%;
 }
