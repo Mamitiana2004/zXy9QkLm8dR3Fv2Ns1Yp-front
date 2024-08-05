@@ -32,6 +32,7 @@ export default function Room() {
             headers: {
                 'Content-Type': 'application/json',
                 // 'Authorization': `Bearer ${user.token}`
+                // 'Authorization': `Bearer ${user.token}`
             }
         })
             .then(response => {
