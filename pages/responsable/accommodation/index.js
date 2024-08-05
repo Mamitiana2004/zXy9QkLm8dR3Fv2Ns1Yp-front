@@ -3,13 +3,13 @@ import { useEffect } from "react"
 
 export default function Accommodation() {
 
-    const router= useRouter();
+    const router = useRouter();
 
-    useEffect(()=>{
+    useEffect(() => {
         if (typeof window != "undefined") {
             router.push("accommodation/dashboard");
         }
-    },[])
+    }, [router])
 
     return <></>
 }

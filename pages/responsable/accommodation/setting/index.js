@@ -6,13 +6,13 @@ export default function Setting() {
     const router = useRouter();
 
 
-    useEffect(()=>{
+    useEffect(() => {
         if (typeof window != "undefined") {
             router.replace("/responsable/accommodation/setting/profil")
         }
-    },[])
+    }, [router])
 
-    return(
+    return (
         <>
             <Head>
                 <title>Setting</title>
