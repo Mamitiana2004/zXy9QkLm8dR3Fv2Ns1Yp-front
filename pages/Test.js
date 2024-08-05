@@ -1,17 +1,23 @@
-import DetailProduct from '@/components/card/DetailProduct';
-import DetailTravel from '@/components/card/DetailTravel';
-import PopularTripCard from '@/components/card/PopularTripCard';
-import TripCard from '@/components/card/TripCard';
-import TimelineEvent from '@/layouts/users/tour/TimelineEvent';
-import dynamic from 'next/dynamic';
-const FilterMap = dynamic(()=> import('@/components/FilterMap'),{ssr:false});
+import RoomPlanning from "@/components/Planning";
 
-
-
+const events = [
+    {
+      title: 'Réunion Chambre 101',
+      start: '2024-07-23',
+      end: '2024-07-28',
+      resourceId: '101'
+    },
+    {
+      title: 'Présentation Chambre 102',
+      start: '2024-07-30',
+      end: '2024-07-30',
+      resourceId: '102'
+    }
+  ];
 export default function Test() {
     return (
         <div>
-            <TimelineEvent/>
+            <RoomPlanning events={events}/>
         </div>
     )
 }

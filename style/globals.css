@@ -57,6 +57,11 @@ body{
     cursor: pointer;
 }
 
+.separateur{
+  border: 0;
+  border-top: 1px solid #00000015;
+}
+
 .nprogress-busy{
     display: none;
 }

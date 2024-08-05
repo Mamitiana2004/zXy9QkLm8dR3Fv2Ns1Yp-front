@@ -62,6 +62,25 @@ export default function Room() {
         });
     };
 
+    const availableTemplate = (item) =>{
+        if (item.available) {
+            return(
+                <>
+                    <span><i className="pi pi-check"/> available</span>
+                </>
+            )
+        }
+        else{
+            return(
+                <>
+                    <span><i className="pi pi-times"/> available</span>
+                </>
+            )
+        }
+    }
+
+    const accept = () =>{
+
     const status = [
         { id: 1, name: 'Available' },
         { id: 2, name: 'Not Available' }
