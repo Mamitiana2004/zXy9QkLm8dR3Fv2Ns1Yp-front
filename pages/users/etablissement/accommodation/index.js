@@ -56,9 +56,32 @@ export default function Accommodation() {
     const [nif, setNif] = useState('');
     const [accommodationType, setAccommodationType] = useState('');
     const [city, setCity] = useState('');
-    const [country, setCountry] = useState('');
+    const [country, setCountry] = useState('Madagascar');
     const [stat, setStat] = useState('');
     const [options, setOptions] = useState([]);
+
+    const informationAccommodationFini = () => {
+        const accommodationInfo = {
+            name: name,
+            address: address,
+            nif: nif,
+            stat: stat,
+            country: country,
+            city: city,
+            accommodationType: accommodationType,
+            phone: `${countryCode}${phone}`,
+            rate: rateValue,
+            socialLink: socialLink
+        };
+
+
+        localStorage.setItem('accommodationInfo', JSON.stringify(accommodationInfo));
+        if (accommodationInfo) {
+            router.push("/users/etablissement/accommodation/addImage");
+        }
+        // console.log('Accommodation information saved:', accommodationInfo);
+    }
+
     const getAllSocial = () => {
         fetch("/api/social")
             .then(res => res.json())
@@ -95,11 +118,6 @@ export default function Accommodation() {
         fetchTypeHebergement();
     }, []);
     // 
-    const informationAccommodationFini = () => {
-        // router.push("/users/etablissement/accommodation/addImage");
-        console.log(accommodationType);
-        console.log(countryCode);
-    }
 
     const addSocialLink = () => {
         const allSocialCopy = [];
