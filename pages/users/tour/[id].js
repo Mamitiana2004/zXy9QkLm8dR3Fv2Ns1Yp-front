@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import style from '../../../style/pages/users/tour/id.module.css';
 import FilterTour from "@/components/FilterTour";
 import { Button } from "primereact/button";
-import GallerieHotel from "@/components/GallerieHotel";
+import GallerieVoyage from "@/components/GallerieVoyage";
 import { TabPanel, TabView } from "primereact/tabview";
 import DetailTravel from "@/components/card/DetailTravel";
 import dynamic from "next/dynamic";
@@ -23,10 +23,9 @@ export default function InfoTour() {
 
     const [voyage, setVoyage] = useState(null);
     const [popularVoyages, setPopularVoyages] = useState([]);
-    const [tour, setTour] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [location, setLocalisation] = useState( )
 
- 
     // Fetch voyage details when ID changes
     useEffect(() => {
         if (id) {
@@ -34,6 +33,10 @@ export default function InfoTour() {
                 .then(res => res.json())
                 .then(data => {
                     setVoyage(data);
+                    data.tour_operateur.localisation ? setLocalisation(data.tour_operateur.localisation) : setLocalisation({
+                        "latitude": 1,
+                        "longitude": 1,
+                    });
                     setLoading(false);
                 })
                 .catch(error => console.error('Error fetching voyage details:', error));
@@ -51,20 +54,6 @@ export default function InfoTour() {
             .catch(error => console.error('Error fetching popular voyages:', error));
     }, []);
 
-    // Fetch Partenire Tour
-    useEffect(() => {
-        if (id) {
-            fetch(`${UrlConfig.apiBaseUrl}/api/tour/partenaire/{id}`)
-                .then(res => res.json())
-                .then(data => {
-                    setTour(data);
-                    setLoading(false);
-                }
-                )
-                .catch(error => console.error('Error fetching partenaire Tour:', error));
-        }
-    } ,[id])
-
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -78,13 +67,8 @@ export default function InfoTour() {
             return style.tab_active;
         else 
             return style.tab;
-    }
+    };
 
-    if (!voyage) {
-        return <div>Loading...</div>;
-    }
-
-    
     return (
         <>
             <Head>
@@ -120,7 +104,7 @@ export default function InfoTour() {
                         </div>
                     </div>
                 </div>
-                <GallerieHotel/>
+                <GallerieVoyage images={voyage.images_voyage} />
                 <div className={style.tour_detail_container}>
                     <div className={style.tour_detail_left}>
                         <span className={style.tour_detail_title}>{voyage.ville_depart} - {voyage.destination_voyage}</span>
@@ -197,18 +181,24 @@ export default function InfoTour() {
                         </TabPanel>
                     </TabView>
                     <div className={style.tour_card_container}>
-                        <DetailTravel/>
+                        <DetailTravel 
+                            date_debut ={voyage.date_debut}
+                            date_fin={voyage.date_fin}
+                            places_disponibles={voyage.places_disponibles}
+                            prix_voyage={voyage.prix_voyage}
+                        />
                         <div className={style.tour_card}>
                             <Map
                                 style={{ width: "100%", height: "300px" }}
-                                lat={-18.9433924}
-                                lng={47.5288271}  
+                                lat={location.latitude}
+                                lng={location.longitude}  
                             />
                         </div>
                         <div className={style.tour_card}>
                             <div className={style.operator_detail_header}>
                                 <Avatar
                                     shape="circle"
+                                    image={UrlConfig.apiBaseUrl+voyage.tour_operateur.images_tour[0].image || "Image Tour"}
                                     className={style.operator_avatar}
                                 />
                                 <div className={style.operator_detail_title_container}>
@@ -223,11 +213,11 @@ export default function InfoTour() {
                         </div>
                     </div>
                 </div>
-                  <div className={style.suggstion_container}>
-                    <span className={style.suggstion_title}>{t("you_would_like_it")}</span>
+                <div className={style.suggestion_container}>
+                    <span className={style.suggestion_title}>{t("you_would_like_it")}</span>
                     <div className={style.suggestion_body}>
-                        {popularVoyages.map(voyage => (
-                            <PopularTripCard key={voyage.id} voyage={voyage} />
+                        {popularVoyages.map((popularVoyage) => (
+                            <PopularTripCard key={popularVoyage.id} voyage={popularVoyage}/>
                         ))}
                     </div>
                 </div>
