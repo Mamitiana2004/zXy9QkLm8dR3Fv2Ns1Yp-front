@@ -176,7 +176,12 @@ export default function InfoTour() {
                         </TabPanel>
                     </TabView>
                     <div className={style.tour_card_container}>
-                        <DetailTravel/>
+                        <DetailTravel 
+                            date_debut ={voyage.date_debut}
+                            date_fin={voyage.date_fin}
+                            places_disponibles={voyage.places_disponibles}
+                            prix_voyage={voyage.prix_voyage}
+                        />
                         <div className={style.tour_card}>
                             <Map
                                 style={{ width: "100%", height: "300px" }}
@@ -188,6 +193,7 @@ export default function InfoTour() {
                             <div className={style.operator_detail_header}>
                                 <Avatar
                                     shape="circle"
+                                    image={UrlConfig.apiBaseUrl+voyage.tour_operateur.images_tour[0].image || "Image Tour"}
                                     className={style.operator_avatar}
                                 />
                                 <div className={style.operator_detail_title_container}>
@@ -214,4 +220,3 @@ export default function InfoTour() {
         </>
     );
 }
-``
