@@ -24,6 +24,7 @@ export default function InfoTour() {
     const [voyage, setVoyage] = useState(null);
     const [popularVoyages, setPopularVoyages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [location, setLocalisation] = useState( )
 
     // Fetch voyage details when ID changes
     useEffect(() => {
@@ -32,6 +33,10 @@ export default function InfoTour() {
                 .then(res => res.json())
                 .then(data => {
                     setVoyage(data);
+                    data.tour_operateur.localisation ? setLocalisation(data.tour_operateur.localisation) : setLocalisation({
+                        "latitude": 1,
+                        "longitude": 1,
+                    });
                     setLoading(false);
                 })
                 .catch(error => console.error('Error fetching voyage details:', error));
@@ -185,8 +190,8 @@ export default function InfoTour() {
                         <div className={style.tour_card}>
                             <Map
                                 style={{ width: "100%", height: "300px" }}
-                                lat={-18.9433924}
-                                lng={47.5288271}  
+                                lat={location.latitude}
+                                lng={location.longitude}  
                             />
                         </div>
                         <div className={style.tour_card}>
