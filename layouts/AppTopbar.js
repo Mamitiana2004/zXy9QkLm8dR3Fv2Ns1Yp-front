@@ -20,7 +20,7 @@ export default function AppTopbar(props) {
     const { user, setUser } = useContext(LayoutContext);
     const { lang, setLang } = useContext(LayoutContext);
 
-    const [sidebarVisible,setSidebarVisible] = useState(true);
+    const [sidebarVisible,setSidebarVisible] = useState(false);
 
     const langMenu = [
         { label: "En", command: () => setLang("en") },
