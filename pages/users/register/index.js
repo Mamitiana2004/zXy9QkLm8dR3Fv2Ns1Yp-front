@@ -126,6 +126,10 @@ export default function Register() {
                     </Link>
                 </div>
                 <div className={style.login_right}>
+                    <Link className={style.back_link} href={"/users"}>
+                        <i className='pi pi-arrow-left'/>
+                        <span>Back</span>
+                    </Link>
                     <div className={style.login_title_container}>
                         <span className={style.login_title}>Sign up</span>
                         <span className={style.login_title_label}>Welcome ! Please enter your details</span>
