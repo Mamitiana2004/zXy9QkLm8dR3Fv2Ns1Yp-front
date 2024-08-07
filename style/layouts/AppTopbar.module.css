@@ -23,7 +23,6 @@
     
     .navbar{
         display: flex;
-        flex-wrap: wrap;
         width: 100vw;
         align-items: center;
         padding: 1vw 12vw;
@@ -36,6 +35,11 @@
         gap: 8px;
         align-items: center;
         justify-content: center;
+    }
+    
+    .nav_image{
+        width: 100px;
+        height: 106px;
     }
 
     .navbar_menu_container{
@@ -133,6 +137,11 @@
         justify-content: center;
     }
 
+    .nav_image{
+        width: 100px;
+        height: 106px;
+    }
+
     .navbar_menu_container{
         display: flex;
         gap: 50px;
@@ -199,4 +208,99 @@
 
 .menu_item{
     color: #305555;
+}
+
+.button_bar{
+    display: none;
+    background-color: transparent;
+    border: none;
+    color: #305555;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.sidebar_container{
+    display:flex;
+    flex-direction: column;
+}
+
+.sidebar_link{
+    text-decoration: none;
+    color: #000;
+    font-weight: 700;
+    padding: 20px;
+}
+
+.sidebar_profil{
+    display: flex;
+    padding: 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #000;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    .username_image{
+        width: 40px;
+        height: 40px;
+        background-color: #305555;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+    }
+}
+
+@media (max-width:1700px) {
+
+    .button_bar{
+        display: flex;
+    }
+
+    .container .navbar_menu_container{
+        display: none;
+    }
+
+    .container .right_container{
+        display: none;
+    }
+
+    .container .nav_image{
+        width: 80px;
+        height: 85px;
+    }
+    
+    .container_home .navbar_menu_container{
+        display: none;
+    }
+
+    .container_home .right_container{
+        display: none;
+    }
+
+    .container_home .nav_image{
+        width: 80px;
+        height: 85px;
+    }
+
+
+}
+
+@media (max-width:600px) {
+    .container .navbar{
+        padding: 20px;
+    }
+
+    .container .nav_image{
+        width: 60px;
+        height: 62px;
+    }
+    
+    .container_home .navbar{
+        padding: 20px;
+    }
+
+    .container_home .nav_image{
+        width: 60px;
+        height: 62px;
+    }
 }
