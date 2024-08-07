@@ -7,6 +7,7 @@ import { StepperPanel } from "primereact/stepperpanel";
 import { useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import UrlConfig from "@/util/config";
 export default function AddImage() {
     const inputFileRef = useRef();
     const router = useRouter();
@@ -34,18 +35,43 @@ export default function AddImage() {
 
 
 
-
-    const addImageFini = () => {
-
-
-        localStorage.setItem('hebergement_images', fileImages);
-        const x = localStorage.getItem('hebergement_images'); console.log("x" + x);
-        if (fileImages) {
-            // router.push("/users/etablissement/accommodation/addInfoUser");
-        } else {
-            console.log("Please add image");
+    const handleSubmitImages = async () => {
+        if (fileImages.length === 0) {
+            console.log("No images to upload");
+            return;
         }
+        const info = localStorage.getItem("responsable_info").id_etablissement;
+        const formData = new FormData();
+        formData.append('hebergement', info.id_etablissement);
 
+        fileImages.forEach((file, index) => {
+            formData.append(`image_${index}`, file);
+        });
+        console.log(formData);
+        try {
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-image/`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Images uploaded successfully:", data);
+
+                setFileImages([]);
+            } else {
+                console.error("Failed to upload images:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error uploading images:", error);
+        }
+    };
+    const addImageFini = async () => {
+        await handleSubmitImages().then(
+            () => {
+                router.push("/users/etablissement/login");
+            }
+        )
     };
 
     return (

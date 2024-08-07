@@ -4,7 +4,7 @@ import style from './../../../../style/pages/users/etablissement/etablissement.m
 import { Stepper } from "primereact/stepper";
 import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { FloatLabel } from "primereact/floatlabel";
@@ -74,7 +74,6 @@ export default function AddInfoConnexion() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Enregistrement réussi:", data);
                 return data
             } else {
                 console.error("Erreur lors de l'enregistrement:", response.statusText);
@@ -95,7 +94,7 @@ export default function AddInfoConnexion() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Enregistrement réussi:", data);
+                return data;
             } else {
                 console.error("Erreur lors de l'enregistrement:", response.statusText);
             }
@@ -129,6 +128,13 @@ export default function AddInfoConnexion() {
                         detail: "Accomodation created successfully",
                         life: 5000
                     });
+                    const responsable_info = {
+                        username: data.username,
+                        job_post: "Manager",
+                        id_etablissement: created.id_hebergement,
+                        type_etablissement: type_etablissement
+                    }
+                    localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
                     localStorage.removeItem("userInfo");
                     localStorage.removeItem("type_etablissement");
                     localStorage.removeItem("accommodationInfo");
