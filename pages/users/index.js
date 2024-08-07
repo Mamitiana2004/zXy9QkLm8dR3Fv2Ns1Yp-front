@@ -50,7 +50,7 @@ export default function Home() {
                         </div>
                     </div>
                     <div className={style.right_body}>
-                        <Image src={"/images/404/not_found.svg"} alt="not found" imageClassName={style.image} />
+                        <Image src={"/images/home.png"} alt="not found" imageClassName={style.image} />
                     </div>
                 </div>
                 <div className={style.footer}>
