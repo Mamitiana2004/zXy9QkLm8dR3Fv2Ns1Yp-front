@@ -1,10 +1,10 @@
 import Head from "next/head";
 import style from "@/style/pages/404.module.css";
 import AppTopbar from "@/layouts/AppTopbar";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import { Image } from "primereact/image";
 export default function Error404() {
     const router = useRouter();
     return(
@@ -17,7 +17,7 @@ export default function Error404() {
                 <span className={style.wrapper_label}>The page you were looking for couldn’t be found</span>
                 <Button onClick={()=>router.back()} icon="pi pi-angle-left" label="Back" className="p-ripple button-primary" style={{backgroundColor:"#000"}}/>
             </div>
-            <Image src={"/images/404/not_found.svg"} alt="not found" width={390} height={460}/>
+            <Image imageClassName={style.image_404} src={"/images/404/not_found.svg"} alt="not found" />
             <div className={style.footer}>
                 <span className={style.footer_label}>Copyright 2024 - All rights reserved</span>
                 <Link style={{color:"#000"}} href={"/users/privatePolicy"}>Pivate policy</Link>
