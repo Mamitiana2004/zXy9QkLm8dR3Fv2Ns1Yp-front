@@ -7,12 +7,14 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Button } from 'primereact/button';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/router';
+import { Dialog } from 'primereact/dialog';
 export default function Filter(props) {
 
     
 
     const {t} = useTranslation();
     const router = useRouter();
+    const [visible,setVisible] = useState(false);
 
     const [locationSelected,setLocationSelected] = useState(null);
     const [locations,setLocations] = useState([]);
@@ -101,65 +103,136 @@ export default function Filter(props) {
 
     return(
         <div className={style.container}>
-            <FloatLabel>
-                <Dropdown 
-                    pt={{
-                        trigger: { className: style.dropdown_trigger }
-                    }}
-                    className={style.dropdown_large}
-                    id='type-select' 
-                    value={typeSelected} 
-                    onChange={(e)=>setTypeSelected(e.value)}
-                    showClear
-                    options={types}
-                    optionLabel={"type_name"}
-                />
-                <label className={style.dropdown_label} htmlFor='type-select'>
-                    <i className='pi pi-map-marker'/>
-                    Type {t("accommodation")}
-                </label>
-            </FloatLabel>
-            <FloatLabel>
-                <Dropdown 
-                    pt={{
-                        trigger: { className: style.dropdown_trigger }
-                    }}
-                    className={style.dropdown}
-                    id='location-select' 
-                    value={locationSelected} 
-                    onChange={(e)=>setLocationSelected(e.value)}
-                    showClear
-                    options={locations}
-                    optionLabel={"nom"}
-                />
-                <label className={style.dropdown_label} htmlFor='location-select'>
-                    <i className='pi pi-map-marker'/>
-                    {t("localisation")}
-                </label>
-            </FloatLabel>
-            <FloatLabel>
-                <Calendar 
-                    value={check}
-                    onChange={(e)=>setCheck(e.value)}
-                    id='check_in'
-                    inputClassName={style.calendar_check}
-                    className={style.calendar_check}
-                    selectionMode='range'
-                />
-                <label className={style.dropdown_label} htmlFor='check_in'>
-                    <i className='pi pi-calendar-times'/>
-                    {t("check_in")} - {t("check_out")}
-                </label>
-            </FloatLabel>
-            
-            <FloatLabel>
-                <InputNumber value={guest} onChange={(e)=>setGuest(e.value)} inputClassName={style.input_number} id='guest'/>
-                <label className={style.dropdown_label} htmlFor='check_out'>
-                    <i className='pi pi-users'/>
-                    {t("guest")}
-                </label>
-            </FloatLabel>
-            <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
+            <Button onClick={()=>setVisible(true)} className={style.button_menu} icon="pi pi-bars"/>
+            <div className={style.wrapper}>
+                <FloatLabel>
+                    <Dropdown 
+                        pt={{
+                            trigger: { className: style.dropdown_trigger }
+                        }}
+                        className={style.dropdown_large}
+                        id='type-select' 
+                        value={typeSelected} 
+                        onChange={(e)=>setTypeSelected(e.value)}
+                        showClear
+                        options={types}
+                        optionLabel={"type_name"}
+                    />
+                    <label className={style.dropdown_label} htmlFor='type-select'>
+                        <i className='pi pi-map-marker'/>
+                        Type {t("accommodation")}
+                    </label>
+                </FloatLabel>
+                <FloatLabel>
+                    <Dropdown 
+                        pt={{
+                            trigger: { className: style.dropdown_trigger }
+                        }}
+                        className={style.dropdown}
+                        id='location-select' 
+                        value={locationSelected} 
+                        onChange={(e)=>setLocationSelected(e.value)}
+                        showClear
+                        options={locations}
+                        optionLabel={"nom"}
+                    />
+                    <label className={style.dropdown_label} htmlFor='location-select'>
+                        <i className='pi pi-map-marker'/>
+                        {t("localisation")}
+                    </label>
+                </FloatLabel>
+                <FloatLabel>
+                    <Calendar 
+                        value={check}
+                        onChange={(e)=>setCheck(e.value)}
+                        id='check_in'
+                        inputClassName={style.calendar_check}
+                        className={style.calendar_check}
+                        selectionMode='range'
+                    />
+                    <label className={style.dropdown_label} htmlFor='check_in'>
+                        <i className='pi pi-calendar-times'/>
+                        {t("check_in")} - {t("check_out")}
+                    </label>
+                </FloatLabel>
+                
+                <FloatLabel>
+                    <InputNumber value={guest} onChange={(e)=>setGuest(e.value)} inputClassName={style.input_number} id='guest'/>
+                    <label className={style.dropdown_label} htmlFor='check_out'>
+                        <i className='pi pi-users'/>
+                        {t("guest")}
+                    </label>
+                </FloatLabel>
+                <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
+            </div>
+            <Dialog
+                visible={visible}
+                onHide={()=>setVisible(false)}
+                header={null}
+                modal
+            >
+                <div className={style.wrapper_dialog}>
+                    <FloatLabel>
+                        <Dropdown 
+                            pt={{
+                                trigger: { className: style.dropdown_trigger }
+                            }}
+                            className={style.dropdown_large}
+                            id='type-select' 
+                            value={typeSelected} 
+                            onChange={(e)=>setTypeSelected(e.value)}
+                            showClear
+                            options={types}
+                            optionLabel={"type_name"}
+                        />
+                        <label className={style.dropdown_label} htmlFor='type-select'>
+                            <i className='pi pi-map-marker'/>
+                            Type {t("accommodation")}
+                        </label>
+                    </FloatLabel>
+                    <FloatLabel>
+                        <Dropdown 
+                            pt={{
+                                trigger: { className: style.dropdown_trigger }
+                            }}
+                            className={style.dropdown}
+                            id='location-select' 
+                            value={locationSelected} 
+                            onChange={(e)=>setLocationSelected(e.value)}
+                            showClear
+                            options={locations}
+                            optionLabel={"nom"}
+                        />
+                        <label className={style.dropdown_label} htmlFor='location-select'>
+                            <i className='pi pi-map-marker'/>
+                            {t("localisation")}
+                        </label>
+                    </FloatLabel>
+                    <FloatLabel>
+                        <Calendar 
+                            value={check}
+                            onChange={(e)=>setCheck(e.value)}
+                            id='check_in'
+                            inputClassName={style.calendar_check}
+                            className={style.calendar_check}
+                            selectionMode='range'
+                        />
+                        <label className={style.dropdown_label} htmlFor='check_in'>
+                            <i className='pi pi-calendar-times'/>
+                            {t("check_in")} - {t("check_out")}
+                        </label>
+                    </FloatLabel>
+                    
+                    <FloatLabel>
+                        <InputNumber value={guest} onChange={(e)=>setGuest(e.value)} inputClassName={style.input_number} id='guest'/>
+                        <label className={style.dropdown_label} htmlFor='check_out'>
+                            <i className='pi pi-users'/>
+                            {t("guest")}
+                        </label>
+                    </FloatLabel>
+                    <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
+                </div>
+            </Dialog>
         </div>
     )
 }

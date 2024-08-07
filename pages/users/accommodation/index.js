@@ -192,7 +192,8 @@ export default function Home() {
                 <div className={style.service}>
                     <span className={style.service_title}>{t("get_best_service")}</span>
                     <div className={style.service_body}>
-                        <div style={{ width: "20%" }}></div>
+                        <Image imageClassName={style.image_service} className={style.image_service_container} src="/images/accommodation.webp"/>
+                        
                         <div className={style.service_detail_container}>
                             <div className={style.service_card}>
                                 <span className={style.service_card_title}>{t("quality")}</span>
