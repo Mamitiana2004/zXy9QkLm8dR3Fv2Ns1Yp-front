@@ -24,13 +24,12 @@ export default function AddImage() {
 
 
     const handleFileUpload = () => {
-        const files = Array.from(inputRef.current.files); // Convert FileList to Array
-        const validFiles = files.filter(file => file.type.startsWith('image/')); // Filter only image files
+        const files = Array.from(inputRef.current.files);
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
 
-        const newImageUrls = validFiles.map(file => URL.createObjectURL(file)); // Create URLs for new images
-        setListImage(prevList => [...prevList, ...newImageUrls]); // Append new URLs to existing list
-
-        setFileImages(prevFiles => [...prevFiles, ...validFiles]); // Append new files to existing list
+        const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
+        setListImage(prevList => [...prevList, ...newImageUrls]);
+        setFileImages(prevFiles => [...prevFiles, ...validFiles]);
     };
 
 
@@ -38,8 +37,15 @@ export default function AddImage() {
 
     const addImageFini = () => {
 
-        console.log(fileImages);
-        // router.push("/users/etablissement/accommodation/addInfoUser");
+
+        localStorage.setItem('hebergement_images', fileImages);
+        const x = localStorage.getItem('hebergement_images'); console.log("x" + x);
+        if (fileImages) {
+            // router.push("/users/etablissement/accommodation/addInfoUser");
+        } else {
+            console.log("Please add image");
+        }
+
     };
 
     return (

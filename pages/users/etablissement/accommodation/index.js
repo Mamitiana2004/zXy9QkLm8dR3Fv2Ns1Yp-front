@@ -71,13 +71,13 @@ export default function Accommodation() {
             accommodationType: accommodationType,
             phone: `${countryCode}${phone}`,
             rate: rateValue,
-            socialLink: socialLink
+            // socialLink: socialLink
         };
 
 
         localStorage.setItem('accommodationInfo', JSON.stringify(accommodationInfo));
         if (accommodationInfo) {
-            router.push("/users/etablissement/accommodation/addImage");
+            router.push("/users/etablissement/accommodation/addInfoUser");
         }
         // console.log('Accommodation information saved:', accommodationInfo);
     }
