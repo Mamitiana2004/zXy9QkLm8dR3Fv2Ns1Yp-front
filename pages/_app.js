@@ -34,14 +34,14 @@ function MyApp({ Component, pageProps }) {
         //       event.preventDefault();
         //     }
         // });
-          
-        Router.events.on("routeChangeStart",handleStart);
-        Router.events.on("routeChangeComplete",handleEnd);
-        Router.events.on("routeChangeError",handleEnd);
-        return () =>{
-            Router.events.off("routeChangeStart",handleStart);
-            Router.events.off("routeChangeComplete",handleEnd);
-            Router.events.off("routeChangeError",handleEnd);
+
+        Router.events.on("routeChangeStart", handleStart);
+        Router.events.on("routeChangeComplete", handleEnd);
+        Router.events.on("routeChangeError", handleEnd);
+        return () => {
+            Router.events.off("routeChangeStart", handleStart);
+            Router.events.off("routeChangeComplete", handleEnd);
+            Router.events.off("routeChangeError", handleEnd);
         }
     }, [])
 
@@ -66,12 +66,14 @@ function MyApp({ Component, pageProps }) {
         return (
             <PrimeReactProvider>
                 <NavigationProvider>
-                    <LayoutProvider>
-                        {loading && <Loader />}
-                        <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
-                        <ChatBot visible={visible} onHide={() => setVisible(false)} />
-                        {Component.getLayout(<Component {...pageProps} />)}
-                    </LayoutProvider>
+                    <ResponsableLayoutProvider>
+                        <LayoutProvider>
+                            {loading && <Loader />}
+                            <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
+                            <ChatBot visible={visible} onHide={() => setVisible(false)} />
+                            {Component.getLayout(<Component {...pageProps} />)}
+                        </LayoutProvider>
+                    </ResponsableLayoutProvider>
                 </NavigationProvider>
             </PrimeReactProvider>
         );
