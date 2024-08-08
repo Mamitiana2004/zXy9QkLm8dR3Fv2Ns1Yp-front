@@ -56,6 +56,7 @@ export default function GallerieHotel(props) {
                                         src={UrlConfig.apiBaseUrl+image.image} 
                                         imageClassName={style.firstImage}
                                         alt='image'
+                                        className={style.firstImage_container}
                                     />;   
                             }
                         })
