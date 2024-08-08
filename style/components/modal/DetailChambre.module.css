@@ -147,3 +147,37 @@
     color: #000;
     font-size: 15px;
 }
+
+@media (max-width:1400px) {
+    .dialog_container{
+        width:100%;
+    }
+}
+@media (max-width:900px) {
+    .title_container{
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .right{
+        gap: 20px;
+    }
+    .firstImage{
+        height: 250px;
+    }
+    .price_value{
+        font-size: 20px;
+    }
+}
+
+
+@media (max-width:600px) {
+    .container{
+        flex-direction: column;
+    }
+    .left{
+        width: 100%;
+    }
+    .right{
+        width: 100%;
+    }
+}
