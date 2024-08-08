@@ -1,6 +1,7 @@
 .container{
     padding: 30px;
     width: 300px;
+    min-width: 300px;
     background-color: #F0F5F4;
     border-radius: 5px;
     display: flex;

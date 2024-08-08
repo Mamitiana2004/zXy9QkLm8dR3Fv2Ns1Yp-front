@@ -1,7 +1,6 @@
 import Head from "next/head";
 import style from './../../../style/pages/users/accommodation/filter.module.css';
 import styleDropdown from './../../../style/components/ListCheckbox.module.css';
-import ListCheckbox from "@/components/ListCheckbox";
 import HotelCard from "@/components/card/HotelCard";
 import React, { useState, useEffect, useRef } from 'react';
 import { getCsrfTokenDirect } from "@/util/csrf";

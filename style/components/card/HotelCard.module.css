@@ -7,10 +7,15 @@
 }
 
 .image_container{
-    width: 260px;
+    width: 350px;
+    height: 280px;
+}
+
+.image{
+    width: 100%;
     height: 100%;
-    object-fit: cover;
     border-radius: 5px;
+    object-fit: cover;
 }
 
 .hotel_container{
@@ -75,4 +80,15 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
+}
+
+
+@media (max-width:1000px) {
+    .container{
+        flex-direction: column;
+    }
+
+    .image_container{
+        width: 100%;
+    }
 }

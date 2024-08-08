@@ -66,7 +66,7 @@ export default function HotelCard(props) {
     };
     return (
         <div className={style.container}>
-            <Image alt='Hotel' src={props.img} imageClassName={style.image_container} />
+            <Image alt='Hotel' src={props.img} className={style.image_container} imageClassName={style.image} />
             <div className={style.hotel_container}>
                 <div className={style.hotel_container_top}>
                     <div className={style.hotel_container_top_left}>
