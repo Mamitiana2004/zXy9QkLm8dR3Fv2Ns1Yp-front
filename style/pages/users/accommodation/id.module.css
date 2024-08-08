@@ -479,3 +479,37 @@
     justify-content: center;
     font-weight: 700;
 }
+
+
+@media (max-width:1200px) {
+    .header_container{
+        flex-direction: column;
+    }
+}
+
+@media (max-width:1490px) {
+    .body_accommodation{
+        flex-direction: column;
+    }
+
+    .accommodation_card_container{
+        width: 100%;
+        flex-direction: row;
+    }
+
+}
+
+@media (max-width:1200px) {
+
+    .accommodation_card_container{
+        width: 100%;
+        flex-direction: column;
+    }
+
+}
+
+@media (max-width:600px) {
+    .input_number{
+        width: 100%;
+    }   
+}

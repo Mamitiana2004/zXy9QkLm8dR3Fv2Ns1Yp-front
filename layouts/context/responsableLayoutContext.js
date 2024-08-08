@@ -4,12 +4,7 @@ const ResponsableLayoutContext = createContext();
 
 export const ResponsableLayoutProvider = ({ children }) => {
 
-    const [user, setUser] = useState({
-        username: "Dude 404",
-        job_post: "Manager",
-        id_etablissement: 1,
-        type_etablissement: 1
-    });
+    const [user, setUser] = useState();
     const [typeResponsable, setTypeResponsable] = useState(1);
 
     return <ResponsableLayoutContext.Provider value={{ user, setUser, typeResponsable, setTypeResponsable }}>{children}</ResponsableLayoutContext.Provider>

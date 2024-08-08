@@ -59,6 +59,14 @@
     gap: 40px;
 }
 
+.back_link{
+    display: flex;
+    gap: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    color: #000;
+}
+
 .login_title{
     font-size: 32px;
     letter-spacing: 1.5px;
@@ -294,4 +302,23 @@
 .register_link{
     font-weight: 700;
     color: #000;
+}
+
+
+@media (max-width:960px) {
+    .login_left{
+        display: none;
+    }
+    .content{
+        width: 100%;
+    }
+}
+@media (max-width:600px) {
+    .separateur_container{
+        width: 100%;
+    }
+    .login_right{
+        width: 100vw;
+        padding: 0 10%;
+    }
 }

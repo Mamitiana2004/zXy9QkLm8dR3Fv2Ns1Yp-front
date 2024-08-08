@@ -48,3 +48,59 @@
     font-weight: 600;
     font-size: 12px;
 }
+
+.image_404{
+    width: 390px;
+    height: 460px;
+    object-fit: contain;
+}
+
+
+@media (max-width:1200px) {
+    .image_404{
+        width: 200px;
+        height: 250px;
+    }
+
+    .title{
+        font-size: 32px;
+    }
+
+    .label{
+        font-size: 24px;
+    }
+
+    .wrapper_label{
+        font-size: 1em;
+    }
+}
+
+@media (max-width:800px) {
+    .container{
+        flex-direction: column-reverse;
+    }
+
+    .wrapper_404{
+        width: 100%;
+        padding: 10%;
+    }
+}
+
+@media (max-width:400px) {
+
+    .wrapper_404{
+        gap: 20px;
+    }
+
+    .title{
+        font-size: 18px;
+    }
+
+    .label{
+        font-size: 16px;
+    }
+
+    .wrapper_label{
+        font-size: 1em;
+    }
+}

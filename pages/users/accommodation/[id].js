@@ -6,7 +6,6 @@ import GallerieHotel from "@/components/GallerieHotel";
 import { TabPanel, TabView } from "primereact/tabview";
 import dynamic from "next/dynamic";
 import { Rating } from "primereact/rating";
-import NoteBar from "@/components/rating/NoteBar";
 import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
 import BookingModal from "../../../components/modal/BookingModal";
