@@ -11,67 +11,69 @@ export default function Booking() {
     const [rooms, setRooms] = useState([]);
     const [name_hotel, setName_hotel] = useState(null);
     const { user } = useContext(ResponsableLayoutContext);
-    const id = user ? user.id_hebergement : 1; // Set to null if the user is not available
+    const id = user ? user.id_hebergement : 1; // A modifer rehefa misy 
 
     useEffect(() => {
         if (!id) return;
 
-        // Fetch CSRF token and data simultaneously
-        const fetchData = async () => {
-            try {
-                const csrfToken = await getCsrfTokenDirect();
-
+        // Fetch CSRF token and data without using async/await
+        getCsrfTokenDirect()
+            .then(csrfToken => {
                 // Fetch booking data
-                const bookingResponse = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/reservations/${id}/`, {
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/reservations/${id}/`, {
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFTOKEN': csrfToken,
                     }
-                });
-                const bookingData = await bookingResponse.json();
-                const mappedData = bookingData.map(item => ({
-                    title: item.client_reserve.username,
-                    nuit: null, // Adjust or remove these if not needed
-                    jour: null, // Adjust or remove these if not needed
-                    start: item.date_debut_reserve,
-                    end: item.date_fin_reserve,
-                    resourceId: item.chambre_reserve
-                }));
-                setBook(mappedData);
+                })
+                    .then(response => response.json())
+                    .then(bookingData => {
+                        const mappedData = bookingData.map(item => ({
+                            title: item.client_reserve.username,
+                            nuit: null, // A modifer rehefa misy 
+                            jour: null, // A modifer rehefa misy 
+                            start: item.date_debut_reserve,
+                            end: item.date_fin_reserve,
+                            resourceId: item.chambre_reserve
+                        }));
+                        setBook(mappedData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des données de réservation:', err));
 
                 // Fetch room data
-                const roomsResponse = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id}/chambres/`, {
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id}/chambres/`, {
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFTOKEN': csrfToken,
                     }
-                });
-                const roomsData = await roomsResponse.json();
-                const mappedRooms = roomsData.map(room => ({
-                    id: room.id,
-                    title: room.nom_chambre
-                }));
-                setRooms(mappedRooms);
+                })
+                    .then(response => response.json())
+                    .then(roomsData => {
+                        const mappedRooms = roomsData.map(room => ({
+                            id: room.id,
+                            title: room.nom_chambre
+                        }));
+                        setRooms(mappedRooms);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des données de chambres:', err));
 
                 // Fetch hotel name
-                const hotelResponse = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`, {
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`, {
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFTOKEN': csrfToken,
                     }
-                });
-                const hotelData = await hotelResponse.json();
-                setName_hotel(hotelData);
-
-            } catch (error) {
-                console.error('Erreur lors de la récupération des données:', error);
-            }
-        };
-
-        fetchData();
+                })
+                    .then(response => response.json())
+                    .then(hotelData => {
+                        setName_hotel(hotelData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
+            })
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
     }, [id]);
 
     return (
