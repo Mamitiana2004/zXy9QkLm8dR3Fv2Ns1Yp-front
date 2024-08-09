@@ -40,8 +40,10 @@ export default function AddImage() {
             console.log("No images to upload");
             return;
         }
-        const info = localStorage.getItem("responsable_info").id_etablissement;
+        const info = JSON.parse(localStorage.getItem("responsable_info"));
         const formData = new FormData();
+
+
         formData.append('hebergement', info.id_etablissement);
 
         fileImages.forEach((file, index) => {

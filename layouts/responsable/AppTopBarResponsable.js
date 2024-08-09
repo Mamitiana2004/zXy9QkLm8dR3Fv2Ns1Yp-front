@@ -21,7 +21,7 @@ export default function AppTopBarResponsable(props) {
     }
     let items = [];
 
-    return(
+    return (
         <div style={props.style} className={style.container}>
             <div className={style.navbar}>
                 <div className={style.nav_title}>
@@ -35,11 +35,11 @@ export default function AppTopBarResponsable(props) {
                 <div className={style.right_container}>
                     <div aria-controls="popup_menu_right" aria-haspopup onClick={(event) => menu.current.toggle(event)} className={style.user_container}>
                         <Avatar
-                            label={getLabelAvatar(user.username)}
+                            label={user != null && user.username != null && getLabelAvatar(user.username)}
                             shape='circle'
                             className={style.username_image}
                         />
-                        <span className={style.username}>{user.username}</span>
+                        <span className={style.username}>{user != null && user.username != null && getLabelAvatar(user.username)}</span>
                     </div>
                     <Menu
                         className={style.menu}
