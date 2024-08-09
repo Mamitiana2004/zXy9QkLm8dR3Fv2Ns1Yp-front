@@ -8,19 +8,19 @@ import { Avatar } from "primereact/avatar";
 import { Divider } from "primereact/divider";
 export default function Profil() {
 
-    const router= useRouter();
+    const router = useRouter();
 
-    const [menuSidebar,setMenuSidebar] = useState([
-        {label:"Profil"},
-        {label:"Security"},
-        {label:"Notification"},
-        {label:"Log"},
-        {label:"Help"}
+    const [menuSidebar, setMenuSidebar] = useState([
+        { label: "Profil" },
+        { label: "Security" },
+        { label: "Notification" },
+        { label: "Log" },
+        { label: "Help" }
     ]);
 
     const menu = 0;
 
-    return(
+    return (
         <>
             <Head>
                 <title>Profil</title>
@@ -33,8 +33,8 @@ export default function Profil() {
                         <span className={style.left_top_title}>Tik&apos;Art</span>
                     </div>
                     <div className={style.left_body_container}>
-                        {menuSidebar.map((item,index)=>{
-                            return <Button key={index} onClick={()=>router.push("/responsable/accommodation/setting/"+item.label.toLowerCase())} text className={menu==index ? "button-secondary" : style.text_button} raised={menu==index ? true : false} label={item.label}/>
+                        {menuSidebar.map((item, index) => {
+                            return <Button key={index} onClick={() => router.push("/responsable/accommodation/setting/" + item.label.toLowerCase())} text className={menu == index ? "button-secondary" : style.text_button} raised={menu == index ? true : false} label={item.label} />
                         })}
                     </div>
                 </div>
@@ -42,19 +42,19 @@ export default function Profil() {
                     <div className={style_profile.container}>
                         <div className={style_profile.user_title_container}>
                             <div className={style_profile.user_title_left}>
-                                <Avatar label="F" shape="circle" className={style_profile.user_avatar}/>
+                                <Avatar label="F" shape="circle" className={style_profile.user_avatar} />
                                 <div className={style_profile.user_title}>
                                     <span className={style_profile.title}>Faneva Mamitiana</span>
                                     <span>Manager</span>
                                 </div>
                             </div>
-                            <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit"/>
+                            <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit" />
                         </div>
                         <div className="separateur"></div>
                         <div className={style_profile.detail_user_container}>
                             <div className={style_profile.detail_user_top_container}>
                                 <span className={style_profile.title}>Personnal information</span>
-                                <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit"/>
+                                <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit" />
                             </div>
                             <div className={style_profile.detail_user_body_container}>
                                 <div className={style_profile.detail_user}>
@@ -62,19 +62,19 @@ export default function Profil() {
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>Lasts name</span>
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>Email address</span>
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>Phone number</span>
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>Bio</span>
                                     <span>Faneva</span>
                                 </div>
                             </div>
@@ -83,7 +83,7 @@ export default function Profil() {
                         <div className={style_profile.detail_user_container}>
                             <div className={style_profile.detail_user_top_container}>
                                 <span className={style_profile.title}>Hotel information</span>
-                                <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit"/>
+                                <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit" />
                             </div>
                             <div className={style_profile.detail_user_body_container}>
                                 <div className={style_profile.detail_user}>
@@ -91,19 +91,35 @@ export default function Profil() {
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>Hotel name</span>
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>Address</span>
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>City</span>
                                     <span>Faneva</span>
                                 </div>
                                 <div className={style_profile.detail_user}>
-                                    <span className={style_profile.title}>First name</span>
+                                    <span className={style_profile.title}>Country</span>
+                                    <span>Faneva</span>
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>NIF</span>
+                                    <span>Faneva</span>
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>STAT</span>
+                                    <span>Faneva</span>
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Hotels type</span>
+                                    <span>Faneva</span>
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Total rooms</span>
                                     <span>Faneva</span>
                                 </div>
                             </div>
