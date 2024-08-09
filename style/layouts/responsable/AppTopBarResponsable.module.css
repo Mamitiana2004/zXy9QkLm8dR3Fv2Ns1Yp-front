@@ -38,6 +38,12 @@
         border-radius: 100px;
     }
 
+    .user{
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
         
 
     .user_container{
@@ -47,15 +53,6 @@
         cursor: pointer;
         padding: 10px 16px;
         border-radius: 10px;
-    }
-
-    .user_container:hover{
-        background-color: #305555;
-        color: #fff;
-    }
-    .user_container:focus{
-        background-color: #305555;
-        color: #fff;
     }
 
 
@@ -71,6 +68,10 @@
 
     .username{
         font-weight: 700;
+        font-size: 18px;
+        color: #000;
+    }
+    .job{
         font-size: 14px;
         color: #000;
     }
