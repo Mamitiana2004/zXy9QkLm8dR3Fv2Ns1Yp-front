@@ -24,7 +24,7 @@ export default function AddNewRoom() {
     const [listImage, setListImage] = useState([]);
     const [description, setDescription] = useState();
     const { user } = useContext(ResponsableLayoutContext);
-    const id = user.id_etablissement;
+    const id = user ? user.id_etablissement : 0;
     const toast = useRef(null); // Create reference for Toast
     const [missingFields, setMissingFields] = useState({});
 

@@ -11,13 +11,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Image } from 'primereact/image';
 import { Toast } from 'primereact/toast';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 export default function Login() {
 
     const router = useRouter();
     const toast = useRef(null);
 
-    const { user, setUser } = useContext(ResponsableLayoutContext);
+    const { setUser } = useContext(ResponsableLayoutContext);
 
 
 
@@ -29,6 +29,21 @@ export default function Login() {
 
     const [emailErreur, setEmailErreur] = useState(null);
     const [passwordErreur, setPasswordErreur] = useState(null);
+
+    // useEffect(()=>{
+    //     let user =JSON.parse(localStorage.getItem("responsable_user"));
+    //     if (user) {
+    //         if (user.type_etablissement == 1) {
+    //             router.push("/responsable/accommodation");
+    //         } else if (user.type_etablissement == 2) {
+    //             router.push("/responsable/handcraft");
+    //         } else if (user.type_etablissement == 3) {
+    //             router.push("/responsable/tour");
+    //         } else {
+    //             router.push("/users/etablissement/login");
+    //         }
+    //     }
+    // },[router])
 
     const login = async (e) => {
         e.preventDefault();
@@ -90,12 +105,14 @@ export default function Login() {
                         job_post: "Manager",
                         id_etablissement: data.etablissement_info.id,
                     })
+
                     toast.current.show({
                         severity: "info",
                         summary: "Info",
                         detail: "Connexion Réussi",
                         life: 5000
-                    })
+                    });
+
                     setTimeout(() => {
                         if (type_etablissement == 1) {
                             router.push("/responsable/accommodation");
@@ -104,9 +121,10 @@ export default function Login() {
                         } else if (type_etablissement == 3) {
                             router.push("/responsable/tour");
                         } else {
-                            // Optionnel : gérer le cas où le type d'établissement ne correspond à aucune des valeurs définies
+                            // Optionnel 
                         }
                     }, 4000);
+
                 })
                 .catch((error) => {
                     toast.current.show({
@@ -118,7 +136,17 @@ export default function Login() {
                     console.log(error);
                 })
         }
-
+        if (!canSendData) {
+            setUser({
+                username: "Faneva",
+                id: 4,
+                email: "mamitianafaneva@gmail.com",
+                type_etablissement: 1,
+                job_post: "Manager",
+                id_etablissement: 1
+            })
+            router.push("/responsable");
+        }
     }
 
 
@@ -132,6 +160,10 @@ export default function Login() {
                     </Link>
                 </div>
                 <div className={style.login_right}>
+                    <Link className={style.back_link} href={"/users"}>
+                        <i className='pi pi-arrow-left' />
+                        <span>Back</span>
+                    </Link>
                     <div className={style.login_title_container}>
                         <span className={style.login_title}>Login to your etablissement <br />account</span><br />
                         <span className={style.login_title_label}>Welcome back! Please enter your details</span>

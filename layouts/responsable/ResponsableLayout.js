@@ -3,13 +3,23 @@ import AppTopBarResponsable from "./AppTopBarResponsable";
 import style from '@/style/layouts/responsable/ResponsableLayout.module.css';
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import ResponsableLayoutContext from "../context/responsableLayoutContext";
 export default function ResponsableLayout(props) {
 
     const router = useRouter();
     const [link, setLink] = useState([]);
 
+    const { setUser, setTypeResponsable } = useContext(ResponsableLayoutContext);
+
     useEffect(() => {
+        const logOut = () => {
+            localStorage.removeItem("responsable_user");
+            localStorage.removeItem("type_responsable");
+            setUser(null);
+            setTypeResponsable(1);
+            router.replace("/users/etablissement/login")
+        }
         if (router.asPath.includes("/responsable/accommodation")) {
             let links = [
                 {
@@ -45,7 +55,7 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    link: "/users"
+                    command: () => logOut()
                 },
 
             ]
@@ -86,7 +96,7 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    link: "/users"
+                    command: () => logOut()
                 },
 
             ]
@@ -127,13 +137,16 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    link: "/users"
+                    command: () => logOut()
                 },
 
             ]
             setLink(links);
         }
-    }, [router.asPath])
+    }, [router.asPath, setUser, setTypeResponsable, router])
+
+
+
 
     return (
         <>
@@ -144,12 +157,22 @@ export default function ResponsableLayout(props) {
             <div className={style.container}>
                 <div className={style.sidebar}>
                     {link.map((l, index) => {
-                        return (
-                            <Link key={index} className={style.sidebar_link} href={l.link}>
-                                <i className={l.icon} />
-                                <span>{l.label}</span>
-                            </Link>
-                        )
+                        if (l.command) {
+                            return (
+                                <div className={style.sidebar_link} key={index} onClick={l.command}>
+                                    <i className={l.icon} />
+                                    <span>{l.label}</span>
+                                </div>
+                            )
+                        }
+                        else {
+                            return (
+                                <Link key={index} className={style.sidebar_link} href={l.link}>
+                                    <i className={l.icon} />
+                                    <span>{l.label}</span>
+                                </Link>
+                            )
+                        }
                     })}
 
 

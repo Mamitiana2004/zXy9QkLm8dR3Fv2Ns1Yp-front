@@ -15,7 +15,7 @@ export default function Room() {
     const { user } = useContext(ResponsableLayoutContext);
 
     const [booking, setBooking] = useState()
-    const id = user.id_etablissement;
+    const id = user ? user.id_etablissement : 0;
 
     useEffect(() => {
         if (id) {
