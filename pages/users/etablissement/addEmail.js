@@ -7,18 +7,78 @@ import { Image } from "primereact/image";
 import { useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import UrlConfig from "@/util/config";
+import { Toast } from "primereact/toast";
+import { getCsrfTokenDirect } from "@/util/csrf";
 
 export default function AddEmail() {
 
     const router = useRouter();
     const [email, setEmail] = useState("");
+    const toast = useRef(null);
 
-
-
+    const checkEmail = (email) => {
+        return getCsrfTokenDirect().then((csrfToken) => {
+            console.log(csrfToken);
+            return fetch(`${UrlConfig.apiBaseUrl}/api/accounts/responsable-check-email/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ email: email }),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    return !data.exists;
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    return false;
+                });
+        });
+    };
     const registerEmail = (e) => {
         e.preventDefault();
-        localStorage.setItem("email_etablissement", email);
-        router.push("/users/etablissement/choixType");
+        checkEmail(email).then((verification) => {
+            if (verification) {
+                toast.current.show({
+                    severity: "info",
+                    summary: "Info",
+                    detail: "Veuillez patienter",
+                    life: 4000
+                });
+                localStorage.setItem("email_etablissement", email); 7
+                setTimeout(() => {
+                    router.push("/users/etablissement/choixType");
+                }, 4000);
+
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: (
+                        <>
+                            Cette email est déjà lié à un établissement, <br />veuillez vous connecter <br />
+                            <span
+                                onClick={() => router.push('/users/etablissement/login')}
+                                style={{ cursor: "pointer", textDecoration: "underline" }}
+                            >
+                                connecter ici
+                            </span>
+                        </>
+                    ),
+                    life: 5000
+                })
+
+            }
+        })
     }
 
 
@@ -60,10 +120,8 @@ export default function AddEmail() {
                         <Button style={{ width: "60%" }} type="submit" className="button-primary" label="Continue" />
                     </form>
                 </div>
-
-
-
             </div>
+            <Toast ref={toast} />
         </>
     )
 }
