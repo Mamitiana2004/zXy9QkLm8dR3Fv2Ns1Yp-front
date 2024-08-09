@@ -25,7 +25,7 @@ export default function AddNewRoom() {
     const [listImage, setListImage] = useState([]);
     const [description, setDescription] = useState();
     const { user } = useContext(ResponsableLayoutContext);
-    const id = user.id_etablissement;
+    const id = user ? user.id_etablissement : 0;
     const toast = useRef(null); // Create reference for Toast
     const [missingFields, setMissingFields] = useState({});
     const router = useRouter();
@@ -39,6 +39,7 @@ export default function AddNewRoom() {
         inputRef.current.click();
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const statusOptions = [
         { id: 1, name: 'Available' },
         { id: 2, name: 'Not Available' }
@@ -81,13 +82,13 @@ export default function AddNewRoom() {
                     setListImage(data.images.map(image => image));
                     setFileImages(data.images);
                 })
-            .catch(err => console.error(err));
+                .catch(err => console.error(err));
 
         }
-    }, [id_chambre ]);
+    }, [id_chambre, statusOptions]);
 
     const handleSubmit = (e) => {
-         e.preventDefault(); // Prevent default form submission
+        e.preventDefault(); // Prevent default form submission
 
         // Collecting missing fields
         const newMissingFields = {
@@ -181,9 +182,9 @@ export default function AddNewRoom() {
                                 <Image
                                     imageClassName={style.image}
                                     src={image.content != null ? `data:image/jpeg;base64,${image.content}` : image.url != null ? image.url : ""}
-                                    alt="image" 
-                                
-                                    />
+                                    alt="image"
+
+                                />
                             </div>
                         );
                     })}
@@ -207,7 +208,7 @@ export default function AddNewRoom() {
                             <label htmlFor="type_select">Type</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <InputText value={capacity}  onChange={(e) => setCapacity(e.target.value) } className={`${style.input_text} ${missingFields.capacity ? style.input_missing : ''}`} id="capacity_input" type="text" />
+                            <InputText value={capacity} onChange={(e) => setCapacity(e.target.value)} className={`${style.input_text} ${missingFields.capacity ? style.input_missing : ''}`} id="capacity_input" type="text" />
                             <label htmlFor="capacity_input">Capacity</label>
                         </FloatLabel>
                         <FloatLabel>

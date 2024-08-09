@@ -10,10 +10,10 @@ export default function ResponsableLayout(props) {
     const router = useRouter();
     const [link, setLink] = useState([]);
 
-    const {setUser,setTypeResponsable} = useContext(ResponsableLayoutContext);
+    const { setUser, setTypeResponsable } = useContext(ResponsableLayoutContext);
 
     useEffect(() => {
-        const logOut = () =>{
+        const logOut = () => {
             localStorage.removeItem("responsable_user");
             localStorage.removeItem("type_responsable");
             setUser(null);
@@ -55,7 +55,7 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    command:()=>logOut()
+                    command: () => logOut()
                 },
 
             ]
@@ -96,7 +96,7 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    command:()=>logOut()
+                    command: () => logOut()
                 },
 
             ]
@@ -137,16 +137,16 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    command:()=>logOut()
+                    command: () => logOut()
                 },
 
             ]
             setLink(links);
         }
-    }, [router.asPath,setUser,setTypeResponsable])
+    }, [router.asPath, setUser, setTypeResponsable, router])
 
 
-    
+
 
     return (
         <>
@@ -165,7 +165,7 @@ export default function ResponsableLayout(props) {
                                 </div>
                             )
                         }
-                        else{
+                        else {
                             return (
                                 <Link key={index} className={style.sidebar_link} href={l.link}>
                                     <i className={l.icon} />

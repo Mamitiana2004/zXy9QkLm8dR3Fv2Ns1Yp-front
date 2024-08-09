@@ -13,9 +13,8 @@ export default function Room() {
     const router = useRouter();
     const { user } = useContext(ResponsableLayoutContext);
     const [booking, setBooking] = useState([]);
-    const id = user.id_etablissement;
+    const id = user ? user.id_etablissement : 0;
 
-    // Recuperer tous les listes des Chambres 
     useEffect(() => {
         if (id) {
             fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id}/chambres/`)
