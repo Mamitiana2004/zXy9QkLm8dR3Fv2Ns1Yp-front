@@ -14,6 +14,7 @@ import { Divider } from "@mui/material";
 import stylePassword from '@/style/components/PasswordInput.module.css';
 import { Password } from "primereact/password";
 import { Toast } from 'primereact/toast';
+import { getCsrfTokenDirect } from "@/util/csrf";
 
 export default function AddInfoConnexion() {
     const toast = useRef(null);
@@ -61,100 +62,67 @@ export default function AddInfoConnexion() {
 
     const passwordInputHeader = <span className={stylePassword.header_container}>Pick a new password</span>;
 
-
-    const SendData = async (data) => {
-        try {
-            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/responsables/create/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+    const sendVerification = (email) => {
+        getCsrfTokenDirect()
+            .then(csrfToken => {
+                return fetch(`${UrlConfig.apiBaseUrl}/api/accounts/send-responsable-code/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: JSON.stringify({ email: email }),
+                });
+            })
+            .then(response => {
+                console.log(response);
+                if (!response.ok) {
+                    throw new Error("Failed to send verification email.");
+                }
+                toast.current.show({
+                    severity: "info",
+                    summary: "Info",
+                    detail: "Email de vérification envoyé",
+                    life: 3000,
+                });
+                setTimeout(() => {
+                    router.push("/users/etablissement/emailCheck");
+                }, 3000);
+            })
+            .catch(error => {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Échec de l\'envoi de l\'email de vérification. Veuillez réessayer plus tard.',
+                    life: 3000,
+                });
+                console.error('Erreur:', error);
             });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data
-            } else {
-                console.error("Erreur lors de l'enregistrement:", response.statusText);
-            }
-        } catch (error) {
-            console.error("Erreur de requête:", error);
-        }
-    }
-    const CreateHebergemet = async (data) => {
-        try {
-            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/create-hebergement/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data;
-            } else {
-                console.error("Erreur lors de l'enregistrement:", response.statusText);
-            }
-        } catch (error) {
-            console.error("Erreur de requête:", error);
-        }
     }
 
-    const addInfoUserFini = () => {
-        // router.push("/users/etablissement/accommodation/addImage")
-    }
 
     const LoadData = async () => {
+        const email = localStorage.getItem("email_etablissement");
+
+
+
+        if (email) {
+            sendVerification(email);
+        }
+
+
+
         let userInfo = localStorage.getItem("userInfo");
+
+        // localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
+        userInfo = JSON.parse(userInfo);
         const type_etablissement = localStorage.getItem("type_etablissement");
         const accommodation_info = JSON.parse(localStorage.getItem("accommodationInfo"));
-        const email = localStorage.getItem("email_etablissement");
-        userInfo = JSON.parse(userInfo);
+
         userInfo.password = password;
         userInfo.type_responsable = parseInt(type_etablissement);
-        userInfo.email = email;
-
-        SendData(userInfo).then((data) => {
-            if (data.id) {
-                accommodation_info.responsable_id = data.id;
-                const created = CreateHebergemet(accommodation_info);
-                if (created) {
-                    toast.current.show({
-                        severity: "success",
-                        summary: "Success",
-                        detail: "Accomodation created successfully",
-                        life: 5000
-                    });
-                    const responsable_info = {
-                        username: data.username,
-                        job_post: "Manager",
-                        id_etablissement: created.id_hebergement,
-                        type_etablissement: type_etablissement
-                    }
-                    localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
-                    localStorage.removeItem("userInfo");
-                    localStorage.removeItem("type_etablissement");
-                    localStorage.removeItem("accommodationInfo");
-                    localStorage.removeItem("email_etablissement");
-
-                    setTimeout(() => {
-                        router.push("/users/etablissement/accommodation/addImage");
-                    }, 3000);
-
-                } else {
-                    toast.current.show({
-                        severity: "error",
-                        summary: "Error",
-                        detail: "Please try again later",
-                        life: 5000
-                    });
-                }
-            }
-        })
-
+        userInfo.email = email
+        localStorage.setItem("_dfqaccess404", JSON.stringify(userInfo));
 
     };
 
