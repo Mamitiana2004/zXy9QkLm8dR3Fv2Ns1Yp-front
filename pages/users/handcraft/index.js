@@ -116,6 +116,7 @@ export default function Handcraft() {
                                 </div>
                             </div>
                         </div>
+                        <Image className={style.top_value_body_image_container} imageClassName={style.top_value_body_image} src="/images/handcraft.jpg" alt=""/>
                     </div>
                 </div>
                 <div className={style.suggestion_container}>
