@@ -15,8 +15,13 @@ export default function Room() {
     const { user } = useContext(ResponsableLayoutContext);
 
     const [booking, setBooking] = useState()
-    const id = user ? user.id_etablissement : 0;
+    const [id, setId] = useState();
 
+    useEffect(() => {
+        user ? setId(user.id_etablissement) : 0;
+
+
+    }, [id, user]);
     useEffect(() => {
         if (id) {
             fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id}/chambres/`)

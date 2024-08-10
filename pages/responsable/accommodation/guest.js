@@ -12,15 +12,20 @@ import UrlConfig from "@/util/config";
 export default function Guest() {
     const router = useRouter();
     const { user } = useContext(ResponsableLayoutContext);
-    const id = user ? user.id_hebergement : 0; // Adjust this as necessary
-
     const [name_hotel, setName_hotel] = useState(null);
     const [guests, setGuests] = useState([]);
+    const [id, setId] = useState();
 
     useEffect(() => {
-        if (!id) return;
+        user ? setId(user.id_etablissement) : 0;
 
-        // Fetch CSRF token
+        if (id) {
+            FetchGuest(id);
+        }
+
+    }, [id, user]);
+
+    function FetchGuest(id) {
         getCsrfTokenDirect()
             .then(csrfToken => {
                 // Fetch Hotel Name
@@ -53,8 +58,9 @@ export default function Guest() {
 
             })
             .catch(err => console.error('Error fetching CSRF token:', err));
+    }
 
-    }, [id]);
+
 
     const buttonTemplate = (item) => {
         return (
