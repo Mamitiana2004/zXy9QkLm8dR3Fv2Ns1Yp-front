@@ -26,6 +26,10 @@
 PUT rah anova ny information rehetra
 PATCH rah misy zavatra ts niova
 
+* Detail guest
+
+`/api/hebergement/client-reservations/{id_client}/hebergement/{i_hebergement}/`
+
 ### Dashboard accomodation
 
 * Total booking + Avaliable room + Total guest (GET)
@@ -48,8 +52,8 @@ PATCH rah misy zavatra ts niova
 
 * GET list responsable par type (1 accomodation, 2 handcraft, 3 tour)
 
-`/api/accounts/responsables/type/{id_hebergement}/
-`
+`/api/accounts/responsables/type/{id_hebergement}/`
+
 * GET detail du responsable
 
 `/api/accounts/detail-responsable/{id_hebergement}/`
