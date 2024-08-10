@@ -1,42 +1,82 @@
 import Head from "next/head";
 import style from '@/style/pages/responsable/accommodation/booking.module.css';
-import { Button } from "primereact/button";
+import { useState, useEffect, useContext } from "react";
 import RoomPlanning from "@/components/Planning";
-import { useState } from "react";
+import UrlConfig from "@/util/config";
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import { getCsrfTokenDirect } from '@/util/csrf';
+
 export default function Booking() {
+    const [book, setBook] = useState([]);
+    const [rooms, setRooms] = useState([]);
+    const [name_hotel, setName_hotel] = useState(null);
+    const { user } = useContext(ResponsableLayoutContext);
+    const id = user ? user.id_hebergement : 1; // A modifer rehefa misy 
 
+    useEffect(() => {
+        if (!id) return;
 
-    const [rooms,setRooms] = useState([
-        {id:1,title:"Room 401"},
-        {id:2,title:"Room 402"},
-        {id:3,title:"Room 403"},
-        {id:4,title:"Room 404"},
-        {id:5,title:"Room 405"},
-        {id:6,title:"Room 406"},
-        {id:7,title:"Room 407"},
-        {id:8,title:"Room 408"}
-    ]);
+        // Fetch CSRF token and data without using async/await
+        getCsrfTokenDirect()
+            .then(csrfToken => {
+                // Fetch booking data
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/reservations/${id}/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(bookingData => {
+                        const mappedData = bookingData.map(item => ({
+                            title: item.client_reserve.username,
+                            nuit: null, // A modifer rehefa misy 
+                            jour: null, // A modifer rehefa misy 
+                            start: item.date_debut_reserve,
+                            end: item.date_fin_reserve,
+                            resourceId: item.chambre_reserve
+                        }));
+                        setBook(mappedData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des données de réservation:', err));
 
-    const [book,setBook] = useState([
-        {
-          title:'Will Smith',
-          nuit:1,
-          jour:2,
-          start: '2024-07-23',
-          end: '2024-07-28',
-          resourceId: 1
-        },
-        {
-          title: 'Will smith',
-          nuit:1,
-          jour:2,
-          start: '2024-07-23',
-          end: '2024-07-30',
-          resourceId: 2 
-        }
-      ])
+                // Fetch room data
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id}/chambres/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(roomsData => {
+                        const mappedRooms = roomsData.map(room => ({
+                            id: room.id,
+                            title: room.nom_chambre
+                        }));
+                        setRooms(mappedRooms);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des données de chambres:', err));
 
-    return(
+                // Fetch hotel name
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(hotelData => {
+                        setName_hotel(hotelData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
+            })
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
+    }, [id]);
+
+    return (
         <>
             <Head>
                 <title>Booking</title>
@@ -44,14 +84,13 @@ export default function Booking() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Booking</span>
-                    <span className={style.top_container_subtitle}>Carlton Hotel</span>
+                    <span className={style.top_container_subtitle}>{name_hotel?.nom_hebergement || 'No Hotel Name'}</span>
                 </div>
             </div>
 
             <div className={style.container}>
-                <RoomPlanning events={book} rooms={rooms}/>
+                <RoomPlanning events={book} rooms={rooms} />
             </div>
-            
         </>
-    )
+    );
 }
