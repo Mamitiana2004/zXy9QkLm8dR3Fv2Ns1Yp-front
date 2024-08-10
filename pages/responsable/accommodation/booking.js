@@ -11,12 +11,19 @@ export default function Booking() {
     const [rooms, setRooms] = useState([]);
     const [name_hotel, setName_hotel] = useState(null);
     const { user } = useContext(ResponsableLayoutContext);
-    const id = user ? user.id_hebergement : 1; // A modifer rehefa misy 
+
+    const [id, setId] = useState();
 
     useEffect(() => {
-        if (!id) return;
+        user ? setId(user.id_etablissement) : 0;
 
-        // Fetch CSRF token and data without using async/await
+        if (user) {
+            Fetch(id);
+        }
+
+    }, [id, user]);
+
+    function Fetch(id) {
         getCsrfTokenDirect()
             .then(csrfToken => {
                 // Fetch booking data
@@ -74,7 +81,9 @@ export default function Booking() {
                     .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
             })
             .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
-    }, [id]);
+    }
+
+
 
     return (
         <>

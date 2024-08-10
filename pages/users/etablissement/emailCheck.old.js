@@ -1,19 +1,14 @@
+import style from '@/style/pages/login.module.css'
 import { getCsrfTokenDirect } from '@/util/csrf';
+import Head from 'next/head'
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Image } from 'primereact/image';
 import { Toast } from 'primereact/toast';
 import { useEffect, useRef, useState } from 'react';
 import { InputOtp } from 'primereact/inputotp';
+import { Button } from 'primereact/button';
 import { UrlConfig } from '@/util/config';
-
-import AppTopbar from "@/layouts/AppTopbar";
-import Head from "next/head";
-import style from '@/style/pages/users/etablissement/etablissement.module.css';
-import { Stepper } from "primereact/stepper";
-import { Image } from "primereact/image";
-import { StepperPanel } from "primereact/stepperpanel";
-import { Button } from "primereact/button";
-import { useRouter } from "next/router";
-
 
 export default function Verify() {
 
@@ -276,40 +271,50 @@ export default function Verify() {
     return (
         <>
             <div className={style.container}>
-                <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png" width={100} height={50} />
-                    <Stepper activeStep={3} linear className={style.stepper}>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                    </Stepper>
-                </div>
-                <div className={style.right_container}>
-                    <div className={style.top_container}>
-                        <span className={style.top_title}>Check your email</span>
-                        <span className={style.top_subtitle}>We sent a verification PIN code <br />to <span style={{ fontWeight: 700 }}>{email}</span>.Paste the PIN Code you<br /> received on the mail to below. </span>
-                    </div>
-                    <div className={style.image_parent}>
 
-                        <div className={style.form_group}>
-                            <div className={style.form_group_input}>
-                                <span className={style.form_label}>Verification code</span>
-                                <InputOtp disabled={isInputDisabled} value={code} onChange={tapeCode} length={6} integerOnly />
+                <div className={style.login_left}>
+                    <Link href={"/users/etablissement/accommodation/addInfoConnexion"}>
+                        <Image src='/images/logo-aftrip.png' alt='logo' style={{ width: "250px" }} />
+                    </Link>
+                </div>
+                <div className={style.login_right}>
+                    <Link className={style.back_link} href={"/users/etablissement/accommodation/addInfoConnexion"}>
+                        <i className='pi pi-arrow-left' />
+                        <span>Back</span>
+                    </Link>
+                    <div className={style.login_title_container}>
+                        <span className={style.login_title}>Check your email</span>
+                        <span className={style.login_title_label}>We sent a verification PIN code <br />to <span style={{ fontWeight: 700 }}>{email}</span>.Paste the PIN Code you<br /> received on the mail to below. </span>
+                    </div>
+
+                    <div className={style.content}>
+                        <div className={style.form}>
+                            <div className={style.form_group}>
+                                <div className={style.form_group_input}>
+                                    <span className={style.form_label}>Verification code</span>
+                                    <InputOtp disabled={isInputDisabled} value={code} onChange={tapeCode} length={6} integerOnly />
+                                </div>
                             </div>
-                        </div> <div className={style.button_group}>
-                            <Button onClick={resend} text disabled={isButtonDisabled} icon="pi pi-refresh" label='Resend code' iconPos='right' className={style.resend_button} />
+
+                            <div className={style.button_group}>
+                                <Button onClick={resend} text disabled={isButtonDisabled} icon="pi pi-refresh" label='Resend code' iconPos='right' className={style.resend_button} />
+                                <span className={style.timer}>{timer == 0 ? "" : `Please wait ${timer} seconds before resending.`}</span>
+                            </div>
+                            <div className={style.button_group}>
+                                <button type='submit' className={style.login_button} disabled={isSubmitDisabled} onClick={handleSubmit}>Continue</button>
+                            </div>
                         </div>
                     </div>
-
-                    <span className={style.timer}>{timer == 0 ? "" : `Please wait ${timer} seconds before resending.`}</span>
-
-
-
-
-
-                    <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
+
+
+
+
+                <div className={style.footer}>
+                    <span>Copyright 2024 - All rights reserved</span>
+                    <Link style={{ color: "#000" }} href={"/users/privatePolicy"}>Pivate policy</Link>
+                </div>
+
             </div>
             <Toast ref={toast} />
         </>
