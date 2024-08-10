@@ -12,7 +12,7 @@ import UrlConfig from "@/util/config";
 export default function Guest() {
     const router = useRouter();
     const { user } = useContext(ResponsableLayoutContext);
-    const id = user ? user.id_hebergement : 1; // Adjust this as necessary
+    const id = user ? user.id_hebergement : 0; // Adjust this as necessary
 
     const [name_hotel, setName_hotel] = useState(null);
     const [guests, setGuests] = useState([]);
