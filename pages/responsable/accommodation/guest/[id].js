@@ -17,7 +17,6 @@ export default function DetailGuest() {
     const [nameHotel, setNameHotel] = useState(null); 
     const [bookingSummary, setBookingSummary] = useState({});
     const [bookingHistory, setBookingHistory] = useState([]);
-    const [images, setImages] = useState([]);
     const { user } = useContext(ResponsableLayoutContext);
     const { id } = router.query;
 
