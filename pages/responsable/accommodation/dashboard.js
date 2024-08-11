@@ -154,6 +154,64 @@ function FetchDashboard_Hotel(id_hebergement) {
                         }
                     }
                 };
+                        const dataLine = {
+            labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            datasets:[
+                {
+                    label:"New booking",
+                    backgroundColor:"rgba(48, 85, 85,0.2)",
+                    borderColor:"#305555",
+                    data: [
+                        reservations.Lundi, 
+                        reservations.Mardi, 
+                        reservations.Mercredi, 
+                        reservations.Jeudi, 
+                        reservations.Vendredi, 
+                        reservations.Samedi, 
+                        reservations.Dimanche
+                    ],
+                        
+                    tension:0.4,
+                    fill:true
+                }
+            ]
+        };
+        const optionsLine = {
+            maintainAspectRatio: false,
+            aspectRatio: 1.9,
+            plugins: {
+                legend: {
+                    labels: {
+                        fontColor: "#000"
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#4a4a4a",
+                        font: {
+                            weight: 500
+                        }
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: "#4a4a4a"
+                    },
+                    grid: {
+                        display:false,
+                        drawBorder: false
+                    }
+                }
+            }
+        };
+        setLineData(dataLine);
+        setLineOptions(optionsLine);
                     
                 setBarData(data);
                 setBarOptions(options);
@@ -248,55 +306,7 @@ function FetchDashboard_Hotel(id_hebergement) {
         
 
 
-        const dataLine = {
-            labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-            datasets:[
-                {
-                    label:"New booking",
-                    backgroundColor:"rgba(48, 85, 85,0.2)",
-                    borderColor:"#305555",
-                    data:[40,88,60,87,36,36,30],
-                    tension:0.4,
-                    fill:true
-                }
-            ]
-        };
-        const optionsLine = {
-            maintainAspectRatio: false,
-            aspectRatio: 1.9,
-            plugins: {
-                legend: {
-                    labels: {
-                        fontColor: "#000"
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        color: "#4a4a4a",
-                        font: {
-                            weight: 500
-                        }
-                    },
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: "#4a4a4a"
-                    },
-                    grid: {
-                        display:false,
-                        drawBorder: false
-                    }
-                }
-            }
-        };
-        setLineData(dataLine);
-        setLineOptions(optionsLine);
+
     },[])
 
     return(
