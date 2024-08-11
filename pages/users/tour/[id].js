@@ -24,7 +24,7 @@ export default function InfoTour() {
     const [voyage, setVoyage] = useState(null);
     const [popularVoyages, setPopularVoyages] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [location, setLocalisation] = useState( )
+    const [location, setLocalisation] = useState()
 
     // Fetch voyage details when ID changes
     useEffect(() => {
@@ -65,7 +65,7 @@ export default function InfoTour() {
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
             return style.tab_active;
-        else 
+        else
             return style.tab;
     };
 
@@ -73,7 +73,7 @@ export default function InfoTour() {
         <>
             <Head>
                 <title>Info {t("tour")}</title>
-            </Head>  
+            </Head>
 
             <div className={style.container}>
                 <div className={style.filter_header_top}>
@@ -82,24 +82,24 @@ export default function InfoTour() {
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
-                        <FilterTour/>
+                        <FilterTour />
                     </div>
                 </div>
                 <div className={style.header_container}>
                     <div className={style.header_left}>
-                        <span className={style.header_left_title}>{voyage.nom_voyage}</span> 
+                        <span className={style.header_left_title}>{voyage.nom_voyage}</span>
                     </div>
                     <div className={style.header_right}>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-heart" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-heart" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Like</span>
                         </div>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-send" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-send" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Share</span>
                         </div>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-save" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-save" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Save</span>
                         </div>
                     </div>
@@ -116,11 +116,11 @@ export default function InfoTour() {
                     </div>
                 </div>
                 <div className={style.body_accommodation}>
-                    <TabView 
+                    <TabView
                         pt={{
                             root: { className: style.tab_container },
-                            panelContainer:{ className: style.tab_container },
-                            navContainer:{ className: style.tab_container }
+                            panelContainer: { className: style.tab_container },
+                            navContainer: { className: style.tab_container }
                         }}
                     >
                         <TabPanel
@@ -147,7 +147,7 @@ export default function InfoTour() {
                                     <span className={style.accommodation_detail_title}>{t("travel_inclusion")}</span>
                                     <ul>
                                         {voyage.inclusions && voyage.inclusions.map((inclusion) => (
-                                            <li key={inclusion.id}>{inclusion.nom_type_inclusion}</li>
+                                            <li key={inclusion.id}>{inclusion.nom_inclusion}</li>
                                         ))}
                                     </ul>
                                 </div>
@@ -181,8 +181,8 @@ export default function InfoTour() {
                         </TabPanel>
                     </TabView>
                     <div className={style.tour_card_container}>
-                        <DetailTravel 
-                            date_debut ={voyage.date_debut}
+                        <DetailTravel
+                            date_debut={voyage.date_debut}
                             date_fin={voyage.date_fin}
                             places_disponibles={voyage.places_disponibles}
                             prix_voyage={voyage.prix_voyage}
@@ -191,14 +191,14 @@ export default function InfoTour() {
                             <Map
                                 style={{ width: "100%", height: "300px" }}
                                 lat={location.latitude}
-                                lng={location.longitude}  
+                                lng={location.longitude}
                             />
                         </div>
                         <div className={style.tour_card}>
                             <div className={style.operator_detail_header}>
                                 <Avatar
                                     shape="circle"
-                                    image={UrlConfig.apiBaseUrl+voyage.tour_operateur.images_tour[0].image || "Image Tour"}
+                                    image={voyage.tour_operateur.images_tour[0] ? UrlConfig.apiBaseUrl + voyage.tour_operateur.images_tour[0].image : "Image Tour"}
                                     className={style.operator_avatar}
                                 />
                                 <div className={style.operator_detail_title_container}>
@@ -209,7 +209,7 @@ export default function InfoTour() {
                             <div className={style.paragraphe}>
                                 {voyage.tour_operateur.description_operateur}
                             </div>
-                            <Button onClick={() => router.push("/users/tour/operator/1")} className="button-primary" label="About the operator"/>
+                            <Button onClick={() => router.push("/users/tour/operator/1")} className="button-primary" label="About the operator" />
                         </div>
                     </div>
                 </div>
@@ -217,7 +217,7 @@ export default function InfoTour() {
                     <span className={style.suggestion_title}>{t("you_would_like_it")}</span>
                     <div className={style.suggestion_body}>
                         {popularVoyages.map((popularVoyage) => (
-                            <PopularTripCard key={popularVoyage.id} voyage={popularVoyage}/>
+                            <PopularTripCard key={popularVoyage.id} voyage={popularVoyage} />
                         ))}
                     </div>
                 </div>
