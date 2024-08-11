@@ -304,10 +304,6 @@ export default function Verify() {
 
                     <span className={style.timer}>{timer == 0 ? "" : `Please wait ${timer} seconds before resending.`}</span>
 
-
-
-
-
                     <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
             </div>
