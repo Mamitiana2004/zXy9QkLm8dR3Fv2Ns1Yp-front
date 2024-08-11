@@ -91,7 +91,6 @@ export default function Travelers() {
                         <Column sortable field="name" header="Name"/>
                         <Column sortable field="email" header="Email"/>
                         <Column sortable field="travelers" header="Travelers"/>
-                        <Column sortable field="payment" header="Payement"/>
                         <Column header="Action" body={buttonTemplate}/>
                     </DataTable>
                 </div>
@@ -109,38 +108,31 @@ export default function Travelers() {
                                     <span className={style.detail_label}>Faneva</span>
                                 </div>
                                 <div className={style.detail}>
-                                    <span className={style.detail_title}>First name</span>
+                                    <span className={style.detail_title}>Last name</span>
                                     <span className={style.detail_label}>Faneva</span>
                                 </div>
                                 <div className={style.detail}>
-                                    <span className={style.detail_title}>First name</span>
+                                    <span className={style.detail_title}>Email address</span>
                                     <span className={style.detail_label}>Faneva</span>
                                 </div>
                                 <div className={style.detail}>
-                                    <span className={style.detail_title}>First name</span>
+                                    <span className={style.detail_title}>Phone number</span>
                                     <span className={style.detail_label}>Faneva</span>
                                 </div>
                             </div>
                         </div>
                         <div className={style.detail_customer}>
-                            <span className={style.title}>Personnal information</span>
+                            <span className={style.title}>Address</span>
                             <div className={style.detail_container}>
                                 <div className={style.detail}>
-                                    <span className={style.detail_title}>First name</span>
+                                    <span className={style.detail_title}>Ville</span>
                                     <span className={style.detail_label}>Faneva</span>
                                 </div>
                                 <div className={style.detail}>
-                                    <span className={style.detail_title}>First name</span>
+                                    <span className={style.detail_title}>Address</span>
                                     <span className={style.detail_label}>Faneva</span>
                                 </div>
-                                <div className={style.detail}>
-                                    <span className={style.detail_title}>First name</span>
-                                    <span className={style.detail_label}>Faneva</span>
-                                </div>
-                                <div className={style.detail}>
-                                    <span className={style.detail_title}>First name</span>
-                                    <span className={style.detail_label}>Faneva</span>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
