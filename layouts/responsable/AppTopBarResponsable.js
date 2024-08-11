@@ -11,7 +11,6 @@ export default function AppTopBarResponsable(props) {
     const { user, setUser } = useContext(ResponsableLayoutContext);
     const router = useRouter();
 
-    const menu = useRef(null);
 
     const getLabelAvatar = (str) => {
         if (str.length > 0) {
@@ -21,7 +20,7 @@ export default function AppTopBarResponsable(props) {
     }
     let items = [];
 
-    return(
+    return (
         <div style={props.style} className={style.container}>
             <div className={style.navbar}>
                 <div className={style.nav_title}>
@@ -33,27 +32,17 @@ export default function AppTopBarResponsable(props) {
                     </div>
                 </div>
                 <div className={style.right_container}>
-                    <div aria-controls="popup_menu_right" aria-haspopup onClick={(event) => menu.current.toggle(event)} className={style.user_container}>
+                    <div className={style.user_container}>
                         <Avatar
-                            label={getLabelAvatar(user.username)}
+                            label={user != null && user.username != null && getLabelAvatar(user.username)}
                             shape='circle'
                             className={style.username_image}
                         />
-                        <span className={style.username}>{user.username}</span>
+                        <div className={style.user}>
+                            <span className={style.username}>{user != null && user.username != null && user.username}</span>
+                            <span className={style.job}>{user != null && user.job_post != null && user.job_post}</span>
+                        </div>
                     </div>
-                    <Menu
-                        className={style.menu}
-                        id="popup_menu_right"
-                        popupAlignment="right"
-                        ref={menu}
-                        model={items}
-                        popup
-                        pt={{
-                            label: { className: style.menu_item },
-                            icon: { className: style.menu_item },
-                            menuitem: { className: style.menu_item_container }
-                        }}
-                    />
                 </div>
             </div>
         </div>

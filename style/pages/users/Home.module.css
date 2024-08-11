@@ -7,7 +7,7 @@
 }
 
 .body_container{
-    margin-top: 180px;
+    margin-top: 150px;
     width: 100vw;
     display: flex;
     align-items: center;
@@ -17,12 +17,13 @@
 
 .left_body{
     color: white;
-    width: 619px;
+    width: 60%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 40px;
+    padding: 100px;
 }
 
 .left_title{
@@ -97,9 +98,76 @@
 
 .right_body{
     width: 40%;
-    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .image{
-    width: 100%;
+    width: 400px;   
+}
+
+@media (max-width:1600px) {
+    .container{
+        overflow-y: auto;
+    }
+    .footer{
+        display: none;
+    }
+    .body_container{
+        gap: 0;
+    }
+    .left_body{
+        padding:10px 100px;
+    }
+    .left_title{
+        font-size: 32px;
+    }
+}
+@media (max-width:1300px) {
+    .right_body{
+        display: none;
+    }
+    .left_body{
+        width: 100%;
+        padding:50px 200px;
+    }
+    .left_title{
+        font-size: 26px;
+    }
+    .button_container{
+        height: auto;
+    }
+    .button_text_title{
+        font-size: 16px;
+    }
+    .button_text_subtitle{
+        font-size: 12px;
+    }
+}
+
+@media (max-width:900px) {
+    .left_body{
+        width: 100%;
+        padding:20px 100px;
+    }
+}
+
+@media (max-width:700px) {
+    .left_body{
+        width: 100%;
+        padding:10px 10%;
+    }
+    .list_button{
+        flex-direction: row;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .button_container{
+        flex-direction: column;
+    }
+    .image_icon{
+        width: 30px;
+        height: 30px;
+    }
 }

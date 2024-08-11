@@ -4,9 +4,11 @@ import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { Dialog } from 'primereact/dialog';
 export default function FilterHandcraft(props) {
 
     const router = useRouter();
+    const [visible,setVisible] = useState(false);
 
     const [store,setStore]=useState([]);
     const [storeSelected,setStoreSelected]=useState();
@@ -48,61 +50,124 @@ export default function FilterHandcraft(props) {
 
     return(
         <div className={style.container}>
-            <FloatLabel>
-            <Dropdown 
-                    pt={{
-                        trigger: { className: style.dropdown_trigger }
-                    }}
-                    className={style.dropdown}
-                    id='operator-select' 
-                    value={storeSelected} 
-                    onChange={(e)=>setStoreSelected(e.value)}
-                    showClear
-                    options={store}
-                    optionLabel={"nom"}
-                />
-                <label className={style.dropdown_label} htmlFor='operator-select'>
-                    <i className='pi pi-shop'/>
-                    Handcraft store
-                </label>
-            </FloatLabel>
-            <FloatLabel>
-                <Dropdown 
-                    pt={{
-                        trigger: { className: style.dropdown_trigger }
-                    }}
-                    className={style.dropdown}
-                    id='location-select' 
-                    value={locationSelected} 
-                    onChange={(e)=>setLocationSelected(e.value)}
-                    showClear
-                    options={location}
-                    optionLabel={"nom"}
-                />
-                <label className={style.dropdown_label} htmlFor='location-select'>
-                    <i className='pi pi-map-marker'/>
-                    Location
-                </label>
-            </FloatLabel>
-            <FloatLabel>
-                <Dropdown
-                    pt={{
-                        trigger: { className: style.dropdown_trigger }
-                    }}
-                    className={style.dropdown}
-                    id='location-select' 
-                    value={typeSelected} 
-                    onChange={(e)=>setTypeSelected(e.value)}
-                    showClear
-                    options={type}
-                    optionLabel={"nom"}
-                />
-                <label className={style.dropdown_label} htmlFor='periode'>
-                    <i className='pi pi-users'/>
-                    Handcraft type
-                </label>
-            </FloatLabel>
-            <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
+            <Button onClick={()=>setVisible(true)} className={style.button_menu} icon="pi pi-bars"/>
+            <div className={style.wrapper}>
+                <FloatLabel>
+                    <Dropdown 
+                        pt={{
+                            trigger: { className: style.dropdown_trigger }
+                        }}
+                        className={style.dropdown}
+                        id='operator-select' 
+                        value={storeSelected} 
+                        onChange={(e)=>setStoreSelected(e.value)}
+                        showClear
+                        options={store}
+                        optionLabel={"nom"}
+                    />
+                    <label className={style.dropdown_label} htmlFor='operator-select'>
+                        <i className='pi pi-shop'/>
+                        Handcraft store
+                    </label>
+                </FloatLabel>
+                <FloatLabel>
+                    <Dropdown 
+                        pt={{
+                            trigger: { className: style.dropdown_trigger }
+                        }}
+                        className={style.dropdown}
+                        id='location-select' 
+                        value={locationSelected} 
+                        onChange={(e)=>setLocationSelected(e.value)}
+                        showClear
+                        options={location}
+                        optionLabel={"nom"}
+                    />
+                    <label className={style.dropdown_label} htmlFor='location-select'>
+                        <i className='pi pi-map-marker'/>
+                        Location
+                    </label>
+                </FloatLabel>
+                <FloatLabel>
+                    <Dropdown
+                        pt={{
+                            trigger: { className: style.dropdown_trigger }
+                        }}
+                        className={style.dropdown}
+                        id='location-select' 
+                        value={typeSelected} 
+                        onChange={(e)=>setTypeSelected(e.value)}
+                        showClear
+                        options={type}
+                        optionLabel={"nom"}
+                    />
+                    <label className={style.dropdown_label} htmlFor='periode'>
+                        <i className='pi pi-users'/>
+                        Handcraft type
+                    </label>
+                </FloatLabel>
+                <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
+            </div>
+            <Dialog visible={visible} onHide={()=>setVisible(false)}>
+                <div className={style.wrapper_dialog}>
+                    <FloatLabel>
+                        <Dropdown 
+                            pt={{
+                                trigger: { className: style.dropdown_trigger }
+                            }}
+                            className={style.dropdown}
+                            id='operator-select' 
+                            value={storeSelected} 
+                            onChange={(e)=>setStoreSelected(e.value)}
+                            showClear
+                            options={store}
+                            optionLabel={"nom"}
+                        />
+                        <label className={style.dropdown_label} htmlFor='operator-select'>
+                            <i className='pi pi-shop'/>
+                            Handcraft store
+                        </label>
+                    </FloatLabel>
+                    <FloatLabel>
+                        <Dropdown 
+                            pt={{
+                                trigger: { className: style.dropdown_trigger }
+                            }}
+                            className={style.dropdown}
+                            id='location-select' 
+                            value={locationSelected} 
+                            onChange={(e)=>setLocationSelected(e.value)}
+                            showClear
+                            options={location}
+                            optionLabel={"nom"}
+                        />
+                        <label className={style.dropdown_label} htmlFor='location-select'>
+                            <i className='pi pi-map-marker'/>
+                            Location
+                        </label>
+                    </FloatLabel>
+                    <FloatLabel>
+                        <Dropdown
+                            pt={{
+                                trigger: { className: style.dropdown_trigger }
+                            }}
+                            className={style.dropdown}
+                            id='location-select' 
+                            value={typeSelected} 
+                            onChange={(e)=>setTypeSelected(e.value)}
+                            showClear
+                            options={type}
+                            optionLabel={"nom"}
+                        />
+                        <label className={style.dropdown_label} htmlFor='periode'>
+                            <i className='pi pi-users'/>
+                            Handcraft type
+                        </label>
+                    </FloatLabel>
+                    <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
+                </div>
+
+            </Dialog>
         </div>
     )
 }

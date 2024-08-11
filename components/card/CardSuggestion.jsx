@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import style from '../../style/components/card/CardSuggestion.module.css'
 import { ScrollPanel } from 'primereact/scrollpanel';
 import { useState, useContext, useEffect, useRef } from 'react';
@@ -6,6 +5,7 @@ import LayoutContext from '@/layouts/context/layoutContext';
 import { checkIfClientLikedAccomodation, LikeAccomodation } from '@/util/Like';
 import Link from 'next/link';
 import { Toast } from 'primereact/toast';
+import { Image } from 'primereact/image';
 
 export default function CardSuggestion(props) {
     const [nbLike, setNbLike] = useState(props.nb_like);
@@ -55,7 +55,7 @@ export default function CardSuggestion(props) {
 
     return (
         <div className={style.container}>
-            <Image className={style.image} src={props.image} alt={props.name} width={382} height={239} />
+            <Image imageClassName={style.image} src={props.image} alt={props.name} />
             <div className={style.wrapper}>
                 <div className={style.title_container}>
                     <span className={style.title}>{props.name}</span>

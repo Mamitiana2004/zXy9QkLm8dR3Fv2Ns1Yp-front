@@ -94,10 +94,14 @@
     color: #fff
 }
 
-@media (max-width:666px) {
+@media (max-width:1400px) {
     .footer{
         padding: 40px;
         justify-content: flex-start;
         align-items: flex-start;
+    }
+
+    .about{
+        justify-content: flex-start;
     }
 }

@@ -141,7 +141,7 @@
 }
 
 .form_select_green_mini{
-    width: 10%;
+    width: 80px;
     appearance: none;
     position: relative;
     align-self: stretch;
@@ -233,3 +233,19 @@
     justify-content: center;
 }
 
+
+
+@media (max-width:900px) {
+    .dialog_container{
+        width: 100vw;
+    }
+
+    .body_left{
+        width: 100%;
+    }
+
+    .body_container{
+        flex-direction: column-reverse;
+        width: 100%;
+    }
+}

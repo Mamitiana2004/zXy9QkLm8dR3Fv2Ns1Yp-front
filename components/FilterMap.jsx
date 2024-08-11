@@ -1,4 +1,3 @@
-import { Button } from 'primereact/button';
 import style from './../style/components/FilterMap.module.css';
 import { useRouter } from 'next/router';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';

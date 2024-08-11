@@ -7,73 +7,130 @@ import { StepperPanel } from "primereact/stepperpanel";
 import { useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import UrlConfig from "@/util/config";
 export default function AddImage() {
-
     const inputFileRef = useRef();
+    const router = useRouter();
     const imageRef = useRef();
-    const router= useRouter();
 
-    const [imageFile,setImageFile] = useState();
-    const [imageLink,setImageLink] = useState(null);
+    const inputRef = useRef(null);
 
-    const addImage = () =>{
-        inputFileRef.current.click();
-    }
+    const [fileImages, setFileImages] = useState([]);
+    const [listImage, setListImage] = useState([]);
 
-    const handleFileUpload = () =>{
-        const files = inputFileRef.current.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-            const fileUrl=URL.createObjectURL(files[0]);
-            imageRef.current.src=fileUrl;
-            setImageFile(files[0]);
-            setImageLink(fileUrl);
+
+    const handleClick = () => {
+        inputRef.current.click();
+    };
+
+
+    const handleFileUpload = () => {
+        const files = Array.from(inputRef.current.files);
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+
+        const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
+        setListImage(prevList => [...prevList, ...newImageUrls]);
+        setFileImages(prevFiles => [...prevFiles, ...validFiles]);
+    };
+
+
+
+    const handleSubmitImages = async () => {
+        if (fileImages.length === 0) {
+            console.log("No images to upload");
+            return;
         }
-    }
+        const info = JSON.parse(localStorage.getItem("responsable_info"));
+        const formData = new FormData();
 
-    const addImageFini = () => {
-        router.push("/users/etablissement/accommodation/addInfoUser")
-    }
 
-    return(
+        formData.append('hebergement', info.id_etablissement);
+
+        fileImages.forEach((file, index) => {
+            formData.append(`image_${index}`, file);
+        });
+        console.log(formData);
+        try {
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-image/`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Images uploaded successfully:", data);
+
+                setFileImages([]);
+            } else {
+                console.error("Failed to upload images:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error uploading images:", error);
+        }
+    };
+    const addImageFini = async () => {
+        await handleSubmitImages().then(
+            () => {
+                router.push("/users/etablissement/login");
+            }
+        )
+    };
+
+    return (
         <div className={style.container}>
-            
-                <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png"/>
-                    <Stepper activeStep={3}  linear className={style.stepper}>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                    </Stepper>
+            <div className={style.left_container}>
+                <Image alt="logo" src="/images/logo-aftrip.png" width={100} height={50} />
+                <Stepper activeStep={3} linear className={style.stepper}>
+                    <StepperPanel></StepperPanel>
+                    <StepperPanel></StepperPanel>
+                    <StepperPanel></StepperPanel>
+                    <StepperPanel></StepperPanel>
+                </Stepper>
+            </div>
+            <div className={style.right_container}>
+                <div className={style.top_container}>
+                    <span className={style.top_title}>Create your etablissement account</span>
+                    <span className={style.top_subtitle}>Please add some images to your accommodation</span>
                 </div>
-                <div className={style.right_container}>
-                    <div className={style.top_container}>
-                        <span className={style.top_title}>Create your etablissement account</span>
-                        <span className={style.top_subtitle}>Please some image to your accommodation</span>
-                    </div>
-                    <div className={style.image_parent}>
-                        <div onClick={addImage} className={style.image_container}>
-                            <i className="pi pi-plus"/>
-                            <span>Add image</span>
-                            <input onChange={handleFileUpload} ref={inputFileRef} type="file" style={{display:"none"}} accept="image/*" />
-                            <Image style={{display:imageLink!=null ? "block" : "none"}} src={imageLink!=null ? imageLink : "/images/logo-aftrip.png"} alt="" ref={imageRef} imageClassName={style.image}/>
+
+                <div onClick={handleClick} className={style.button_image}>
+                    <i className="pi pi-plus" />
+                    <span>Add image</span>
+                    <input
+                        ref={inputRef}
+                        onChange={handleFileUpload}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        multiple
+                    />
+                </div>
+                <div className={style.image_container}>
+                    {listImage.map((image, index) => (
+                        <div key={index} className={style.image_add_container}>
+                            <Image
+                                className={style.image_added}
+                                src={image}
+                                alt={`Image ${index + 1}`}
+                            />
                         </div>
-                    </div>
-                    <Button onClick={addImageFini}  className="button-primary" label="Continue"/>
-
-
+                    ))}
                 </div>
+
+
+                <Button onClick={addImageFini} className="button-primary" label="Continue" />
+            </div>
         </div>
-    )
+    );
 }
 
 AddImage.getLayout = function getLayout(page) {
-    return(
+    return (
         <>
             <Head>
                 <title>Add Image</title>
             </Head>
-            <AppTopbar/>
+            <AppTopbar />
             {page}
         </>
     )

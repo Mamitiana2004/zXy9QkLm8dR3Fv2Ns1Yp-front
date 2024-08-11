@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import style from '../../../style/pages/users/tour/id.module.css';
 import FilterTour from "@/components/FilterTour";
 import { Button } from "primereact/button";
-import GallerieHotel from "@/components/GallerieHotel";
+import GallerieVoyage from "@/components/GallerieVoyage";
 import { TabPanel, TabView } from "primereact/tabview";
 import DetailTravel from "@/components/card/DetailTravel";
 import dynamic from "next/dynamic";
@@ -23,10 +23,9 @@ export default function InfoTour() {
 
     const [voyage, setVoyage] = useState(null);
     const [popularVoyages, setPopularVoyages] = useState([]);
-    const [tour, setTour] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [location, setLocalisation] = useState()
 
- 
     // Fetch voyage details when ID changes
     useEffect(() => {
         if (id) {
@@ -34,6 +33,10 @@ export default function InfoTour() {
                 .then(res => res.json())
                 .then(data => {
                     setVoyage(data);
+                    data.tour_operateur.localisation ? setLocalisation(data.tour_operateur.localisation) : setLocalisation({
+                        "latitude": 1,
+                        "longitude": 1,
+                    });
                     setLoading(false);
                 })
                 .catch(error => console.error('Error fetching voyage details:', error));
@@ -51,20 +54,6 @@ export default function InfoTour() {
             .catch(error => console.error('Error fetching popular voyages:', error));
     }, []);
 
-    // Fetch Partenire Tour
-    useEffect(() => {
-        if (id) {
-            fetch(`${UrlConfig.apiBaseUrl}/api/tour/partenaire/{id}`)
-                .then(res => res.json())
-                .then(data => {
-                    setTour(data);
-                    setLoading(false);
-                }
-                )
-                .catch(error => console.error('Error fetching partenaire Tour:', error));
-        }
-    } ,[id])
-
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -76,20 +65,15 @@ export default function InfoTour() {
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
             return style.tab_active;
-        else 
+        else
             return style.tab;
-    }
+    };
 
-    if (!voyage) {
-        return <div>Loading...</div>;
-    }
-
-    
     return (
         <>
             <Head>
                 <title>Info {t("tour")}</title>
-            </Head>  
+            </Head>
 
             <div className={style.container}>
                 <div className={style.filter_header_top}>
@@ -98,29 +82,29 @@ export default function InfoTour() {
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
-                        <FilterTour/>
+                        <FilterTour />
                     </div>
                 </div>
                 <div className={style.header_container}>
                     <div className={style.header_left}>
-                        <span className={style.header_left_title}>{voyage.nom_voyage}</span> 
+                        <span className={style.header_left_title}>{voyage.nom_voyage}</span>
                     </div>
                     <div className={style.header_right}>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-heart" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-heart" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Like</span>
                         </div>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-send" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-send" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Share</span>
                         </div>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-save" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-save" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Save</span>
                         </div>
                     </div>
                 </div>
-                <GallerieHotel/>
+                <GallerieVoyage images={voyage.images_voyage} />
                 <div className={style.tour_detail_container}>
                     <div className={style.tour_detail_left}>
                         <span className={style.tour_detail_title}>{voyage.ville_depart} - {voyage.destination_voyage}</span>
@@ -132,11 +116,11 @@ export default function InfoTour() {
                     </div>
                 </div>
                 <div className={style.body_accommodation}>
-                    <TabView 
+                    <TabView
                         pt={{
                             root: { className: style.tab_container },
-                            panelContainer:{ className: style.tab_container },
-                            navContainer:{ className: style.tab_container }
+                            panelContainer: { className: style.tab_container },
+                            navContainer: { className: style.tab_container }
                         }}
                     >
                         <TabPanel
@@ -163,7 +147,7 @@ export default function InfoTour() {
                                     <span className={style.accommodation_detail_title}>{t("travel_inclusion")}</span>
                                     <ul>
                                         {voyage.inclusions && voyage.inclusions.map((inclusion) => (
-                                            <li key={inclusion.id}>{inclusion.nom_type_inclusion}</li>
+                                            <li key={inclusion.id}>{inclusion.nom_inclusion}</li>
                                         ))}
                                     </ul>
                                 </div>
@@ -197,37 +181,43 @@ export default function InfoTour() {
                         </TabPanel>
                     </TabView>
                     <div className={style.tour_card_container}>
-                        <DetailTravel/>
+                        <DetailTravel
+                            date_debut={voyage.date_debut}
+                            date_fin={voyage.date_fin}
+                            places_disponibles={voyage.places_disponibles}
+                            prix_voyage={voyage.prix_voyage}
+                        />
                         <div className={style.tour_card}>
                             <Map
                                 style={{ width: "100%", height: "300px" }}
-                                lat={-18.9433924}
-                                lng={47.5288271}  
+                                lat={location.latitude}
+                                lng={location.longitude}
                             />
                         </div>
                         <div className={style.tour_card}>
                             <div className={style.operator_detail_header}>
                                 <Avatar
                                     shape="circle"
+                                    image={voyage.tour_operateur.images_tour[0] ? UrlConfig.apiBaseUrl + voyage.tour_operateur.images_tour[0].image : "Image Tour"}
                                     className={style.operator_avatar}
                                 />
                                 <div className={style.operator_detail_title_container}>
-                                    <span className={style.operator_detail_title}>ZTrip Mada</span>
-                                    <span className={style.operator_detail_subtitle}>Ivato</span>
+                                    <span className={style.operator_detail_title}>{voyage.tour_operateur.nom_operateur}</span>
+                                    <span className={style.operator_detail_subtitle}>{voyage.tour_operateur.adresse_operateur}</span>
                                 </div>
                             </div>
                             <div className={style.paragraphe}>
-                                Lorem ipsum dolor sit amet dolor sadipscing. Dolores diam no eos vel gubergren consequat erat accusam sit eum at stet ea et. Amet sed at voluptua voluptua diam lorem rebum elitr et dolore qui diam elitr ipsum accusam takimata et suscipit. Duo esse possim dolore consectetuer blandit. In eu voluptua id vero diam facilisis accusam tempor est dolores ipsum amet consequat. Zzril vulputate ipsum duo vel erat elitr. Labore et no elitr soluta no nisl at dolore elitr lorem stet ea kasd dolor molestie at. Accusam et ut nonumy.
+                                {voyage.tour_operateur.description_operateur}
                             </div>
-                            <Button onClick={() => router.push("/users/tour/operator/1")} className="button-primary" label="About the operator"/>
+                            <Button onClick={() => router.push("/users/tour/operator/1")} className="button-primary" label="About the operator" />
                         </div>
                     </div>
                 </div>
-                  <div className={style.suggstion_container}>
-                    <span className={style.suggstion_title}>{t("you_would_like_it")}</span>
+                <div className={style.suggestion_container}>
+                    <span className={style.suggestion_title}>{t("you_would_like_it")}</span>
                     <div className={style.suggestion_body}>
-                        {popularVoyages.map(voyage => (
-                            <PopularTripCard key={voyage.id} voyage={voyage} />
+                        {popularVoyages.map((popularVoyage) => (
+                            <PopularTripCard key={popularVoyage.id} voyage={popularVoyage} />
                         ))}
                     </div>
                 </div>

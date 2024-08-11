@@ -1,6 +1,5 @@
 import style from '@/style/pages/login.module.css'
 import { getCsrfTokenDirect } from '@/util/csrf';
-import { emailValid } from '@/util/verify';
 import Head from 'next/head'
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -10,8 +9,6 @@ import { useEffect, useRef, useState } from 'react';
 import { InputOtp } from 'primereact/inputotp';
 import { Button } from 'primereact/button';
 import { UrlConfig } from '@/util/config';
-import { useNavigation } from '@/layouts/context/navigation';
-import { NavigationProvider } from '@/layouts/context/navigation';
 
 export default function Verify() {
 
@@ -28,13 +25,105 @@ export default function Verify() {
 
     const inputCode = useRef(null);
 
-    const { canAccessForgotPage, setCanAccessForgotPage } = useNavigation();
 
-    useEffect(() => {
-        if (!canAccessForgotPage) {
-            router.push('/user/login');
+    const SendData = async (data) => {
+        try {
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/responsables/create/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data
+            } else {
+                console.error("Erreur lors de l'enregistrement:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Erreur de requête:", error);
         }
-    }, [canAccessForgotPage, router, setCanAccessForgotPage]);
+    }
+    const CreateHebergemet = (data) => {
+        return fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/create-hebergement/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur lors de l'enregistrement: " + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error("Erreur de requête:", error);
+                return false;
+            });
+    }
+
+    const LoadData = async () => {
+
+        const type_etablissement = localStorage.getItem("type_etablissement");
+        const accommodation_info = JSON.parse(localStorage.getItem("accommodationInfo"));
+
+
+        let userInfo = localStorage.getItem("_dfqaccess404");
+        userInfo = JSON.parse(userInfo);
+
+        SendData(userInfo).then((data) => {
+            if (data.id) {
+                accommodation_info.responsable_id = data.id;
+                const created = CreateHebergemet(accommodation_info).then((created) => {
+
+
+                    if (created) {
+                        toast.current.show({
+                            severity: "success",
+                            summary: "Success",
+                            detail: "Accomodation created successfully",
+                            life: 5000
+                        });
+                        localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
+                        console.log("hebergement :", created);
+                        const responsable_info = {
+                            username: data.username,
+                            job_post: "Manager",
+                            id_etablissement: created.id_hebergement,
+                            type_etablissement: type_etablissement
+                        }
+                        localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
+
+                        localStorage.removeItem("userInfo");
+                        localStorage.removeItem("_dfqaccess404");
+                        localStorage.removeItem("type_etablissement");
+                        localStorage.removeItem("accommodationInfo");
+                        localStorage.removeItem("email_etablissement");
+
+                        // setTimeout(() => {
+                        //     router.push("/users/etablissement/accommodation/addImage");
+                        // }, 3000);
+
+                    } else {
+                        toast.current.show({
+                            severity: "error",
+                            summary: "Error",
+                            detail: "Please try again later",
+                            life: 5000
+                        });
+                    }
+                })
+
+            }
+        })
+    };
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -65,28 +154,25 @@ export default function Verify() {
         return () => clearInterval(interval);
     }, [isButtonDisabled])
 
-    if (!canAccessForgotPage) {
-        return null;
-    }
+
 
     const handleSubmit = async () => {
         setSubmitDisabled(true);
 
-        const csrfToken = await getCsrfTokenDirect();
-        const email = localStorage.getItem("email_user");
+        const email = localStorage.getItem("email_etablissement");
 
+        console.log(code, email);
         try {
             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/verify-code/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
                 },
-                body: JSON.stringify({ email, code }),
+                body: JSON.stringify({ email: email, code: code }),
             });
 
             const data = await response.json();
-
+            console.log(data);
             if (response.ok) {
                 toast.current.show({
                     severity: 'success',
@@ -94,12 +180,12 @@ export default function Verify() {
                     detail: 'Verification code is correct',
                     life: 3000
                 });
-                localStorage.setItem("qfdhoiamlfndksqofmanlfdsnkzlfkqsd", code)
-                setCanAccessForgotPage(true);
 
-                setTimeout(() => {
-                    router.push('/users/forgot/newPassword');
-                }, 3000);
+                LoadData().then(() => {
+                    setTimeout(() => {
+                        router.push('/users/etablissement/accommodation/addImage');
+                    }, 3000);
+                })
             } else {
 
                 toast.current.show({
@@ -107,12 +193,12 @@ export default function Verify() {
                     summary: 'Error',
                     detail: data.error || 'Verification code is incorrect',
                     life: 3000
-                }); setTimeout(() => {
+                });
+                setTimeout(() => {
                     setSubmitDisabled(false);
                 }, 3000);
             }
         } catch (error) {
-
             toast.current.show({
                 severity: 'error',
                 summary: 'Error',
@@ -127,7 +213,7 @@ export default function Verify() {
     const sendNewCode = async (email) => {
         try {
             const csrfToken = await getCsrfTokenDirect();
-            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/send-recovery-code/`, {
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/send-responsable-code/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -141,30 +227,27 @@ export default function Verify() {
             }
 
             toast.current.show({
-                severity: 'success',
-                summary: 'Success',
-                detail: 'Password reset email sent. Please check your inbox.',
-                life: 3000
+                severity: "info",
+                summary: "Info",
+                detail: "Email de vérification renvoyé",
+                life: 3000,
             });
 
-            setTimeout(() => {
-                router.push('/users/forgot/verif');
-            }, 3000);
         } catch (error) {
             toast.current.show({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'Failed to send password reset email. Please try again later.',
+                detail: 'Failed to send verification email. Please try again later.',
                 life: 3000
             });
         }
     };
     const resend = async (e) => {
-        const email = localStorage.getItem("email_user");
+        const email = localStorage.getItem("email_etablissement");
 
         sendNewCode(email);
         setIsButtonDisabled(true);
-        setTimer(60);
+        setTimer(30);
     }
 
 
@@ -172,7 +255,7 @@ export default function Verify() {
     const tapeCode = (e) => {
         setCode(e.value);
         if (code) {
-            if (code.length == 6) {
+            if (code.length >= 6) {
                 const verify_code = handleSubmit();
                 if (verify_code) {
                     setIsInputDisabled(true);
@@ -190,13 +273,13 @@ export default function Verify() {
             <div className={style.container}>
 
                 <div className={style.login_left}>
-                    <Link href={"/users"}>
+                    <Link href={"/users/etablissement/accommodation/addInfoConnexion"}>
                         <Image src='/images/logo-aftrip.png' alt='logo' style={{ width: "250px" }} />
                     </Link>
                 </div>
                 <div className={style.login_right}>
-                    <Link className={style.back_link} href={"/users"}>
-                        <i className='pi pi-arrow-left'/>
+                    <Link className={style.back_link} href={"/users/etablissement/accommodation/addInfoConnexion"}>
+                        <i className='pi pi-arrow-left' />
                         <span>Back</span>
                     </Link>
                     <div className={style.login_title_container}>
