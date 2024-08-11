@@ -1,7 +1,7 @@
 import Head from "next/head";
 import style from './../../../style/pages/responsable/tour/travalers.module.css'
 import { Button } from "primereact/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState , useContext } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
@@ -9,6 +9,9 @@ import { useRouter } from "next/router";
 import TourCard from "@/components/responsable/TourCard";
 import { Dialog } from "primereact/dialog";
 import { Avatar } from "primereact/avatar";
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import { getCsrfFromToken } from '@/util/csrf';
+import UrlConfig from "@/util/config";
 
 export default function Travelers() {
 
@@ -18,7 +21,38 @@ export default function Travelers() {
 
 
     const [bookings,setBooking] = useState([])
-    const [allBooking,setAllBooking] = useState([]);
+    const [allBooking, setAllBooking] = useState([]);
+    
+    const { user } = useContext(ResponsableLayoutContext);
+    const { id } = router.query;
+
+    useEffect(() => {
+        if (user) {
+            const id_tour = user.id_etablissement;
+            FetchTravels(id_tour);
+        }
+    }, [user]);
+
+    function FetchTravels(id_hebergement, id) {
+        getCsrfFromToken()
+            .then(csrfToken => {
+                // Fetch hotel details
+                fetch(`${UrlConfig.apiBaseUrl}/api/tour/${id_tour}/voyages/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(allBookingData => {
+                        setBooking(allBookingData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
+
+            })
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));   
+    }
 
     useEffect(()=>{
         fetch("/api/trip/getAllCustomer")
