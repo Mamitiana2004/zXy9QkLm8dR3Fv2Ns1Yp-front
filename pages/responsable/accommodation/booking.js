@@ -12,16 +12,14 @@ export default function Booking() {
     const [name_hotel, setName_hotel] = useState(null);
     const { user } = useContext(ResponsableLayoutContext);
 
-    const [id, setId] = useState();
+    // const [id, setId] = useState();
 
     useEffect(() => {
-        user ? setId(user.id_etablissement) : 0;
-
         if (user) {
+            const id = user.id_etablissement;
             Fetch(id);
         }
-
-    }, [id, user]);
+    }, [user]);
 
     function Fetch(id) {
         getCsrfTokenDirect()
