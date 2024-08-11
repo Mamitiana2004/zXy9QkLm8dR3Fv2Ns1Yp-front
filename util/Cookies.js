@@ -59,6 +59,7 @@ const getNewAccess = () => {
         });
 };
 
+
 const getNewResponsabeAccess = () => {
     const refreshToken = Cookies.get('responsable_refresh_token');
 
@@ -82,18 +83,39 @@ const getNewResponsabeAccess = () => {
         })
         .then(data => {
             const { access } = data;
-
             Cookies.set('responsable_access_token', access, {
                 expires: 5 / 1440,
                 secure: true,
                 sameSite: 'Strict'
             });
+            return access;
         })
         .catch(error => {
             console.error('Error while refreshing access token:', error);
+            throw error;
         });
 };
 
+function getResponsableAccessToken() {
+    return new Promise((resolve, reject) => {
+        const accessToken = Cookies.get('responsable_access_token');
 
+        if (accessToken) {
+            console.log(accessToken);
+            resolve(accessToken);
+        } else {
+            getNewResponsabeAccess()
+                .then(() => {
+                    const newAccessToken = Cookies.get('responsable_access_token');
+                    if (newAccessToken) {
+                        resolve(newAccessToken);
+                    } else {
+                        reject('Failed to retrieve new access token.');
+                    }
+                })
+                .catch(error => reject(error));
+        }
+    });
+}
 
-export { setTokensInCookies, getNewAccess };
+export { setTokensInCookies, getNewAccess, getResponsableAccessToken, getNewResponsabeAccess };

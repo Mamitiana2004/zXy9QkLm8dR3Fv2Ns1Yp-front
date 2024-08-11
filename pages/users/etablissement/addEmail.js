@@ -54,7 +54,8 @@ export default function AddEmail() {
                     detail: "Veuillez patienter",
                     life: 4000
                 });
-                localStorage.setItem("email_etablissement", email); 7
+                localStorage.setItem("email_etablissement", email);
+
                 setTimeout(() => {
                     router.push("/users/etablissement/choixType");
                 }, 4000);

@@ -1,6 +1,6 @@
 import AppTopbar from "@/layouts/AppTopbar";
 import Head from "next/head";
-import style from './../../../../style/pages/users/etablissement/etablissement.module.css';
+import style from '@/style/pages/users/etablissement/etablissement.module.css';
 import { Stepper } from "primereact/stepper";
 import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
@@ -75,7 +75,6 @@ export default function AddInfoConnexion() {
                 });
             })
             .then(response => {
-                console.log(response);
                 if (!response.ok) {
                     throw new Error("Failed to send verification email.");
                 }
@@ -85,8 +84,19 @@ export default function AddInfoConnexion() {
                     detail: "Email de vérification envoyé",
                     life: 3000,
                 });
+                const type_etablissement = localStorage.getItem("type_etablissement");
+
+                let rout = "";
+
+                if (type_etablissement == 1) {
+                    rout = "/users/etablissement/accommodation/emailCheck";
+                } else if (type_etablissement == 2) {
+                    rout = "/users/etablissement/handcraft/emailCheck";
+                } else if (type_etablissement == 3) {
+                    rout = "/users/etablissement/tour/emailCheck";
+                }
                 setTimeout(() => {
-                    router.push("/users/etablissement/emailCheck");
+                    router.push(rout);
                 }, 3000);
             })
             .catch(error => {
@@ -104,24 +114,18 @@ export default function AddInfoConnexion() {
     const LoadData = async () => {
         const email = localStorage.getItem("email_etablissement");
 
-
-
         if (email) {
             sendVerification(email);
         }
 
-
-
         let userInfo = localStorage.getItem("userInfo");
 
-        // localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
         userInfo = JSON.parse(userInfo);
         const type_etablissement = localStorage.getItem("type_etablissement");
-        const accommodation_info = JSON.parse(localStorage.getItem("accommodationInfo"));
 
         userInfo.password = password;
         userInfo.type_responsable = parseInt(type_etablissement);
-        userInfo.email = email
+        userInfo.email = email;
         localStorage.setItem("_dfqaccess404", JSON.stringify(userInfo));
 
     };

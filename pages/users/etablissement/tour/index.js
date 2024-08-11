@@ -9,53 +9,99 @@ import { Rating } from "primereact/rating";
 import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
 import { Dropdown } from "primereact/dropdown";
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { Dialog } from "primereact/dialog";
 import { Chip } from 'primereact/chip';
 import { Tooltip } from "primereact/tooltip";
-        
+import { Toast } from "primereact/toast";
+
 
 export default function Tour() {
+    const toast = useRef(null);
 
-    const [rateValue,setRateValue] = useState(0);
+    const [rateValue, setRateValue] = useState(0);
 
     const router = useRouter();
-    const [deleteChip,setDeleteChip] = useState(false);
-
-    const [socialLink,setSocialLink] = useState([]);
-    const [visible,setVisible] = useState(false);
+    const [deleteChip, setDeleteChip] = useState(false);
 
 
-    const [socialLabel,setSocialLabel] = useState();
-    const [socialSelected,setSocialSelected] = useState();
-    const [allSocial,setAllSocial] = useState([]);
-    const getAllSocial = () =>{
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [nif, setNif] = useState('');
+    const [country, setCountry] = useState('Madagascar');
+    const [stat, setStat] = useState('');
+    const [socialLink, setSocialLink] = useState([]);
+    const [visible, setVisible] = useState(false);
+
+    const handleNameChange = (e) => setName(e.target.value);
+    const handlePhoneChange = (e) => setPhone(e.target.value);
+    const handleNifChange = (e) => setNif(e.target.value);
+    const handleCountryChange = (e) => setCountry(e.target.value);
+    const handleStatChange = (e) => setStat(e.target.value);
+
+    const saveToLocalStorage = () => {
+        if (name && phone && nif && country && stat) {
+
+            const email = localStorage.getItem("email_etablissement");
+
+            const data = {
+                nom_operateur: name,
+                responsable_TourOperateur: 1,
+                // adresse_operateur: "Adresse de l'opérateur",
+                email_operateur: email,
+                telephone_operateur: phone,
+                // description_operateur: "Description de l'opérateur",
+                stat: stat,
+                nif: nif,
+                pays: country,
+            };
+
+            localStorage.setItem("formData", JSON.stringify(data));
+            console.log("Data saved to localStorage:", data);
+            setTimeout(() => {
+                router.push("/users/etablissement/addInfoUser");
+            }, 3000);
+        } else {
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Please complete all fields',
+                life: 3000,
+            });
+        }
+    };
+    const [socialLabel, setSocialLabel] = useState();
+    const [socialSelected, setSocialSelected] = useState();
+    const [allSocial, setAllSocial] = useState([]);
+    const getAllSocial = () => {
         fetch("/api/social")
-        .then(res=>res.json())
-        .then(data=>setAllSocial(data))
-        .catch(error=>console.log(error));
+            .then(res => res.json())
+            .then(data => setAllSocial(data))
+            .catch(error => console.log(error));
     }
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         getAllSocial();
-    },[])
+    }, [])
 
-    const [socialLabelUpdat,setSocialLabelUpdat] = useState();
+    const [socialLabelUpdat, setSocialLabelUpdat] = useState();
 
 
-    const informationAccommodationFini = () =>{
-        router.push("/users/etablissement/tour/addImage")
+    const informationAccommodationFini = () => {
+        saveToLocalStorage();
+
+
     }
 
-    const addSocialLink = () =>{
+    const addSocialLink = () => {
         const allSocialCopy = [];
-        allSocial.map((social)=>{
+        allSocial.map((social) => {
             if (socialSelected != social) {
                 allSocialCopy.push({
-                    id:social.id,
-                    label:social.label,
-                    icon:social.icon
+                    id: social.id,
+                    label: social.label,
+                    icon: social.icon
                 });
             }
         })
@@ -63,47 +109,47 @@ export default function Tour() {
         setSocialSelected();
         const socialLinkCopy = [...socialLink];
         socialLinkCopy.push({
-            icon:socialSelected.icon,
-            label:socialLabel,
-            visible:false
+            icon: socialSelected.icon,
+            label: socialLabel,
+            visible: false
         });
         setSocialLabel();
         setSocialLink(socialLinkCopy);
         setVisible(false);
     }
 
-    const updateSocialLink = (social) =>{
+    const updateSocialLink = (social) => {
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             if (social == s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:socialLabelUpdat,
-                    visible:false
+                    icon: s.icon,
+                    label: socialLabelUpdat,
+                    visible: false
                 });
                 setSocialLabelUpdat();
             }
-            else{
+            else {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
         setSocialLink(socialLinkCopy);
     }
-    
-    const deleteSocialLink = (social) =>{
+
+    const deleteSocialLink = (social) => {
         setDeleteChip(true);
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             setSocialLabelUpdat();
             if (social != s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
@@ -111,27 +157,27 @@ export default function Tour() {
         setDeleteChip(false);
     }
 
-    const detailSocial = (social,event) =>{
+    const detailSocial = (social, event) => {
         if (event.ctrlKey) {
             router.push(social.label);
         }
-        else{
+        else {
             if (!deleteChip) {
                 const socialLinkCopy = [];
-                socialLink.map((s)=>{
+                socialLink.map((s) => {
                     if (social == s) {
                         socialLinkCopy.push({
-                            icon:s.icon,
-                            label:s.label,
-                            visible:true
+                            icon: s.icon,
+                            label: s.label,
+                            visible: true
                         });
                         setSocialLabelUpdat(s.label);
                     }
-                    else{
+                    else {
                         socialLinkCopy.push({
-                            icon:s.icon,
-                            label:s.label,
-                            visible:s.visible
+                            icon: s.icon,
+                            label: s.label,
+                            visible: s.visible
                         });
                     }
                 })
@@ -140,21 +186,21 @@ export default function Tour() {
         }
     }
 
-    const hideSocialDetail = (social) =>{
+    const hideSocialDetail = (social) => {
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             if (social == s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:false
+                    icon: s.icon,
+                    label: s.label,
+                    visible: false
                 });
             }
-            else{
+            else {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
@@ -165,20 +211,20 @@ export default function Tour() {
 
     const socialOptionTemplate = (option) => {
         return (
-            <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
-                <i className={option.icon}/>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <i className={option.icon} />
                 {option.label}
             </div>
         );
     };
 
 
-    return(
+    return (
         <>
             <div className={style.container}>
                 <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png"/>
-                    <Stepper activeStep={2}  linear className={style.stepper}>
+                    <Image alt="logo" src="/images/logo-aftrip.png" />
+                    <Stepper activeStep={2} linear className={style.stepper}>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
@@ -198,129 +244,127 @@ export default function Tour() {
                                 <FloatLabel>
                                     <InputText
                                         id="input_name"
+                                        value={name}
+                                        onChange={handleNameChange}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-warehouse"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_name">
+                                        <i className="pi pi-warehouse" />
                                         Name
                                     </label>
                                 </FloatLabel>
-                                <FloatLabel>
-                                    <InputText
-                                        id="input_address"
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_address">
-                                        <i className="pi pi-map-marker"/>
-                                        Address
-                                    </label>
-                                </FloatLabel>
+
                                 <FloatLabel>
                                     <InputText
                                         id="input_phone"
+                                        value={phone}
+                                        onChange={handlePhoneChange}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_phone">
-                                        <i className="pi pi-phone"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_phone">
+                                        <i className="pi pi-phone" />
                                         Phone
                                     </label>
                                 </FloatLabel>
-                                <FloatLabel>
-                                    <InputText
-                                        id="input_phone"
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_phone">
-                                        <i className="pi pi-credit-card"/>
-                                        NIF
-                                    </label>
-                                </FloatLabel>
+
                             </div>
                             <div className={style.right_accommodation_1}>
-                                <FloatLabel>
-                                    <Dropdown 
-                                        pt={{
-                                            trigger: { style: {display:"none"} }
-                                        }} style={{width:"100%"}}
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-warehouse"/>
-                                        Accommodation type
-                                    </label>
-                                </FloatLabel>
+
+
                                 <FloatLabel>
                                     <InputText
-                                        id="input_name"
+                                        id="input_country"
+                                        value={country}
+                                        onChange={handleCountryChange}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-map-marker"/>
-                                        City
-                                    </label>
-                                </FloatLabel>
-                                <FloatLabel>
-                                    <InputText
-                                        id="input_name"
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-map-marker"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_country">
+                                        <i className="pi pi-map-marker" />
                                         Country
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
                                     <InputText
-                                        id="input_name"
+                                        id="input_stat"
+                                        value={stat}
+                                        onChange={handleStatChange}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-credit-card"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_stat">
+                                        <i className="pi pi-credit-card" />
                                         STAT
+                                    </label>
+                                </FloatLabel>
+                                <FloatLabel>
+                                    <InputText
+                                        id="input_nif"
+                                        value={nif}
+                                        onChange={handleNifChange}
+                                    />
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_nif">
+                                        <i className="pi pi-credit-card" />
+                                        NIF
                                     </label>
                                 </FloatLabel>
                             </div>
                         </div>
-                        <Button onClick={()=>setVisible(true)} className={style.addSocial} label="Add social link" icon="pi pi-plus"/>
+                        <Button onClick={() => setVisible(true)} className={style.addSocial} label="Add social link" icon="pi pi-plus" />
                         <div className={style.chip_container}>
-                            {socialLink.map((social,key)=>{
-                                return (<>
-                                <Tooltip target="#chip"/>
-                                        <Chip id="chip" data-pr-tooltip="Ctrl+Key : aperçu" data-pr-position="right" data-pr-at="right+5 top" data-pr-my="left center-2" style={{cursor:"pointer"}} onClick={(event)=>detailSocial(social,event)} label={social.label} icon={social.icon} removable onRemove={()=>deleteSocialLink(social)}/>
-                                </>
-                                )
-                            })}
+                            {socialLink.map((social, key) => (
+                                <React.Fragment key={key}>
+                                    <Tooltip target="#chip" />
+                                    <Chip
+                                        id="chip"
+                                        data-pr-tooltip="Ctrl+Key : aperçu"
+                                        data-pr-position="right"
+                                        data-pr-at="right+5 top"
+                                        data-pr-my="left center-2"
+                                        style={{ cursor: "pointer" }}
+                                        onClick={(event) => detailSocial(social, event)}
+                                        label={social.label}
+                                        icon={social.icon}
+                                        removable
+                                        onRemove={() => deleteSocialLink(social)}
+                                    />
+                                </React.Fragment>
+                            ))}
                         </div>
-                        <Button onClick={informationAccommodationFini} style={{width:"60%"}} className="button-primary" label="Continue"/>
+                        <Button onClick={informationAccommodationFini} style={{ width: "60%" }} className="button-primary" label="Continue" />
                     </div>
 
                 </div>
             </div>
 
-            <Dialog visible={visible} onHide={()=>setVisible(false)}>
+            <Dialog visible={visible} onHide={() => setVisible(false)}>
                 <Dropdown
                     value={socialSelected}
-                    onChange={(e)=>setSocialSelected(e.value)}
+                    onChange={(e) => setSocialSelected(e.value)}
                     placeholder="Social link"
                     options={allSocial}
                     optionLabel="label"
                     itemTemplate={socialOptionTemplate}
                 />
-                <InputText value={socialLabel} onChange={(e)=>setSocialLabel(e.target.value)}/>
-                <Button label="test" onClick={addSocialLink}/>
+                <InputText value={socialLabel} onChange={(e) => setSocialLabel(e.target.value)} />
+                <Button label="test" onClick={addSocialLink} />
             </Dialog>
 
-            {socialLink.map((social,index)=>{
-                return(
-                    <Dialog draggable={false} key={index} visible={social.visible} onHide={()=>hideSocialDetail(social)}>
-                        <InputText value={socialLabelUpdat} onChange={(e)=>setSocialLabelUpdat(e.target.value)}/>
-                        <Button onClick={()=>updateSocialLink(social)} icon="pi pi-pencil" label="Upadte"/>
+            {socialLink.map((social, index) => {
+                return (
+                    <Dialog draggable={false} key={index} visible={social.visible} onHide={() => hideSocialDetail(social)}>
+                        <InputText value={socialLabelUpdat} onChange={(e) => setSocialLabelUpdat(e.target.value)} />
+                        <Button onClick={() => updateSocialLink(social)} icon="pi pi-pencil" label="Upadte" />
                     </Dialog>
                 )
             })}
+            <Toast ref={toast} />
+
         </>
     )
 }
 
 Tour.getLayout = function getLayout(page) {
-    return(
+    return (
         <>
             <Head>
                 <title>Tour</title>
             </Head>
-            <AppTopbar/>
+            <AppTopbar />
             {page}
         </>
     )
