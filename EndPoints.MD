@@ -38,10 +38,6 @@ PATCH rah misy zavatra ts niova
 * Recent Bookings (GET)
 `/api/hebergement/{id_hebergement}/recent-reservations/`
 
-
-
-
-
 ## admin tour
 
 * liste voyages avec liste clients qui ont résérvé (/responsable/tour/travelers) (GET)
@@ -80,6 +76,10 @@ Format de donnée m ise à jour voyage  (afaka ts fenoina)
 
 `/api/tour/voyages/create/`
 
+* List ana inclusion (GET) (akana ID inclusion ho ampidirina ao ambany)
+
+`/api/tour/inclusions/`
+
 #### / Format de donnée (ny information ihany, mbola tsisy sary)
 
     {
@@ -93,11 +93,21 @@ Format de donnée m ise à jour voyage  (afaka ts fenoina)
         "prix_voyage": 500,
         "places_disponibles": 20,
         "type_transport": 1,
-        "inclusions": [1, 2],  // IDs des inclusions
+        "inclusions": [1, 2],  // IDs anleh inclusions ataov sous forme ana liste otrzao
         "tour_operateur": 1    // ID du tour opérateur
     }
 
-#### / Ajout image
+#### / Ajout Trajet de voyage
+
+`/api/tour/voyages/{id_voyage}/create-trajet/`
+
+    {
+        "nom_ville": "Paris",
+        "date_trajet": "2024-09-05",
+        "description_trajet": "Départ de Paris vers la prochaine destination."
+    }
+
+#### / Ajout image (POST)
 
 `voyages/{voyage_id}/add-images/`
 
@@ -109,7 +119,21 @@ Format de donnée m ise à jour voyage  (afaka ts fenoina)
         formData.append('images', image);
     });
 
-## super-admin
+## dashboard TOUR
+
+* Stats le eo amleh vo miditra (GET)
+
+`/api/tour/{id_tour}/stats/`
+
+* GET total résérvation par mois (les 12 mois de l'année)
+
+`/api/tour/1/monthly-reservations/`
+
+* Les résérvations les plus récentes (GET)
+
+`/api/tour/{id_tour}/recent-reservations/`
+
+# super-admin
 
 * GET list responsable par type (1 accomodation, 2 handcraft, 3 tour)
 `/api/accounts/responsables/type/{id_hebergement}/`
