@@ -29,14 +29,16 @@ PATCH rah misy zavatra ts niova
 * Total booking + Avaliable room + Total guest (GET)
 `/api/hebergement/{id_hebergement}/stats/`
 
+* Nombre reservation par jour de la semaine (GET)
+`/api/hebergement/reservations-by-day/{id_hebergement}/`
+
 * Booking par mois (GET)
 `/api/hebergement/{id_hebergement}/reservations/mois/`
 
 * Recent Bookings (GET)
 `/api/hebergement/{id_hebergement}/recent-reservations/`
 
-* Nombre reservation par jour de la semaine (GET)
-`/api/hebergement/reservations-by-day/{id_hebergement}/`
+
 
 
 

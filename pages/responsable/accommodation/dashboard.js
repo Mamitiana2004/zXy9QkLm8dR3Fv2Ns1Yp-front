@@ -53,7 +53,7 @@ export default function DashBoard() {
         }
     }, [user])
 
-    function FetchDashboard_Hotel(id_hebergement) { 
+function FetchDashboard_Hotel(id_hebergement) { 
     getCsrfFromToken()
         .then(csrfToken => {
             // Fetch Hotel Data
@@ -81,118 +81,171 @@ export default function DashBoard() {
             .then(response => response.json())
             .then(Total => {
                 setTotalBookings(Total);
-                setTotalGuest(Total);
+                setTotalGuest(Total); 
                 setTotalRooms(Total);
             })
             .catch(err => console.error('Erreur lors de la récupération des statistiques de l\'hôtel:', err));
+            
+            // Fetch Reservations Par Jour
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/reservations-by-day/${id_hebergement}/`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFTOKEN': csrfToken,
+                }
+            })
+            .then(response => response.json())
+            .then(reservationData => {
+                const reservations = reservationData.reservations_by_day;
+
+                // Data for the chart, using the fetched data
+                const data = {
+                    labels: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+                    datasets: [
+                        {
+                            label: "States Booking reservations",
+                            backgroundColor: "#305555",
+                            borderColor: "#305555",
+                            data: [
+                                reservations.Lundi, 
+                                reservations.Mardi, 
+                                reservations.Mercredi, 
+                                reservations.Jeudi, 
+                                reservations.Vendredi, 
+                                reservations.Samedi, 
+                                reservations.Dimanche
+                            ]
+                        }
+                    ]
+                };
+                
+                // Options for the chart
+                const options = {
+                    maintainAspectRatio: false,
+                    aspectRatio: 0.6,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: "#000"
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: "#4a4a4a",
+                                font: {
+                                    weight: 500
+                                }
+                            },
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: "#4a4a4a"
+                            },
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        }
+                    }
+                };
+                    
+                setBarData(data);
+                setBarOptions(options);
+            })
+                .catch(err => console.error('Erreur lors de la récupération des réservations par jour:', err));
+            
+            
+            //Fetch Booking state par Mois
+              // Fecth Booking State
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id_hebergement}/reservations/mois/`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFTOKEN': csrfToken,
+                }
+            })
+            .then(response => response.json())
+                .then(data => {
+                const allMonths = [
+                    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                ];
+                
+                // Create an object to map reservations by month
+                const reservationsByMonth = {};
+
+                data.reservations_by_month.forEach(item => {
+                    const month = new Date(item.month).toLocaleDateString('en-US', { month: 'short' });
+                    reservationsByMonth[month] = item.total_reservations;
+                });
+
+                // Create an array of reservation data, using 0 if no data for the month
+                const reservationsData = allMonths.map(month => reservationsByMonth[month] || 0);
+                const dataHorizontal = {
+                    labels: allMonths,
+                    datasets:[
+                        {
+                            label:"Booking",
+                            backgroundColor:"#D4E4E2",
+                            borderColor:"#D4E4E2",
+                            data:reservationsData
+                        }
+                    ]
+                };
+                const optionsHorizontal = {
+                    indexAxis:'y',
+                    maintainAspectRatio: false,
+                    aspectRatio: 0.5,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                fontColor: "#000"
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: "#4a4a4a",
+                                font: {
+                                    weight: 500
+                                }
+                            },
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: "#4a4a4a"
+                            },
+                            grid: {
+                                display:false,
+                                drawBorder: false
+                            }
+                        }
+                    }
+                };
+                setBarHorizontalData(dataHorizontal);
+                setBarHorizontalOptions(optionsHorizontal);
+
+                })
+            
         })
         .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));   
 }
 
 
-    useEffect(()=>{
-        const data = {
-            labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-            datasets:[
-                {
-                    label:"New booking",
-                    backgroundColor:"#D4E4E2",
-                    borderColor:"#D4E4E2",
-                    data:[40,88,60,87,36,36,30]
-                },
-                {
-                    label:"Confirmed booking",
-                    backgroundColor:"#305555",
-                    borderColor:"#305555",
-                    data:[43,44,74,52,29,96,24]
-                }
-            ]
-        };
-        const options = {
-            maintainAspectRatio: false,
-            aspectRatio: 0.6,
-            plugins: {
-                legend: {
-                    labels: {
-                        fontColor: "#000"
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        color: "#4a4a4a",
-                        font: {
-                            weight: 500
-                        }
-                    },
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: "#4a4a4a"
-                    },
-                    grid: {
-                        display:false,
-                        drawBorder: false
-                    }
-                }
-            }
-        };
 
-        setBarData(data);
-        setBarOptions(options);
-        const dataHorizontal = {
-            labels:['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets:[
-                {
-                    label:"Booking",
-                    backgroundColor:"#D4E4E2",
-                    borderColor:"#D4E4E2",
-                    data:[40,88,60,87,36,36,30]
-                }
-            ]
-        };
-        const optionsHorizontal = {
-            indexAxis:'y',
-            maintainAspectRatio: false,
-            aspectRatio: 0.5,
-            plugins: {
-                legend: {
-                    labels: {
-                        fontColor: "#000"
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        color: "#4a4a4a",
-                        font: {
-                            weight: 500
-                        }
-                    },
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: "#4a4a4a"
-                    },
-                    grid: {
-                        display:false,
-                        drawBorder: false
-                    }
-                }
-            }
-        };
-        setBarHorizontalData(dataHorizontal);
-        setBarHorizontalOptions(optionsHorizontal);
+    useEffect(()=>{
+        
 
 
         const dataLine = {
