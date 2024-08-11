@@ -26,11 +26,11 @@ export default function DashBoard() {
     const [lineOptions, setLineOptions] = useState({});
 
     const [recentBooking,setRecentBooking] = useState([
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
-        {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"}
+        // {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
+        // {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
+        // {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
+        // {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"},
+        // {id:"#41",name:"Paul Adamas",room:"203",guests:"2",check_in:"07-07-2024",check_out:"08-07-2024"}
     ])
 
      // Integration 
@@ -84,7 +84,32 @@ function FetchDashboard_Hotel(id_hebergement) {
                 setTotalGuest(Total); 
                 setTotalRooms(Total);
             })
-            .catch(err => console.error('Erreur lors de la récupération des statistiques de l\'hôtel:', err));
+                .catch(err => console.error('Erreur lors de la récupération des statistiques de l\'hôtel:', err));
+            
+            
+            // Fetch Recent Bookings
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id_hebergement}/recent-reservations/`, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFTOKEN': csrfToken,
+                }
+            })
+            .then(response => response.json())
+                .then(RecentBooking => {
+                    setRecentBooking(
+                        RecentBooking.recent_reservations.map(res => ({
+                            id: res.client_reserve.id,
+                            name: res.client_reserve.first_name +" "+res.client_reserve.last_name,
+                            room: res.chambre_reserve,
+                            guests: res.nombre_personnes_reserve,
+                            check_in: res.date_debut_reserve,
+                            check_out: res.date_fin_reserve
+                        }))
+                    )
+
+            })
+                .catch(err => console.error('Erreur lors de la récupération des Booking recents:', err));
             
             // Fetch Reservations Par Jour
             fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/reservations-by-day/${id_hebergement}/`, {
