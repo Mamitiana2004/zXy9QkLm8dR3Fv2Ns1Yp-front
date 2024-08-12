@@ -133,6 +133,12 @@ Format de donnée m ise à jour voyage  (afaka ts fenoina)
 
 `/api/tour/{id_tour}/recent-reservations/`
 
+# Coté client
+
+* Panier
+
+`/api/artisanat/client-panier/`
+
 # super-admin
 
 * GET list responsable par type (1 accomodation, 2 handcraft, 3 tour)
