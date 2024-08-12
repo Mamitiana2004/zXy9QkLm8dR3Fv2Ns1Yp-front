@@ -1,6 +1,6 @@
 import AppTopbar from "@/layouts/AppTopbar";
 import Head from "next/head";
-import style from './../../../../style/pages/users/etablissement/etablissement.module.css';
+import style from '@/style/pages/users/etablissement/etablissement.module.css';
 import { Stepper } from "primereact/stepper";
 import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
@@ -58,7 +58,7 @@ export default function AddInfoUser() {
     const addInfoUserFini = () => {
         const status = saveInfoToLocalStorage();
         if (status) {
-            router.push("/users/etablissement/accommodation/addInfoConnexion")
+            router.push("/users/etablissement/addLocalisation");
         }
 
     }

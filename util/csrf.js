@@ -72,8 +72,10 @@ export const getCsrfTokenDirect = async () => {
     try {
         const response = await fetch(`${UrlConfig.apiBaseUrl}/api/get-csrf-token-direct/`, {
             method: "GET",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
+
             },
         });
 
@@ -83,6 +85,7 @@ export const getCsrfTokenDirect = async () => {
 
         const data = await response.json();
         return data.csrfToken;
+
     } catch (error) {
         console.error("Error fetching CSRF token:", error.message);
         throw error;

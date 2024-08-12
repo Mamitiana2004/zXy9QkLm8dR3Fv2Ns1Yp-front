@@ -49,7 +49,7 @@ export default function AddImage() {
         fileImages.forEach((file, index) => {
             formData.append(`image_${index}`, file);
         });
-        console.log(formData);
+
         try {
             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-image/`, {
                 method: 'POST',
@@ -59,7 +59,9 @@ export default function AddImage() {
             if (response.ok) {
                 const data = await response.json();
                 console.log("Images uploaded successfully:", data);
-
+                setTimeout(() => {
+                    router.push("/users/etablissement/we");
+                }, 3000);
                 setFileImages([]);
             } else {
                 console.error("Failed to upload images:", response.statusText);
@@ -69,11 +71,8 @@ export default function AddImage() {
         }
     };
     const addImageFini = async () => {
-        await handleSubmitImages().then(
-            () => {
-                router.push("/users/etablissement/login");
-            }
-        )
+        handleSubmitImages();
+
     };
 
     return (

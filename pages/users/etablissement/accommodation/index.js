@@ -77,7 +77,7 @@ export default function Accommodation() {
 
         localStorage.setItem('accommodationInfo', JSON.stringify(accommodationInfo));
         if (accommodationInfo) {
-            router.push("/users/etablissement/accommodation/addInfoUser");
+            router.push("/users/etablissement/addInfoUser");
         }
         // console.log('Accommodation information saved:', accommodationInfo);
     }
