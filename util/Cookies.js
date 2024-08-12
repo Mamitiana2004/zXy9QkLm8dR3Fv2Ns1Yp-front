@@ -13,7 +13,7 @@ const setTokensInCookies = (refreshToken, accessToken) => {
         sameSite: 'Strict'
     });
 
-    Cookies.set('accessToken', accessToken, {
+    Cookies.set('trucdu_genre', accessToken, {
         expires: 5 / 1440,
         secure: true,
         sameSite: 'Strict'
