@@ -23,13 +23,21 @@ export default function Verify() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [isSubmitDisabled, setSubmitDisabled] = useState(false);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
-
+    const [locate, setLocate] = useState();
 
     const [email, setEmail] = useState("");
     const [code, setCode] = useState();
-
+    const [username, setUsername] = useState();
+    const [idEtablissement, setIdEtablissement] = useState();
     const inputCode = useRef(null);
-
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedLocation = localStorage.getItem("info_location");
+            if (storedLocation) {
+                setLocate(JSON.parse(storedLocation));
+            }
+        }
+    }, []);
 
     const CreateResponsableUser = async (data) => {
         try {
@@ -66,11 +74,15 @@ export default function Verify() {
                 }
                 return response.json();
             })
-            .then(data => {
-                console.log('Success:', data);
+            .then(() => {
+                // console.log('Success:', data);
+                CleanStorage();
+                return true;
             })
             .catch(error => {
                 console.error('Error:', error);
+                return false;
+
             });
     };
 
@@ -87,7 +99,6 @@ export default function Verify() {
                 throw new Error("Erreur lors de l'enregistrement: " + response.statusText);
             }
             const data_1 = await response.json();
-            const localisation_info = JSON.parse(localStorage.getItem("info_location"));
 
             toast.current.show({
                 severity: "success",
@@ -102,75 +113,76 @@ export default function Verify() {
             return false;
         }
     }
+    const CleanStorage = async () => {
 
+        localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
+
+
+        // localStorage.removeItem("userInfo");
+        // localStorage.removeItem("_dfqaccess404");
+        // localStorage.removeItem("type_etablissement");
+        // localStorage.removeItem("formData");
+        // localStorage.removeItem("email_etablissement");
+
+        setTimeout(() => {
+            router.push('/users/etablissement/tour/addImage');
+        }, 3000);
+
+    }
     const LoadData = async () => {
-        const type_etablissement = localStorage.getItem("type_etablissement");
-        const etablissement_info = JSON.parse(localStorage.getItem("formData"));
+        setLocate();
+        if (locate) {
 
-        const userInfo = JSON.parse(localStorage.getItem("_dfqaccess404"));
-        const addressParts = localisation_info.split(',');
-        const city = addressParts[addressParts.length - 2].trim();
+            const etablissement_info = JSON.parse(localStorage.getItem("formData"));
 
-        CreateResponsableUser(userInfo)
-            .then((data) => {
-                if (data.id) {
-                    etablissement_info.responsable_TourOperateur = data.id;
-                    CreateTour(etablissement_info)
-                        .then((created) => {
+            const userInfo = JSON.parse(localStorage.getItem("_dfqaccess404"));
+            console.log(locate.adress);
+            const addressParts = locate.adress.split(',');
+            const city = addressParts[addressParts.length - 2].trim();
 
 
+            CreateResponsableUser(userInfo)
+                .then((data) => {
+                    if (data.id) {
+                        etablissement_info.responsable_TourOperateur = data.id;
 
-                            if (created) {
-                                const locate_data = {
-                                    "adresse": localisation_info.adress,
-                                    "ville": city,
-                                    "latitude": localisation_info.location.lat,
-                                    "longitude": localisation_info.location.lng,
-                                    "tour_id": created.id
-                                }
-                                CreateLocation(locate_data).then((res) => {
-                                    if (res) {
-                                        localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
+                        CreateTour(etablissement_info)
+                            .then(async (created) => {
+                                if (created) {
 
-                                        console.log("etablissement :", created);
-                                        const responsable_info = {
-                                            username: data.username,
-                                            job_post: "Manager",
-                                            id_etablissement: created.id_hebergement,
-                                            type_etablissement: type_etablissement
-                                        }
-                                        localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
+                                    const type_etablissement = localStorage.getItem("type_etablissement");
 
-                                        // localStorage.removeItem("userInfo");
-                                        // localStorage.removeItem("_dfqaccess404");
-                                        // localStorage.removeItem("type_etablissement");
-                                        // localStorage.removeItem("formData");
-                                        // localStorage.removeItem("email_etablissement");
-
-                                        // setTimeout(() => {
-                                        //     router.push('/users/etablissement/accommodation/addImage');
-                                        // }, 3000);
-                                    } else {
-                                        console.log("euureurreeee");
+                                    const responsable_info = {
+                                        username: data.username,
+                                        job_post: "Manager",
+                                        id_etablissement: created.id,
+                                        type_etablissement: type_etablissement
                                     }
-                                })
+                                    localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
+                                    const locate_data = {
+                                        "adresse": locate.adress,
+                                        "ville": city,
+                                        "latitude": locate.location.lat,
+                                        "longitude": locate.location.lng,
+                                        "tour_id": created.id
+                                    }
 
+                                    CreateLocation(locate_data);
 
-                                return true;
-                            } else {
-                                toast.current.show({
-                                    severity: "error",
-                                    summary: "Error",
-                                    detail: "Please try again later",
-                                    life: 5000
-                                });
+                                } else {
+                                    toast.current.show({
+                                        severity: "error",
+                                        summary: "Error",
+                                        detail: "Please try again later",
+                                        life: 5000
+                                    });
+                                }
+                            })
 
-                                return false;
-                            }
-                        })
+                    }
+                })
+        }
 
-                }
-            })
     };
 
     useEffect(() => {
