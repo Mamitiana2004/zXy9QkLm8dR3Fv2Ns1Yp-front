@@ -165,6 +165,8 @@ export default function Travelers() {
                                 <div className={style.detail}>
                                     <span className={style.detail_title}>Address</span>
                                     <span className={style.detail_label}>Faneva</span>
+                                    <span className={style.detail_label}>Beckup</span>
+
                                 </div>
                                
                             </div>
