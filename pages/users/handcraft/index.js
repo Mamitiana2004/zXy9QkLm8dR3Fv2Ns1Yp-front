@@ -116,7 +116,7 @@ export default function Handcraft() {
                                 </div>
                             </div>
                         </div>
-                        <Image className={style.top_value_body_image_container} imageClassName={style.top_value_body_image} src="/images/handcraft.jpg" alt=""/>
+                        <Image className={style.top_value_body_image_container} imageClassName={style.top_value_body_image} src="/images/handcraft.jpg" alt="" />
                     </div>
                 </div>
                 <div className={style.suggestion_container}>
@@ -133,8 +133,8 @@ export default function Handcraft() {
                                     id={product.id}
                                     nb_like={product.total_likes}
                                     nom_produit={product.nom_produit_artisanal}
-                                    by={product.artisanat.nom_artisanat}
-                                    location={`${product.artisanat.localisation_artisanat.ville} ${product.artisanat.localisation_artisanat.adresse}`}
+                                    by={product.artisanat.nom}
+                                    location={`${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.ville : ""} ${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.adresse : ""}`}
                                     prix={`$ ${product.prix_artisanat}`}
                                     discount={product.discount}
                                     href={`/users/handcraft/${product.id}`}
