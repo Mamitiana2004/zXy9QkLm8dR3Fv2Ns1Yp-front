@@ -23,15 +23,22 @@ export default function Verify() {
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [isSubmitDisabled, setSubmitDisabled] = useState(false);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
+    const [locate, setLocate] = useState();
 
 
     const [email, setEmail] = useState("");
     const [code, setCode] = useState();
 
     const inputCode = useRef(null);
-
-
-    const SendData = async (data) => {
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const storedLocation = localStorage.getItem("info_location");
+            if (storedLocation) {
+                setLocate(JSON.parse(storedLocation));
+            }
+        }
+    }, []);
+    const CreateResponsableUser = async (data) => {
         try {
             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/responsables/create/`, {
                 method: 'POST',
@@ -51,6 +58,33 @@ export default function Verify() {
             console.error("Erreur de requête:", error);
         }
     }
+
+    const CreateLocation = async (data) => {
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/localisation/create/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(() => {
+                // console.log('Success:', data);
+                // CleanStorage();
+                return true;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                return false;
+
+            });
+    };
     const CreateHebergemet = (data) => {
         return fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/create-hebergement/`, {
             method: 'POST',
@@ -74,60 +108,79 @@ export default function Verify() {
             });
     }
 
+    const CleanStorage = async () => {
+
+        localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
+
+
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("_dfqaccess404");
+        localStorage.removeItem("type_etablissement");
+        localStorage.removeItem("formData");
+        localStorage.removeItem("email_etablissement");
+
+        setTimeout(() => {
+            router.push('/users/etablissement/tour/addImage');
+        }, 3000);
+
+    }
+
     const LoadData = async () => {
+        if (locate) {
+            const type_etablissement = localStorage.getItem("type_etablissement");
+            const accommodation_info = JSON.parse(localStorage.getItem("accommodationInfo"));
 
-        const type_etablissement = localStorage.getItem("type_etablissement");
-        const accommodation_info = JSON.parse(localStorage.getItem("accommodationInfo"));
+            const addressParts = locate.adress.split(',');
+            const city = addressParts[addressParts.length - 2].trim();
+            let userInfo = localStorage.getItem("_dfqaccess404");
+            userInfo = JSON.parse(userInfo);
+
+            CreateResponsableUser(userInfo).then((data) => {
+                if (data.id) {
+                    accommodation_info.responsable_id = data.id;
+                    const created = CreateHebergemet(accommodation_info).then((created) => {
 
 
-        let userInfo = localStorage.getItem("_dfqaccess404");
-        userInfo = JSON.parse(userInfo);
+                        if (created) {
+                            toast.current.show({
+                                severity: "success",
+                                summary: "Success",
+                                detail: "Accomodation created successfully",
+                                life: 5000
+                            });
+                            localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
 
-        SendData(userInfo).then((data) => {
-            if (data.id) {
-                accommodation_info.responsable_id = data.id;
-                const created = CreateHebergemet(accommodation_info).then((created) => {
+                            console.log("hebergement :", created);
+                            const responsable_info = {
+                                username: data.username,
+                                job_post: "Manager",
+                                id_etablissement: created.id_hebergement,
+                                type_etablissement: type_etablissement
+                            }
+                            localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
+                            const locate_data = {
+                                "adresse": locate.adress,
+                                "ville": city,
+                                "latitude": locate.location.lat,
+                                "longitude": locate.location.lng,
+                                "hebergement_id": created.id_hebergement
+                            }
 
-
-                    if (created) {
-                        toast.current.show({
-                            severity: "success",
-                            summary: "Success",
-                            detail: "Accomodation created successfully",
-                            life: 5000
-                        });
-                        localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
-                        console.log("hebergement :", created);
-                        const responsable_info = {
-                            username: data.username,
-                            job_post: "Manager",
-                            id_etablissement: created.id_hebergement,
-                            type_etablissement: type_etablissement
+                            CreateLocation(locate_data);
+                        } else {
+                            toast.current.show({
+                                severity: "error",
+                                summary: "Error",
+                                detail: "Please try again later",
+                                life: 5000
+                            });
                         }
-                        localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
+                    })
 
-                        localStorage.removeItem("userInfo");
-                        localStorage.removeItem("_dfqaccess404");
-                        localStorage.removeItem("type_etablissement");
-                        localStorage.removeItem("accommodationInfo");
-                        localStorage.removeItem("email_etablissement");
+                }
+            })
+        }
 
-                        // setTimeout(() => {
-                        //     router.push("/users/etablissement/accommodation/addImage");
-                        // }, 3000);
-
-                    } else {
-                        toast.current.show({
-                            severity: "error",
-                            summary: "Error",
-                            detail: "Please try again later",
-                            life: 5000
-                        });
-                    }
-                })
-
-            }
-        })
     };
 
     useEffect(() => {

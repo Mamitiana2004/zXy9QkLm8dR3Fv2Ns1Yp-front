@@ -118,11 +118,11 @@ export default function Verify() {
         localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
 
 
-        // localStorage.removeItem("userInfo");
-        // localStorage.removeItem("_dfqaccess404");
-        // localStorage.removeItem("type_etablissement");
-        // localStorage.removeItem("formData");
-        // localStorage.removeItem("email_etablissement");
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("_dfqaccess404");
+        localStorage.removeItem("type_etablissement");
+        localStorage.removeItem("formData");
+        localStorage.removeItem("email_etablissement");
 
         setTimeout(() => {
             router.push('/users/etablissement/tour/addImage');
@@ -130,13 +130,11 @@ export default function Verify() {
 
     }
     const LoadData = async () => {
-        setLocate();
         if (locate) {
 
             const etablissement_info = JSON.parse(localStorage.getItem("formData"));
 
             const userInfo = JSON.parse(localStorage.getItem("_dfqaccess404"));
-            console.log(locate.adress);
             const addressParts = locate.adress.split(',');
             const city = addressParts[addressParts.length - 2].trim();
 

@@ -109,7 +109,7 @@ export default function FilterHandcraft(props) {
                 <Button onClick={search} icon="pi pi-search" label='Search' className='button-primary'/>
             </div>
             <Dialog visible={visible} onHide={()=>setVisible(false)}>
-                <div className={style.wrapper_dialog}>
+                <div className={style.wrapper_dialochq}>
                     <FloatLabel>
                         <Dropdown 
                             pt={{
