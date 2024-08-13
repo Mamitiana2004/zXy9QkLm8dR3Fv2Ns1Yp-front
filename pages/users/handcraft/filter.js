@@ -24,7 +24,7 @@ export default function FilterHandCraftPage() {
             id={handcraft.id}
             nb_like={handcraft.total_likes}
             nom_produit={handcraft.nom_produit_artisanal}
-            by={handcraft.artisanat.nom_artisanat}
+            by={handcraft.artisanat.nom}
             location={`${handcraft.artisanat.localisation_artisanat.ville} ${handcraft.artisanat.localisation_artisanat.adresse}`}
             prix={`$ ${handcraft.prix_artisanat}`}
             discount={handcraft.discount}
