@@ -14,8 +14,18 @@ import { InputText } from "primereact/inputtext";
 import { FilterMatchMode, FilterOperator } from "primereact/api";
 import { Dropdown } from "primereact/dropdown";
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+import { Dialog } from "primereact/dialog";
+
+let emptyAccommodation ={
+    id:null,
+    name:"",
+    type_accommodation:null,
+    star:0
+}
+
         
 export default function Accommodation(){
+
     
     const dt = useRef(null);
     const toast = useRef(null);
@@ -30,11 +40,15 @@ export default function Accommodation(){
         setGlobalFilter('');
     };
 
+    const [accommodationData,setAccommodationData] = useState(emptyAccommodation);
+
     const [type_accommodation,setType_accommodation] = useState([
         {id:1,nom_type:"Hotel"},
         {id:2,nom_type:"Maison"},
         {id:3,nom_type:"Villa"}
-    ])
+    ]);
+    const [dialogVisible,setDialogVisible] = useState(false);
+    const [typeDialog,setTypeDialog] = useState(0);//0 insert - 1 update
 
     const [accommodations,setAccommodations] = useState(null);
     const [accommodationSelected,setAccommodationSelected] = useState([]);
@@ -59,18 +73,39 @@ export default function Accommodation(){
         initFilters();
     },[])
 
+    useEffect(()=>{
+        if (typeDialog==0) {
+            setAccommodationData(emptyAccommodation);
+        }
+    },[typeDialog,emptyAccommodation])
+
     const exportCSV = () => {
         dt.current.exportCSV();
     };
 
+    const update = (item) =>{
+        let data={
+            id:item.id,
+            name:item.nom_hebergement,
+            star:item.nombre_etoile_hebergement,
+            type_accommodation:getTypeAccommodation(item.idTypeAccommodation)
+        }
+        console.log(data);
+        setAccommodationData(data);
+        setTypeDialog(1);
+        setDialogVisible(true);
+    }
+
     const leftToolbarTemplate = (
         <React.Fragment>
             <div className={style.leftToolbar}>
-                <Button label="New" icon="pi pi-plus" severity="success"  />
+                <Button onClick={()=>{setDialogVisible(true);setTypeDialog(0)}} label="New" icon="pi pi-plus" severity="success"  />
                 <Button onClick={()=>{confirmAllDelete()}} label="Delete" icon="pi pi-trash" severity="danger" disabled={!accommodationSelected || !accommodationSelected.length} />
             </div>
         </React.Fragment>
-        );
+    );
+
+
 
     const rightToolbarTemplate = () => {
         return <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />;
@@ -102,8 +137,7 @@ export default function Accommodation(){
     const actionBodyTemplate = (item) =>{
         return(
             <div className={style.actionBodyTemplate}>
-                <Button icon="pi pi-eye" rounded outlined severity="help"/>
-                <Button icon="pi pi-pencil" rounded outlined severity="success"/>
+                <Button onClick={()=>{update(item)}} icon="pi pi-pencil" rounded outlined severity="success"/>
                 <Button onClick={()=>confirmDelete(item)} icon="pi pi-trash" rounded outlined severity="danger"/>
             </div>
         )
@@ -159,6 +193,46 @@ export default function Accommodation(){
         </div>
     )
 
+    const sendData = () =>{
+        let accommodationCopy = [...accommodations];
+        if (typeDialog==0) {
+            
+        }
+        if (typeDialog==1) {
+            
+        }
+        setDialogVisible(false);
+    }
+
+    const changeType = (e) =>{
+        let data={
+            id:accommodationData.id,
+            name:accommodationData.nom,
+            star:accommodationData.star,
+            type_accommodation:e.value
+        }
+        setAccommodationData(data);
+    }
+
+    const changeName = (e) =>{
+        let data={
+            id:accommodationData.id,
+            name:e.target.value,
+            star:accommodationData.star,
+            type_accommodation:accommodationData.type_accommodation
+        }
+        setAccommodationData(data);
+    }
+    
+    const changeStar = (e) =>{
+        let data={
+            id:accommodationData.id,
+            name:accommodationData.name,
+            star:e.value,
+            type_accommodation:accommodationData.type_accommodation
+        }
+        setAccommodationData(data);
+    }
 
     return(
         <>
@@ -188,6 +262,47 @@ export default function Accommodation(){
             </div>
             <Toast ref={toast}/>
             <ConfirmDialog/>
+
+            <Dialog header={typeDialog==0 ? "Add new Hotel" : "Update hotel"} draggable={false} visible={dialogVisible} onHide={()=>setDialogVisible(false)}>
+
+                <div className={style.add_container}>
+
+                    <div className={style.input_container}>
+                        <span>Nom :</span>
+                        <input onChange={changeName} value={accommodationData.name} className={style.add_input}/>
+                    </div>
+
+                    <div className={style.input_container}>
+                        <span>Type :</span>
+                        <Dropdown  
+                            value={accommodationData.type_accommodation}
+                            options={type_accommodation}
+                            optionLabel="nom_type"
+                            onChange={(e)=>changeType(e)}
+                        />
+                    </div>
+
+                    <div className={style.input_container}>
+                        <span>Stars</span>
+                        <Rating
+                            value={accommodationData.star}
+                            onChange={(e)=>changeStar(e)}
+                            cancel={false}
+                            pt={{
+                                onIcon:()=>({
+                                    style:{
+                                        "color":"#FFD700"
+                                    }
+                                })
+                            }}
+                        />
+                    </div>
+
+                    <Button onClick={()=>sendData()} className="button-primary" label={typeDialog==0 ? "Add" : "Update"}/>
+
+                </div>
+
+            </Dialog>
         </>
     )   
 }
