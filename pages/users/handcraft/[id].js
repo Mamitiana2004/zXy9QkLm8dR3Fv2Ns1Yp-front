@@ -51,7 +51,7 @@ export default function DetailHandcraft() {
                                     nb_like={product.total_likes}
                                     nom_produit={product.nom_produit_artisanal}
                                     by={product.artisanat.nom_artisanat}
-                                    location={`${product.artisanat.localisation_artisanat.ville} ${product.artisanat.localisation_artisanat.adresse}`}
+                                    location={`${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.ville : ""} ${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.adresse : ""}`}
                                     prix={`$ ${product.prix_artisanat}`}
                                     discount={product.discount}
                                     href={`/users/handcraft/${product.id}`}
