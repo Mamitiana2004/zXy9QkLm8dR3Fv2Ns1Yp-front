@@ -12,22 +12,18 @@ import { appWithTranslation } from "next-i18next";
 import ResponsableLayout from "@/layouts/responsable/ResponsableLayout";
 import { ResponsableLayoutProvider } from "@/layouts/context/responsableLayoutContext";
 import 'react-calendar/dist/Calendar.css';
-import { Button } from "primereact/button";
-import ChatBot from "@/components/ChatBot";
-import { NavigationProvider } from "@/layouts/context/navigation";
 import AdminLayout from "@/layouts/admin/AdminLayout";
 import AdminLayoutContext, { AdminLayoutProvider } from "@/layouts/context/adminLayoutContext";
-const Loader = dynamic(() => import('@/layouts/Loader'), { ssr: false });
+const Loader = dynamic(()=> import('@/layouts/Loader'),{ssr:false});
 
 
 
 function MyApp({ Component, pageProps }) {
 
-    const [loading, setLoading] = useState(false);
-    const [visible, setVisible] = useState(false);
+    const [loading,setLoading]=useState(false);
     const router = useRouter();
 
-    useEffect(() => {
+    useEffect(()=>{
         const handleStart = () => setLoading(true);
         const handleEnd = () => setLoading(false);
         // document.addEventListener('contextmenu', (event) => event.preventDefault());
@@ -36,16 +32,16 @@ function MyApp({ Component, pageProps }) {
         //       event.preventDefault();
         //     }
         // });
-
-        Router.events.on("routeChangeStart", handleStart);
-        Router.events.on("routeChangeComplete", handleEnd);
-        Router.events.on("routeChangeError", handleEnd);
-        return () => {
-            Router.events.off("routeChangeStart", handleStart);
-            Router.events.off("routeChangeComplete", handleEnd);
-            Router.events.off("routeChangeError", handleEnd);
+          
+        Router.events.on("routeChangeStart",handleStart);
+        Router.events.on("routeChangeComplete",handleEnd);
+        Router.events.on("routeChangeError",handleEnd);
+        return () =>{
+            Router.events.off("routeChangeStart",handleStart);
+            Router.events.off("routeChangeComplete",handleEnd);
+            Router.events.off("routeChangeError",handleEnd);
         }
-    }, [])
+    },[])
 
     if(router.asPath.includes("/admin")  && !Component.getLayout){
         return (
@@ -69,47 +65,35 @@ function MyApp({ Component, pageProps }) {
             </PrimeReactProvider>
         )
     }
-    if (router.asPath.includes("/responsable") && !Component.getLayout) {
-        return (
+    if(router.asPath.includes("/responsable") && !Component.getLayout){
+        return(
             <PrimeReactProvider>
-                <NavigationProvider>
-                    <ResponsableLayoutProvider>
-                        <ResponsableLayout>
-                            {loading && <Loader />}
-                            <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
-                            <ChatBot visible={visible} onHide={() => setVisible(false)} />
-                            <Component {...pageProps} />
-                        </ResponsableLayout>
-                    </ResponsableLayoutProvider>
-                </NavigationProvider>
+                <ResponsableLayoutProvider>
+                    <ResponsableLayout>
+                        {loading && <Loader/>}
+                        <Component {...pageProps}/>
+                    </ResponsableLayout>
+                </ResponsableLayoutProvider>
             </PrimeReactProvider>
         )
     }
     if (Component.getLayout) {
-        return (
+        return(
             <PrimeReactProvider>
-                <NavigationProvider>
-                    <ResponsableLayoutProvider>
-                        <LayoutProvider>
-                            {loading && <Loader />}
-                            <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
-                            <ChatBot visible={visible} onHide={() => setVisible(false)} />
-                            {Component.getLayout(<Component {...pageProps} />)}
-                        </LayoutProvider>
-                    </ResponsableLayoutProvider>
-                </NavigationProvider>
+                <LayoutProvider>
+                    {loading && <Loader/>}
+                    {Component.getLayout(<Component {...pageProps}/>)}
+                </LayoutProvider>
             </PrimeReactProvider>
         );
     }
-    else {
+    else{
         return (
             <PrimeReactProvider>
                 <LayoutProvider>
-                    {loading && <Loader />}
-                    <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
-                    <ChatBot visible={visible} onHide={() => setVisible(false)} />
+                    {loading && <Loader/>}
                     <Layout>
-                        <Component {...pageProps} />
+                        <Component {...pageProps}/>
                     </Layout>
                 </LayoutProvider>
             </PrimeReactProvider>
