@@ -129,11 +129,11 @@ export default function DetailProduct(props) {
             <div className={style.right}>
                 <div className={style.right_head_container}>
                     <div className={style.right_head_left_container}>
-                        <span className={style.breadcrumd}>Handcraft / {product.artisanat.nom_artisanat} / {product.nom_produit_artisanal}</span>
+                        <span className={style.breadcrumd}>Handcraft / {product.artisanat.nom} / {product.nom_produit_artisanal}</span>
                         <span className={style.right_head_title}>{product.nom_produit_artisanal}</span>
                         <div className={style.right_head_detail}>
-                            <span>Store : {product.artisanat.nom_artisanat}</span>
-                            <span>{product.artisanat.localisation_artisanat.ville} - {product.artisanat.localisation_artisanat.adresse}</span>
+                            <span>Store : {product.artisanat.nom}</span>
+                            <span>${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.ville : ""} - ${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.adresse : ""}</span>
                         </div>
                     </div>
                     <span className={style.price}>${product.prix_artisanat}</span>
