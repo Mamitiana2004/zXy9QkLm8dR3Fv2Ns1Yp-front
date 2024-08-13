@@ -2,11 +2,13 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import style from './../../../style/pages/responsable/handcraft/customer.module.css';
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Dialog } from "primereact/dialog";
 import { Avatar } from "primereact/avatar";
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import UrlConfig from "@/util/config";
 
 export default function Customer() {
 
@@ -53,6 +55,26 @@ export default function Customer() {
         setCustomer(item);
         setVisible(true);
     }
+
+
+    // Debut integration Hanccraft
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/1/clients/`)
+            .then(res => res.json())
+            .then(CustomerData => {
+                setCustomers(
+                    CustomerData.customers.map(customer => ({
+                        id: customer.id,
+                        name: customer.name,
+                        email: customer.email,
+                        product : customer.product,
+                        phone: customer.phone,
+                        total_order: customer.total_order,
+                    }))
+                );
+            })
+        .catch(err => console.error(`Erreur lors de la récupération des liste des Customers :`, err))
+    })
     
 
     const buttonTemplate = (item) =>{
@@ -81,10 +103,11 @@ export default function Customer() {
             <div className={style.container}>
                 <span className={style.container_title}>All customers</span>
                 <div className={style.table_container}>
-                    <DataTable paginator rows={10} value={customers}>
+                    <DataTable paginator rows={5} value={customers}>
                         <Column sortable field="id" header="No"/>
                         <Column sortable field="name" header="Name"/>
                         <Column sortable field="email" header="Email"/>
+                        <Column sortable field="product" header="Product"/>
                         <Column sortable field="phone" header="Phone number"/>
                         <Column sortable field="total_order" header="Total Order"/>
                         <Column body={buttonTemplate} header="Actions"/>
