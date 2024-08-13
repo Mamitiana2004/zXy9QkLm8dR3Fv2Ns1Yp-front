@@ -4,7 +4,7 @@ import style from './../../../../style/pages/users/etablissement/etablissement.m
 import { Stepper } from "primereact/stepper";
 import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import UrlConfig from "@/util/config";
@@ -20,8 +20,12 @@ export default function AddImage() {
     const [fileImages, setFileImages] = useState([]);
     const [listImage, setListImage] = useState([]);
 
-    const info = JSON.parse(localStorage.getItem("responsable_info"));
-
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const responsableInfo = JSON.parse(localStorage.getItem('responsable_info'));
+            setInfo(responsableInfo);
+        }
+    }, []);
     const handleClick = () => {
         inputRef.current.click();
     };
