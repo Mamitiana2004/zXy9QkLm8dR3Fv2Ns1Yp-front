@@ -2,11 +2,15 @@ import Head from "next/head";
 import style from './../../../style/pages/responsable/handcraft/dahsboard.module.css'
 import { Button } from "primereact/button";
 import { Chart } from "primereact/chart";
-import { useEffect, useState } from "react";
+import { useEffect, useState , useContext} from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Calendar } from "primereact/calendar";
 import { useRouter } from "next/router";
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import { getCsrfFromToken } from '@/util/csrf';
+import UrlConfig from "@/util/config";
+
 export default function DashBoard() {
 
     const router = useRouter();
@@ -181,7 +185,40 @@ export default function DashBoard() {
         };
         setLineData(dataLine);
         setLineOptions(optionsLine);
-    },[])
+    }, [])
+    
+
+    // 
+    const { user } = useContext(ResponsableLayoutContext);
+    const [totalStat, setTotalStat] = useState(0);
+
+    useEffect(() => {
+        if (user) {
+            const id_tour = user.id_etablissement;
+            FetchDetails_Guest(id_tour);
+        }
+    }, [user]);
+
+    function FetchDetails_Guest(id_tour) {
+        getCsrfFromToken()
+            .then(csrfToken => {
+                // Fetch hotel details
+                fetch(`${UrlConfig.apiBaseUrl}/api/tour/${id_tour}/stats/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(totalData => {
+                        setTotalStat(totalData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
+            })
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));   
+    }
+
 
     return(
         <>
@@ -204,22 +241,22 @@ export default function DashBoard() {
                         <div className={style.card_detail}>
                             <i className="pi pi-calendar" style={{fontSize:"32px"}}/>
                             <div className={style.card_detail_text}>
-                                <span className={style.card_detail_title}>Total booking</span>
-                                <span className={style.card_detail_value}>32</span>
+                                <span className={style.card_detail_title}>Total Trip</span>
+                                <span className={style.card_detail_value}>{totalStat?.voyage_count}</span>
                             </div>
                         </div>
                         <div className={style.card_detail}>
                             <i className="pi pi-calendar" style={{fontSize:"32px"}}/>
                             <div className={style.card_detail_text}>
-                                <span className={style.card_detail_title}>Total booking</span>
-                                <span className={style.card_detail_value}>32</span>
+                                <span className={style.card_detail_title}>Total Booking</span>
+                                <span className={style.card_detail_value}>{totalStat?.booking_count}</span>
                             </div>
                         </div>
                         <div className={style.card_detail}>
                             <i className="pi pi-calendar" style={{fontSize:"32px"}}/>
                             <div className={style.card_detail_text}>
-                                <span className={style.card_detail_title}>Total booking</span>
-                                <span className={style.card_detail_value}>32</span>
+                                <span className={style.card_detail_title}>Total guests</span>
+                                <span className={style.card_detail_value}>{totalStat?.total_guests}</span>
                             </div>
                         </div>
                     </div>
