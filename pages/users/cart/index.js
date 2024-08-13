@@ -19,20 +19,29 @@ export default function Profile() {
         ? [...selectedProducts, product]
         : selectedProducts.filter((p) => p.id !== product.id);
 
-    setSelectedProducts(updatedProducts);
-    updateOrderSummary(updatedProducts);
-};
-const updateOrderSummary = (products) => {
-    const items = products.map((product) => ({
-        name: product.produit.nom_produit_artisanal,
-        quantity: product.quantite,
-        price: product.produit.prix_artisanat * product.quantite,
-    }));
+    // console.log('Updated Products:', updatedProducts); 
 
-    const total = items.reduce((acc, item) => acc + item.price, 0);
+        setSelectedProducts(updatedProducts);
+        updateOrderSummary(updatedProducts);
+    };
 
-    setOrderSummary({ total, items });
-};
+    const updateOrderSummary = (products) => {
+        const items = products.map((product) => ({
+            id : product.produit.id,
+            name: product.produit.nom_produit_artisanal,
+            quantity: product.quantite,
+            price: product.produit.prix_artisanat * product.quantite,
+        }));
+
+        const total = items.reduce((acc, item) => acc + item.price, 0);
+
+        // console.log('Order Summary Items:', items); 
+        // console.log('Order Summary Total:', total);  
+
+        setOrderSummary({ total, items });
+    };
+
+
 
 
 
@@ -101,7 +110,27 @@ const updateOrderSummary = (products) => {
     return (
     <div className={style.container}>
         <div className={style.menu_container}>
-            {/* ... (votre menu de navigation) ... */}
+            <Link style={{ textDecoration: "none" }} href={"/users/profil"}>
+                <span className={style.menu_item}><i className="pi pi-user" /> Profil</span>
+            </Link>
+            <Link style={{ textDecoration: "none" }} href={"/users/cart"}>
+                <span className={style.menu_active}><i className="pi pi-shopping-cart" /> Cart</span>
+            </Link>
+            <Link style={{ textDecoration: "none" }} href={"/users/history"}>
+                <span className={style.menu_item}><i className="pi pi-clock" /> History</span>
+            </Link>
+            <Link style={{ textDecoration: "none" }} href={"/users/notifications"}>
+                <span className={style.menu_item}><i className="pi pi-bell" /> Notification</span>
+            </Link>
+            <Link style={{ textDecoration: "none" }} href={"/users/security"}>
+                <span className={style.menu_item}><i className="pi pi-shield" /> Security</span>
+            </Link>
+            <Link style={{ textDecoration: "none" }} href={"/users/settings"}>
+                <span className={style.menu_item}><i className="pi pi-cog" /> Setting</span>
+            </Link>
+            <Link style={{ textDecoration: "none" }} href={"/users/login"}>
+                <span className={style.menu_item}><i className="pi pi-sign-out" /> Log out</span>
+            </Link>
         </div>
 
         <div className={style.profil_container}>
@@ -209,26 +238,29 @@ const updateOrderSummary = (products) => {
                         </div>
                     </div>
                 </div>
-                <div className={style.order_summary}>
-                    <span className={style.order_summary_title}>Order summary</span>
-                    {orderSummary.items.length > 0 ? (
-                        orderSummary.items.map((item, index) => (
-                            <div key={index} className={style.order_summary_detail}>
-                                <span>{item.name}</span>
-                                <span>{item.quantity}</span>
-                                <span className={style.price}>${item.price.toFixed(2)}</span>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No items selected</p>
-                    )}
-                    <div className={style.separateur}></div>
+               <div className={style.order_summary}>
+                <span className={style.order_summary_title}>Order summary</span>
+                {orderSummary.items.length > 0 ? (
+                    orderSummary.items.map((item, index) => (
+                        <div key={item.id} className={style.order_summary_detail}>
+                            <span>{item.name}</span>
+                            <span>{item.quantity}</span>
+                            <span className={style.price}>${item.price.toFixed(2)}</span>
+                        </div>
+                    ))
+                ) : (
                     <div className={style.order_summary_detail}>
-                        <span className={style.order_summary_detail_total}>Total</span>
-                        <span className={style.price}>${orderSummary.total.toFixed(2)}</span>
+                        <span>No items selected</span>
+                        <span className={style.price}>$0.00</span>
                     </div>
-                    <Button className="button-primary" label="Check out" />
+                )}
+                <div className={style.separateur}></div>
+                <div className={style.order_summary_detail}>
+                    <span className={style.order_summary_detail_total}>Total</span>
+                    <span className={style.price}>${orderSummary.total.toFixed(2)}</span>
                 </div>
+                <Button className="button-primary" label="Check out" />
+            </div>
             </div>
         </div>
     </div>
