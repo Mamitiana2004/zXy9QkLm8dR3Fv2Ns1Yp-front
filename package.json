@@ -21,6 +21,8 @@
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.5",
     "@react-google-maps/api": "^2.19.3",
+    "@stripe/react-stripe-js": "^2.7.3",
+    "@stripe/stripe-js": "^4.2.0",
     "aftrip": "file:",
     "chart.js": "^4.4.3",
     "data-fns": "^1.1.0",
@@ -38,7 +40,8 @@
     "react-dom": "^18",
     "react-i18next": "^15.0.0",
     "react-leaflet": "^4.2.1",
-    "sharp": "^0.33.4"
+    "sharp": "^0.33.4",
+    "stripe": "^16.7.0"
   },
   "devDependencies": {
     "eslint": "^8",

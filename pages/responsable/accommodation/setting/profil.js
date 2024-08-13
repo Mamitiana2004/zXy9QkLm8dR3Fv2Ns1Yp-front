@@ -1,36 +1,158 @@
 import Head from "next/head";
 import style from './../../../../style/pages/responsable/accommodation/setting.module.css';
 import style_profile from "./../../../../style/pages/responsable/accommodation/setting/profil.module.css";
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import { Avatar } from "primereact/avatar";
+import { Divider } from "primereact/divider";
 import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import { getCsrfFromToken } from '@/util/csrf';
 import UrlConfig from "@/util/config";
-
 
 export default function Profil() {
 
     const router = useRouter();
-    const { user } = useContext(ResponsableLayoutContext);
-    const id = user ? user.id_hebergement : 1; // Mbola hovaina 
 
-    const [responsable, setResponsable] = useState(null);
-    const [infosHotels, setInfosHotels] = useState(null);
+    const { user } = useContext(ResponsableLayoutContext);
+    const { id } = router.query;
+
+    const [nameHotel, setNameHotel] = useState(null);
+    const [infosHotel, setInfosHotel] = useState(null);
+    const [totalRooms, setTotalRooms] = useState(0);
+    const [detailProfil, setDetailProfil] = useState(null);
+    
+    const [isEditingPersonal, setIsEditingPersonal] = useState(false);
+    const [isEditingHotel, setIsEditingHotel] = useState(false);
+
 
     useEffect(() => {
-        if (!id) return;
-        fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${id}/`)
-            .then(response => response.json())
-            .then(data => setResponsable(data))
-            .catch(error => console.error('Error fetching responsable data:', error));
+        if (user) {
+            const id_hebergement = user.id_etablissement;
+            FetchProfil(id_hebergement, id);
+        }
+    }, [user]);
 
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/info/${id}/`)
-            .then(response => response.json())
-            .then(data => setInfosHotels(data))
-            .catch(error => console.error('Error fetching hotel data:', error));
+    function FetchProfil(id_hebergement) {
+        getCsrfFromToken()
+            .then(csrfToken => {
+                // Fetch hotel details
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id_hebergement}/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(hotelData => {
+                        setNameHotel(hotelData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
+                
+                //Fetch Detail Responsable
+                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${id_hebergement}/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(hotelData => {
+                        setDetailProfil(hotelData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des details des responsable:', err));
+                
+                
+                //Fetch Informations Hotels
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/info/${id_hebergement}/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(hotelData => {
+                        setInfosHotel(hotelData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des informations des Hotels:', err));
+                
+                
+                // Fetch Total Rooms
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id_hebergement}/stats/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    }
+                })
+                .then(response => response.json())
+                .then(totalRoom => {
+                    setTotalRooms(totalRoom);
+                })
+                    .catch(err => console.error('Erreur lors de la récupération des statistiques de l\'hôtel:', err));
+                
+            })
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));   
+    }
 
-    }, [id]);
+    function handleSave() {
+    // Envoyer les informations mises à jour au backend
+        getCsrfFromToken()
+            .then(csrfToken => {
+                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${user.id_etablissement}/`, {
+                    method: "PATCH",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    },
+                    body: JSON.stringify(detailProfil),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la mise à jour');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Données mises à jour:', data);
+                    setIsEditingPersonal(false);
+                })
+                    .catch(err => console.error('Erreur lors de la mise à jour des informations personnelles:', err));
+                
+            })
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
+    }
+
+    function handleSaveHotel() {
+        getCsrfFromToken()
+            .then(csrfToken => {
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/info/${user.id_etablissement}/`, {
+                    method: "PATCH",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFTOKEN': csrfToken,
+                    },
+                    body: JSON.stringify(infosHotel),
+                })
+                .then(response => {
+                    return response.json().then(data => ({ status: response.status, body: data }));
+                })
+                .then(({ status, body }) => {
+                    if (status !== 200 && status !== 204) {
+                        console.error('Erreur lors de la mise à jour:', body);
+                        throw new Error(`Erreur lors de la mise à jour des informations de l'hôtel: ${body.detail || status}`);
+                    }
+                    console.log('Informations de l\'hôtel mises à jour:', body);
+                    setIsEditingHotel(false); 
+                })
+                .catch(err => console.error('Erreur lors de la mise à jour des informations de l\'hôtel:', err));
+            })
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
+    }
+
 
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
@@ -52,12 +174,12 @@ export default function Profil() {
                 <div className={style.left_container}>
                     <div className={style.left_top_container}>
                         <span className={style.left_top_subtitle}>{menuSidebar[menu].label}</span>
-                        <span className={style.left_top_title}>Tik&apos;Art</span>
+                        <span className={style.left_top_title}>{nameHotel?.nom_hebergement || 'No Hotel Name'}</span>
                     </div>
                     <div className={style.left_body_container}>
-                        {menuSidebar.map((item, index) => (
-                            <Button key={index} onClick={() => router.push("/responsable/accommodation/setting/" + item.label.toLowerCase())} text className={menu == index ? "button-secondary" : style.text_button} raised={menu == index} label={item.label} />
-                        ))}
+                        {menuSidebar.map((item, index) => {
+                            return <Button key={index} onClick={() => router.push("/responsable/accommodation/setting/" + item.label.toLowerCase())} text className={menu == index ? "button-secondary" : style.text_button} raised={menu == index ? true : false} label={item.label} />
+                        })}
                     </div>
                 </div>
                 <div className={style.right_body_container}>
@@ -65,91 +187,224 @@ export default function Profil() {
                         <div className={style_profile.user_title_container}>
                             <div className={style_profile.user_title_left}>
                                 <Avatar label="F" shape="circle" className={style_profile.user_avatar} />
-                                {responsable && (
-                                    <div className={style_profile.user_title}>
-                                        <span className={style_profile.title}>{responsable.first_name} {responsable.last_name}</span>
-                                        <span>Manager</span>
-                                    </div>
-                                )}
+                                <div className={style_profile.user_title}>
+                                    <span className={style_profile.title}>{detailProfil?.first_name || 'No Name'}</span>
+                                    <span>Manager</span>
+                                </div>
                             </div>
-                            <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit" />
                         </div>
                         <div className="separateur"></div>
                         <div className={style_profile.detail_user_container}>
                             <div className={style_profile.detail_user_top_container}>
-                                <span className={style_profile.title}>Personal information</span>
-                                <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit" />
+                                <span className={style_profile.title}>Personnal information</span>
+                                {isEditingPersonal ? (
+                                    <>
+                                        <Button
+                                            text
+                                            className={style_profile.button_edit}
+                                            icon="pi pi-save"
+                                            raised
+                                            label="Save"
+                                            onClick={handleSave}
+                                        />
+                                        <Button
+                                            text
+                                            className={style_profile.button_cancel}
+                                            icon="pi pi-cancel"
+                                            raised
+                                            label="Cancel"
+                                            onClick={() => setIsEditingPersonal(false)}
+                                        />
+                                    </>
+                                ) : (
+                                    <Button
+                                        text
+                                        className={style_profile.button_edit}
+                                        icon="pi pi-pen-to-square"
+                                        raised
+                                        label="Edit"
+                                        onClick={() => setIsEditingPersonal(!isEditingPersonal)}
+                                    />
+                                )}
+
                             </div>
                             <div className={style_profile.detail_user_body_container}>
-                                {responsable && (
-                                    <>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>First name</span>
-                                            <span>{responsable.first_name}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Last name</span>
-                                            <span>{responsable.last_name}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Email address</span>
-                                            <span>{responsable.email}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Phone number</span>
-                                            <span>{responsable.phone}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Bio</span>
-                                            <span>{responsable.bio}</span>
-                                        </div>
-                                    </>
-                                )}
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>First name</span>
+                                    {isEditingPersonal ? (
+                                        <input
+                                            type="text"
+                                            value={detailProfil?.first_name || ''}
+                                            onChange={(e) => setDetailProfil({...detailProfil, first_name: e.target.value})}
+                                        />
+                                    ) : (
+                                        <span>{detailProfil?.first_name || 'No Name'}</span>
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Lasts name</span>
+                                    {isEditingPersonal ? (
+                                         <input
+                                            type="text"
+                                            value={detailProfil?.last_name || ''}
+                                            onChange={(e) => setDetahandleSaveilProfil({...detailProfil, last_name: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{detailProfil?.last_name || 'No Last name'}</span>                                         
+                                    )
+                                    }
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Email address</span>
+                                    {isEditingPersonal ? (
+                                         <input
+                                            type="text"
+                                            value={detailProfil?.email || ''}
+                                            onChange={(e) => setDetailProfil({...detailProfil, email: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{detailProfil?.email || 'No Email'}</span>
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Phone number</span>
+                                    {isEditingPersonal ? (
+                                         <input
+                                            type="text"
+                                            value={detailProfil?.numero_responsable || ''}
+                                            onChange={(e) => setDetailProfil({...detailProfil, numero_responsable: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{detailProfil?.numero_responsable || 'No Number'}</span>         
+                                    )}
+                                </div>
                             </div>
                         </div>
                         <div className="separateur"></div>
                         <div className={style_profile.detail_user_container}>
                             <div className={style_profile.detail_user_top_container}>
                                 <span className={style_profile.title}>Hotel information</span>
-                                <Button text className={style_profile.button_edit} icon="pi pi-pen-to-square" raised label="Edit" />
+                               {isEditingHotel ? (
+                                    <>
+                                        <Button
+                                            text
+                                            className={style_profile.button_edit}
+                                            icon="pi pi-save"
+                                            raised
+                                            label="Save"
+                                            onClick={handleSaveHotel}
+                                        />
+                                        <Button
+                                            text
+                                            className={style_profile.button_cancel}
+                                            icon="pi pi-cancel"
+                                            raised
+                                            label="Cancel"
+                                            onClick={() => setIsEditingHotel(false)}
+                                        />
+                                    </>
+                                ) : (
+                                    <Button
+                                        text
+                                        className={style_profile.button_edit}
+                                        icon="pi pi-pen-to-square"
+                                        raised
+                                        label="Edit"
+                                        onClick={() => setIsEditingHotel(!isEditingHotel)}
+                                    />
+                                )}
                             </div>
                             <div className={style_profile.detail_user_body_container}>
-                                {infosHotels && (
-                                    <>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Hotel name</span>
-                                            <span>{infosHotels.nom_hebergement || "Not available"}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Address</span>
-                                            <span>{infosHotels.localisation.adresse || "Not available"}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>City</span>
-                                            <span>{infosHotels.localisation.ville || "Not available"}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Country</span>
-                                            <span>{infosHotels.hotel_country || "Not available"}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>NIF</span>
-                                            <span>{infosHotels.nif || "Not available"}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>STAT</span>
-                                            <span>{infosHotels.stat || "Not available"}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Hotel type</span>
-                                            <span>{infosHotels.type_hebergement}</span>
-                                        </div>
-                                        <div className={style_profile.detail_user}>
-                                            <span className={style_profile.title}>Total rooms</span>
-                                            <span>{infosHotels.total_rooms || "Not available"}</span>
-                                        </div>
-                                    </>
-                                )}
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Hotel name</span>
+                                    {isEditingHotel ? (
+                                         <input
+                                            type="text"
+                                            value={infosHotel?.nom_hebergement || ''}
+                                            onChange={(e) => setInfosHotel({...infosHotel, nom_hebergement: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{infosHotel?.nom_hebergement || 'No Number'}</span>
+                                            
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Address</span>
+                                    {isEditingHotel ? (
+                                         <input
+                                            type="text"
+                                            value={infosHotel?.localisation.adresse || ''}
+                                            onChange={(e) => setInfosHotel({...infosHotel, localisation: {...infosHotel.localisation, adresse: e.target.value}})}
+                                        />
+                                    ) : (
+                                    <span>{infosHotel?.localisation.adresse || 'No Number'}</span>
+                                            
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>City</span>
+                                    {isEditingHotel ? (
+                                        <input
+                                            type="text"
+                                            value={infosHotel?.localisation.ville || ''}
+                                            onChange={(e) => setInfosHotel({...infosHotel, localisation: {...infosHotel.localisation, ville: e.target.value}})}
+                                        />
+                                    ) : (
+                                    <span>{infosHotel?.localisation.ville || 'No Number'}</span>
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>NIF</span>
+                                    {isEditingHotel ? (
+                                         <input
+                                            type="text"
+                                            value={infosHotel?.nif || ''}
+                                            onChange={(e) => setInfosHotel({...infosHotel, nif: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{infosHotel?.nif || 'No Number'}</span>
+                                            
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>STAT</span>
+                                    {isEditingHotel ? (
+                                        <input
+                                            type="text"
+                                            value={infosHotel?.stat || ''}
+                                            onChange={(e) => setInfosHotel({...infosHotel, stat: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{infosHotel?.stat || 'No Number'}</span>
+                                            
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Hotels type</span>
+                                    {isEditingHotel ? (
+                                        <input
+                                            type="text"
+                                            value={infosHotel?.type_hebergement || ''}
+                                            onChange={(e) => setInfosHotel({...infosHotel, type_hebergement: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{infosHotel?.type_hebergement || 'No Number'}</span>
+                                            
+                                    )}
+                                </div>
+                                <div className={style_profile.detail_user}>
+                                    <span className={style_profile.title}>Total rooms</span>
+                                    {isEditingHotel ? (
+                                         <input
+                                            type="text"
+                                            value={infosHotel?.available_room_count || ''}
+                                            onChange={(e) => setInfosHotel({...infosHotel, available_room_count: e.target.value})}
+                                        />
+                                    ) : (
+                                    <span>{totalRooms.available_room_count}</span>
+                                            
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
