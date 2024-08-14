@@ -24,17 +24,29 @@ export default function Order() {
         );
     }
 
+    const buttonTemplate = (item) => {
+    return (
+        <>
+            <Button onClick={() => router.push(`/responsable/handcraft/order_detail?id=${item.id}`)} icon="pi pi-eye" text />
+        </>
+    );
+};
+
+
     const actionTemplate = (item) => {
-        return (
+    return (
             <Button onClick={() => afficheDetail(item)} icon="pi pi-eye" text />
         );
-    }
+    };
 
     const afficheDetail = (item) => {
-        const url = new URLSearchParams();
-        url.append("id", item.id);
-        router.push("/responsable/handcraft/order_detail?" + url.toString());
-    }
+        // Ensure that item.id is a plain number or string without any special characters
+        const id = item.id.toString().replace('#', '');
+        const url = new URLSearchParams({ id });
+        router.push(`/responsable/handcraft/order_detail?${url.toString()}`);
+    };
+
+
 
     // Début intégration Orders ( Commandes )
     const { user } = useContext(ResponsableLayoutContext);
@@ -42,6 +54,8 @@ export default function Order() {
     useEffect(() => {
         if (user) {
             const id_client = user.id_etablissement;
+            console.log(user);
+
             FetchList_Orders(id_client);
         }
     }, [user]);
