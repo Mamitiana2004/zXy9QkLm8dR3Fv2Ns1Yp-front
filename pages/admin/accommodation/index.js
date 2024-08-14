@@ -46,7 +46,7 @@ export default function Accommodation() {
 
     const { user, setUser } = useContext(AdminLayoutContext);
 
-
+    // a ajouter dans chaque page d'admin
     useEffect(() => {
         if (user == null) {
             router.push("/admin/login");
@@ -59,6 +59,7 @@ export default function Accommodation() {
                 }
             })
     }, [router, setUser, user])
+
     const [accommodationData, setAccommodationData] = useState(emptyAccommodation);
 
     const [type_accommodation, setType_accommodation] = useState([
@@ -96,7 +97,7 @@ export default function Accommodation() {
         if (typeDialog == 0) {
             setAccommodationData(emptyAccommodation);
         }
-    }, [typeDialog, emptyAccommodation])
+    }, [typeDialog])
 
     const exportCSV = () => {
         dt.current.exportCSV();
