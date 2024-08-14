@@ -21,22 +21,32 @@ const setTokensInCookies = (refreshToken, accessToken) => {
     return true
 };
 
-
-const getAccessAdmin = async () => {
-    // Récupérer le jeton access du cookie
+function removeAllAdminAccess() {
     const accessToken = Cookies.get('isthisanotherpaimon');
 
-    // Vérifier si le jeton existe
+    if (accessToken) {
+        Cookies.remove('isthisanotherpaimon', { secure: true, sameSite: 'strict' });
+    }
+
+    const refreshToken = Cookies.get('yesthisisanotherpaimon');
+
+    if (refreshToken) {
+        Cookies.remove('yesthisisanotherpaimon', { secure: true, sameSite: 'strict' });
+    }
+
+    localStorage.removeItem('adminUser');
+}
+const getAccessAdmin = async () => {
+    const accessToken = Cookies.get('isthisanotherpaimon');
+
     if (accessToken) {
         return accessToken;
     } else {
         try {
-            // Si le jeton n'existe pas, essayer d'obtenir un nouveau jeton
             const access = await getNewAdminAccess();
-            console.log('New access token obtained:', access);
             return access;
         } catch (error) {
-            console.error('Failed to obtain new access token:', error);
+            console.error("amn'azy amn'azy");
             return null;
         }
     }
@@ -172,4 +182,4 @@ function getResponsableAccessToken() {
     });
 }
 
-export { setTokensInCookies, getNewAccess, getResponsableAccessToken, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
+export { setTokensInCookies, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
