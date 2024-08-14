@@ -82,7 +82,7 @@ export default function Order() {
                             return item.commandes.map((commande) => {
                                 const totalAmount = commande.quantite * parseFloat(item.prix_artisanat);
                                 return {
-                                    id: `#${index + 1}`,
+                                    id: `#${commande?.id_commande}`,
                                     name: commande?.client?.nom || 'No Client Name',
                                     email: commande.client.email || 'No Email client ',
                                     product: item.nom_produit_artisanal || 'No Product Name ',
