@@ -69,11 +69,11 @@ export default function Order() {
                                 const totalAmount = commande.quantite * parseFloat(item.prix_artisanat);
                                 return {
                                     id: `#${index + 1}`,
-                                    name: commande?.client?.nom || 'No Hotel Name',
-                                    email: commande.client.email,
-                                    product: item.nom_produit_artisanal,
-                                    amount: `$${totalAmount.toFixed(2)}`,
-                                    quantity: commande.quantite,
+                                    name: commande?.client?.nom || 'No Client Name',
+                                    email: commande.client.email || 'No Email client ',
+                                    product: item.nom_produit_artisanal || 'No Product Name ',
+                                    amount: `$${totalAmount.toFixed(2)}` || 'No Total Count',
+                                    quantity: commande.quantite || 'No Quantite',
                                     date: commande.date_commande || new Date().toLocaleDateString(),
                                     status: getStatus(commande.statut_commande)
                                 };
