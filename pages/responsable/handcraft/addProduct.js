@@ -31,6 +31,18 @@ export default function AddNewRoom() {
         }
     }
 
+    // Debut de l'integration AddProduct
+    const { user } = useContext(ResponsableLayoutContext);
+
+    useEffect(() => {
+        if (user) {
+            const id_artisanat = user.id_etablissement;
+            console.log(user);
+
+            FetchList_Orders(id_artisanat);
+        }
+    }, [user]);
+
     return(
         <>
             <Head>

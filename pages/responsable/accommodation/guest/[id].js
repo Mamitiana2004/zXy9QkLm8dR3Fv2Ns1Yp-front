@@ -58,13 +58,13 @@ export default function DetailGuest() {
                         setBookingSummary(guestData.reservations[0]);
                         setBookingHistory(
                             guestData.reservations.map(res => ({
-                                id: res.client.id,
-                                name: res.client.nom,
-                                email: res.client.email,
-                                nbr_guest: res.nombre_personnes_reserve,
-                                room: res.chambre.nom,
-                                check_in: res.date_debut_reserve,
-                                check_out: res.date_fin_reserve
+                                id: res.client.id || 'N/A',
+                                name: res.client.nom || 'N/A',
+                                email: res.client.email || 'N/A',
+                                nbr_guest: res.nombre_personnes_reserve || 'N/A',
+                                room: res.chambre.nom || 'N/A',
+                                check_in: res.date_debut_reserve || 'N/A',
+                                check_out: res.date_fin_reserve || 'N/A'
                             }))
                         );
                     })

@@ -1,31 +1,34 @@
 import Head from "next/head";
 import style from './../../../style/pages/responsable/handcraft/product.module.css'
 import { Button } from "primereact/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState , useContext} from "react";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { useRouter } from "next/router";
-
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext"; 
+import UrlConfig from "@/util/config";
+    
+    
 export default function Product() {
 
     const router = useRouter();
     const [category,setCategory] = useState(0);
 
     const [categories,setCategories] = useState([
-        {id:1,name:"basketry"},
-        {id:2,name:"wooden sculture"},
-        {id:3,name:"metal sculture"}
+        // {id:1,name:"basketry"},
+        // {id:2,name:"wooden sculture"},
+        // {id:3,name:"metal sculture"}
     ])
 
     const [products,setProducts] = useState([])
     const [allProduct,setAllProducts] = useState([]);
-    useEffect(()=>{
-        fetch("/api/handcraft/getAll")
-        .then(res=>res.json())
-        .then(data=>{setProducts(data);setAllProducts(data)})
-        .catch(error=>console.log(error))
-    },[])
+    // useEffect(()=>{
+    //     fetch("/api/handcraft/getAll")
+    //     .then(res=>res.json())
+    //     .then(data=>{setProducts(data);setAllProducts(data)})
+    //     .catch(error=>console.log(error))
+    // },[])
 
     const buttonTemplate = (item) =>{
         return(
@@ -90,6 +93,58 @@ export default function Product() {
             setProducts(allProduct);
             setCategory(0);
         }
+    }
+
+
+    // Debut integration Product
+    const { user } = useContext(ResponsableLayoutContext);
+
+    useEffect(() => {
+        if (user) {
+            const id_artisanat = user.id_etablissement;
+            console.log(user);
+
+            FetchList_Orders(id_artisanat);
+        }
+    }, [user]);
+
+    function FetchList_Orders(id_artisanat) {
+                fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/${id_artisanat}/produits/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const formattedData = data.map(item => ({
+                            id: item.id || 'N/A',
+                            name: item.nom_produit_artisanal || 'N/A',
+                            category: item.artisanat || 'N/A',
+                            quantity: item.nb_produit_dispo || 'N/A',
+                            price: item.prix_artisanat || 'N/A'
+                        }));
+                        setProducts(formattedData);
+                        setAllProducts(formattedData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des Listes des Products:', err));
+        
+                fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/specifications/`, {
+                        method: "GET",
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const formattedData = data.map(item => ({
+                            id: item.id || 'N/A',
+                            name: item.type_specification || 'N/A',
+                        }));
+                        setProducts(formattedData);
+                        setCategories(formattedData);
+                    })
+                    .catch(err => console.error('Erreur lors de la récupération des Listes des Categorie:', err));
     }
 
     return(
