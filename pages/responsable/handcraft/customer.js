@@ -43,7 +43,6 @@ export default function Customer() {
                 })
                     .then(response => response.json())
                      .then(data => {
-                    // Map the data to the format used in the component
                     const mappedCustomers = data.map((client) => ({
                             id: client.id,
                             name: client.username,
@@ -131,7 +130,7 @@ export default function Customer() {
                                 <div className={style.detail_container}>
                                     <div className={style.detail}>
                                         <span className={style.detail_title}>Total Price</span>
-                                        <span className={style.detail_label}>{customer.total_price}</span>
+                                        <span className={style.detail_label}>{customer.total_price} $ </span>
                                     </div>
                                 </div>
                             </div>
