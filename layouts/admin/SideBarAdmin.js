@@ -33,7 +33,7 @@ export default function SideBarAdmin(props) {
                 <span className={style.link}>Trip</span>
                 <i style={{ display: sideBar == true ? "none" : "block" }} className='pi pi-chevron-right' />
             </Link>
-            <Link className={style.container_link} href={""}>
+            <Link className={style.container_link} href={"/admin/users"}>
                 <i className='pi pi-user' />
                 <span className={style.link}>Users</span>
                 <i style={{ display: sideBar == true ? "none" : "block" }} className='pi pi-chevron-right' />
