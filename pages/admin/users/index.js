@@ -20,6 +20,7 @@ import AdminLayoutContext from "@/layouts/context/adminLayoutContext";
 import { getAccessAdmin, getNewAdminAccess } from "@/util/Cookies";
 import UrlConfig from "@/util/config";
 import { getCsrfTokenDirect } from "@/util/csrf";
+import { Tag } from "primereact/tag";
 
 let emptyAccommodation = {
     id: null,
@@ -318,6 +319,9 @@ export default function Accommodation() {
         setAccommodationData(data);
     }
 
+    const bodyTag = (item) => {
+        return !item.ban ? <Tag severity="success" value="Active"></Tag> : <Tag severity="warning" value="Disabled"></Tag>
+    }
     const changeName = (e) => {
         let data = {
             id: accommodationData.id,
@@ -359,6 +363,7 @@ export default function Accommodation() {
                     <Column sortable filter filterPlaceholder="Search by name" field="username" header="Name" />
                     <Column sortable field="email" header="Email" />
                     <Column sortable field="numero_client" header="Phone Number" />
+                    <Column body={bodyTag} header="Status" />
                     <Column body={actionBodyTemplate} exportable={false} />
                 </DataTable>
 

@@ -17,6 +17,9 @@ import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import AdminLayoutContext from "@/layouts/context/adminLayoutContext";
 import { useRouter } from "next/router";
 import { getAccessAdmin } from "@/util/Cookies";
+import UrlConfig from "@/util/config";
+import { Tag } from "primereact/tag";
+import { getCsrfTokenDirect } from "@/util/csrf";
 
 export default function Handcraft() {
 
@@ -56,21 +59,86 @@ export default function Handcraft() {
         { id: 3, nom_type: "Villa" }
     ])
 
-    const [accommodations, setAccommodations] = useState(null);
-    const [accommodationSelected, setAccommodationSelected] = useState([]);
-    const getAllAccommodation = () => {
-        fetch("/api/hebergement/getAll")
-            .then(res => res.json())
-            .then(data => setAccommodations(data))
-            .catch((error) => {
-                toast.current.show({ severity: 'error', summary: 'Erreur', detail: 'Data error' + error, life: 3000 })
+    const [handcrafts, setHandcrafts] = useState(null);
+    const [handcraftSelected, setHandcraftSelected] = useState([]);
+
+
+    const getAllAccommodation = async () => {
+        let accessToken = await getAccessAdmin();
+
+        if (!accessToken) {
+            accessToken = getNewAdminAccess();
+        }
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/list/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return res.json();
             })
-    }
+            .then(data => {
+                setHandcrafts(data);
+                console.log(data);
+            })
+            .catch(error => {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: 'Data error: ' + error.message,
+                    life: 3000
+                });
+            })
+
+    };
     const getTypeAccommodation = (id) => {
         return type_accommodation.find(accom => accom.id === id);
     };
 
-
+    const statusChange = (id) => {
+        getCsrfTokenDirect().then((csrf) => {
+            getAccessAdmin().then((accessToken) => {
+                fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/toggle-autorisation/${id}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        setHandcrafts(handcrafts.map(acc =>
+                            acc.id === id ? { ...acc, active: !acc.active } : acc
+                        ));
+                        toast.current.show({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'status changed to ' + data.active,
+                            life: 3000
+                        });
+                        return data
+                    })
+                    .catch(error => {
+                        toast.current.show({
+                            severity: 'error',
+                            summary: 'Erreur',
+                            detail: 'Error: ' + error.message,
+                            life: 3000
+                        });
+                    });
+            })
+        })
+    }
     //datatable
     const [globalFilter, setGlobalFilter] = useState();
 
@@ -87,7 +155,7 @@ export default function Handcraft() {
         <React.Fragment>
             <div className={style.leftToolbar}>
                 <Button label="New" icon="pi pi-plus" severity="success" />
-                <Button onClick={() => { confirmAllDelete() }} label="Delete" icon="pi pi-trash" severity="danger" disabled={!accommodationSelected || !accommodationSelected.length} />
+                <Button onClick={() => { confirmAllDelete() }} label="Delete" icon="pi pi-trash" severity="danger" disabled={!handcraftSelected || !handcraftSelected.length} />
             </div>
         </React.Fragment>
     );
@@ -97,7 +165,8 @@ export default function Handcraft() {
     };
 
     const imageBodyTemplate = (item) => {
-        return <Image imageClassName={style.image_data} src={item.images} alt={item.name} />
+        return item.active ? <Tag severity="success" value="Active"></Tag> : <Tag severity="warning" value="Disabled"></Tag>
+
     }
 
     const typeBodyTemplate = (item) => {
@@ -120,8 +189,15 @@ export default function Handcraft() {
     }
 
     const actionBodyTemplate = (item) => {
+        const statusAcc = item.active;
+
         return (
             <div className={style.actionBodyTemplate}>
+                {(statusAcc ?
+                    <Button onClick={() => { statusChange(item.id) }} icon="pi pi-play" rounded outlined severity="success" />
+                    :
+                    <Button onClick={() => { statusChange(item.id) }} icon="pi pi-pause" rounded outlined severity="danger" />
+                )}
                 <Button icon="pi pi-eye" rounded outlined severity="help" />
                 <Button icon="pi pi-pencil" rounded outlined severity="success" />
                 <Button onClick={() => confirmDelete(item)} icon="pi pi-trash" rounded outlined severity="danger" />
@@ -131,7 +207,7 @@ export default function Handcraft() {
 
     const confirmDelete = (item) => {
         confirmDialog({
-            message: 'Do you want to delete this accommodation?',
+            message: 'Do you want to delete this handcraft?',
             header: 'Delete Confirmation',
             icon: 'pi pi-info-circle',
             defaultFocus: 'reject',
@@ -141,9 +217,9 @@ export default function Handcraft() {
     }
 
     const confirmAllDelete = () => {
-        if (accommodationSelected.length) {
+        if (handcraftSelected.length) {
             confirmDialog({
-                message: `Do you want to delete this accommodation ${accommodationSelected.length} ?`,
+                message: `Do you want to delete this accommodation ${handcraftSelected.length} ?`,
                 header: 'Delete Confirmation',
                 icon: 'pi pi-info-circle',
                 defaultFocus: 'reject',
@@ -154,18 +230,18 @@ export default function Handcraft() {
     }
 
     const deleteAllAccommodation = () => {
-        let _accommodations = [...accommodations];
-        accommodationSelected.map((item) => {
+        let _accommodations = [...handcrafts];
+        handcraftSelected.map((item) => {
             _accommodations = _accommodations.filter((val) => val.id !== item.id);
         })
-        setAccommodations(_accommodations);
-        toast.current.show({ severity: 'success', summary: 'Success', detail: `Handcraft(${accommodationSelected.length})  deleted`, life: 3000 });
-        setAccommodationSelected([]);
+        setHandcrafts(_accommodations);
+        toast.current.show({ severity: 'success', summary: 'Success', detail: `Handcraft(${handcraftSelected.length})  deleted`, life: 3000 });
+        setHandcraftSelected([]);
     }
 
     const deleteAccommodation = (item) => {
-        let _accommodations = accommodations.filter((val) => val.id !== item.id);
-        setAccommodations(_accommodations);
+        let _accommodations = handcrafts.filter((val) => val.id !== item.id);
+        setHandcrafts(_accommodations);
         toast.current.show({ severity: 'success', summary: 'Success', detail: 'Handcraft deleted', life: 3000 });
     }
 
@@ -189,20 +265,21 @@ export default function Handcraft() {
                 <Toolbar start={leftToolbarTemplate} end={rightToolbarTemplate} />
                 <DataTable
                     ref={dt}
-                    value={accommodations}
+                    value={handcrafts}
                     header={header}
                     globalFilter={globalFilter}
                     filters={filters}
-                    selection={accommodationSelected}
-                    onSelectionChange={(e) => setAccommodationSelected(e.value)}
+                    selection={handcraftSelected}
+                    onSelectionChange={(e) => setHandcraftSelected(e.value)}
                 >
                     <Column selectionMode="multiple" exportable={false} />
                     <Column sortable field="id" header="ID" exportable={false} />
-                    <Column sortable filter filterPlaceholder="Search by name" field="nom_hebergement" header="Name" />
-                    <Column body={imageBodyTemplate} header="Image" />
-                    <Column body={typeBodyTemplate} header="Type" />
-                    <Column sortable filter filterField="nombre_etoile_hebergement" dataType="numeric" field="nombre_etoile_hebergement" body={starBodyTemplate} header="Stars" />
-                    <Column dataType="numeric" filter filterField="min_prix_nuit_chambre" sortable field="min_prix_nuit_chambre" header="Price Min" />
+                    <Column sortable filter filterPlaceholder="Search by name" field="nom" header="Name" />
+                    <Column sortable filter filterPlaceholder="Search by email" field="email" header="Email" />
+                    <Column dataType="numeric" filter filterField="telephone" sortable field="telephone" header="Contact" />
+                    <Column dataType="numeric" filter filterField="total_produits" sortable field="total_produits" header="Nb Product" />
+                    <Column body={imageBodyTemplate} header="Status" />
+
                     <Column body={actionBodyTemplate} exportable={false} />
                 </DataTable>
             </div>
