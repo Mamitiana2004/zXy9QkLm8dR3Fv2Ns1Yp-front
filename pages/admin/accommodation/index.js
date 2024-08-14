@@ -17,7 +17,8 @@ import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import { Dialog } from "primereact/dialog";
 import { useRouter } from "next/router";
 import AdminLayoutContext from "@/layouts/context/adminLayoutContext";
-import { getAccessAdmin } from "@/util/Cookies";
+import { getAccessAdmin, getNewAdminAccess } from "@/util/Cookies";
+import UrlConfig from "@/util/config";
 
 let emptyAccommodation = {
     id: null,
@@ -62,24 +63,81 @@ export default function Accommodation() {
 
     const [accommodationData, setAccommodationData] = useState(emptyAccommodation);
 
-    const [type_accommodation, setType_accommodation] = useState([
-        { id: 1, nom_type: "Hotel" },
-        { id: 2, nom_type: "Maison" },
-        { id: 3, nom_type: "Villa" }
-    ]);
+    const [type_accommodation, setType_accommodation] = useState([]);
+
     const [dialogVisible, setDialogVisible] = useState(false);
     const [typeDialog, setTypeDialog] = useState(0);//0 insert - 1 update
 
-    const [accommodations, setAccommodations] = useState(null);
+    const [accommodations, setAccommodations] = useState([]);
     const [accommodationSelected, setAccommodationSelected] = useState([]);
-    const getAllAccommodation = () => {
-        fetch("/api/hebergement/getAll")
-            .then(res => res.json())
-            .then(data => setAccommodations(data))
-            .catch((error) => {
-                toast.current.show({ severity: 'error', summary: 'Erreur', detail: 'Data error' + error, life: 3000 })
+
+
+    const getAllAccommodation = async () => {
+        let accessToken = await getAccessAdmin();
+
+        if (!accessToken) {
+            accessToken = getNewAdminAccess();
+        }
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/list/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return res.json();
             })
-    }
+            .then(data => {
+                setAccommodations(data);
+                console.log(data);
+            })
+            .catch(error => {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Erreur',
+                    detail: 'Data error: ' + error.message,
+                    life: 3000
+                });
+            })
+
+    };
+
+    const getAllType = () => {
+        // const accessToken = Cookies.get('isthisanotherpaimon');
+        getAccessAdmin().then((accessToken) => {
+
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    setType_accommodation(data);
+                    console.log(data);
+                })
+                .catch(error => {
+                    toast.current.show({
+                        severity: 'error',
+                        summary: 'Erreur',
+                        detail: 'Data error: ' + error.message,
+                        life: 3000
+                    });
+                });
+        })
+    };
+
     const getTypeAccommodation = (id) => {
         return type_accommodation.find(accom => accom.id === id);
     };
@@ -89,6 +147,7 @@ export default function Accommodation() {
     const [globalFilter, setGlobalFilter] = useState();
 
     useEffect(() => {
+        getAllType();
         getAllAccommodation();
         initFilters();
     }, [])
@@ -132,11 +191,11 @@ export default function Accommodation() {
     };
 
     const imageBodyTemplate = (item) => {
-        return <Image imageClassName={style.image_data} src={item.images} alt={item.name} />
+        return <Image imageClassName={style.image_data} src={item.images[0].image} alt={item.name} />
     }
 
     const typeBodyTemplate = (item) => {
-        return <span>{getTypeAccommodation(item.idTypeAccommodation).nom_type}</span>
+        return <span>{getTypeAccommodation(item.type_hebergement).type_name}</span>
     }
 
     const starBodyTemplate = (item) => {
@@ -153,11 +212,55 @@ export default function Accommodation() {
             }}
         />
     }
+    const statusChange = (id) => {
+        getAccessAdmin().then((accessToken) => {
+
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/toggle-autorisation/${id}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    setAccommodations(accommodations.map(acc =>
+                        acc.id === id ? { ...acc, autorisation: !acc.autorisation } : acc
+                    ));
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'status changed to ' + data.autorisation,
+                        life: 3000
+                    });
+                    return data
+                })
+                .catch(error => {
+                    toast.current.show({
+                        severity: 'error',
+                        summary: 'Erreur',
+                        detail: 'Error: ' + error.message,
+                        life: 3000
+                    });
+                });
+        })
+    }
 
     const actionBodyTemplate = (item) => {
+        const statusAcc = item.autorisation
         return (
             <div className={style.actionBodyTemplate}>
                 <Button onClick={() => { update(item) }} icon="pi pi-pencil" rounded outlined severity="success" />
+                {(statusAcc ?
+                    <Button onClick={() => { statusChange(item.id) }} icon="pi pi-play" rounded outlined severity="success" />
+                    :
+                    <Button onClick={() => { statusChange(item.id) }} icon="pi pi-pause" rounded outlined severity="danger" />
+                )}
                 <Button onClick={() => confirmDelete(item)} icon="pi pi-trash" rounded outlined severity="danger" />
             </div>
         )
@@ -276,7 +379,7 @@ export default function Accommodation() {
                     <Column body={imageBodyTemplate} header="Image" />
                     <Column body={typeBodyTemplate} header="Type" />
                     <Column sortable filter filterField="nombre_etoile_hebergement" dataType="numeric" field="nombre_etoile_hebergement" body={starBodyTemplate} header="Stars" />
-                    <Column dataType="numeric" filter filterField="min_prix_nuit_chambre" sortable field="min_prix_nuit_chambre" header="Price Min" />
+                    <Column dataType="numeric" filter filterField="prix_min_chambre" sortable field="prix_min_chambre" header="Price Min" />
                     <Column body={actionBodyTemplate} exportable={false} />
                 </DataTable>
             </div>
@@ -297,7 +400,7 @@ export default function Accommodation() {
                         <Dropdown
                             value={accommodationData.type_accommodation}
                             options={type_accommodation}
-                            optionLabel="nom_type"
+                            optionLabel="type_name"
                             onChange={(e) => changeType(e)}
                         />
                     </div>

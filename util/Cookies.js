@@ -36,21 +36,25 @@ function removeAllAdminAccess() {
 
     localStorage.removeItem('adminUser');
 }
-const getAccessAdmin = async () => {
+function getAccessAdmin() {
     const accessToken = Cookies.get('isthisanotherpaimon');
 
     if (accessToken) {
-        return accessToken;
+        return Promise.resolve(accessToken);
     } else {
-        try {
-            const access = await getNewAdminAccess();
-            return access;
-        } catch (error) {
-            console.error("amn'azy amn'azy");
-            return null;
-        }
+        return getNewAdminAccess()
+            .then(() => {
+                const accessToken = Cookies.get('isthisanotherpaimon');
+
+                return Promise.resolve(accessToken);
+            })
+            .catch((error) => {
+                console.error("Erreur lors de la récupération du token:", error);
+                return null;
+            });
     }
-};
+}
+
 const getNewAdminAccess = () => {
     const refreshToken = Cookies.get('yesthisisanotherpaimon');
 
@@ -83,7 +87,7 @@ const getNewAdminAccess = () => {
             return data.access;
         })
         .catch(error => {
-            console.error('Error while refreshing access token:', error);
+            // console.error('Error while refreshing access token:', error);
         });
 };
 
