@@ -87,10 +87,18 @@ export default function Login() {
                 .then((data) => {
                     if (data.is_admin) {
                         if (data.access) {
-                            Cookies.set('isthisanotherpaimon', data.access, { expires: 7, secure: true, sameSite: 'strict' });
+                            Cookies.set('isthisanotherpaimon', data.access, {
+                                expires: 5 / 1440,
+                                secure: true,
+                                sameSite: 'Strict'
+                            });
                         }
                         if (data.refresh) {
-                            Cookies.set('yesthisisanotherpaimon', data.refresh, { expires: 30, secure: true, sameSite: 'strict' });
+                            Cookies.set('yesthisisanotherpaimon', data.refresh, {
+                                expires: 1,
+                                secure: true,
+                                sameSite: 'strict'
+                            });
                         }
                         toast.current.show({
                             severity: "info",
@@ -98,7 +106,7 @@ export default function Login() {
                             detail: "Veuillez patientez",
                             life: 3000
                         })
-                        console.log(data);
+
                         setTimeout(() => {
                             setUser({
                                 username: data.user.username,
