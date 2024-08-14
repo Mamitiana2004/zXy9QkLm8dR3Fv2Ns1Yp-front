@@ -7,11 +7,11 @@
 
 `/api/artisanat/1/clients/`
 
-* GET / POST produits
+* (GET / POST) produits
 
 `/api/artisanat/{id_artisanat}/produits/`
 
-* PUT produits
+* (PUT) produits
 
 `/api/artisanat/{id_artisanat}/produits/{id_produit}/`
 
@@ -27,9 +27,13 @@
             "hauteur": null,
             "nb_produit_dispo": null,
             "artisanat": null,
-            "specifications": [],
+            "specifications": [id, id, id],
             "likes": []
         }
+
+* (GET) list de tout les endpoints
+
+`/api/artisanat/specifications/`
 
 ## admin accomodation
 
