@@ -86,9 +86,9 @@ export default function Verify() {
             });
     };
 
-    const CreateTour = async (data) => {
+    const CreateHandcraft = async (data) => {
         try {
-            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/tour/create/`, {
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/create/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -118,14 +118,14 @@ export default function Verify() {
         localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
 
 
-        // localStorage.removeItem("userInfo");
-        // localStorage.removeItem("_dfqaccess404");
-        // localStorage.removeItem("type_etablissement");
-        // localStorage.removeItem("formData");
-        // localStorage.removeItem("email_etablissement");
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("_dfqaccess404");
+        localStorage.removeItem("type_etablissement");
+        localStorage.removeItem("formData");
+        localStorage.removeItem("email_etablissement");
 
         setTimeout(() => {
-            router.push('/users/etablissement/tour/addImage');
+            router.push('/users/etablissement/we');
         }, 3000);
 
     }
@@ -144,9 +144,9 @@ export default function Verify() {
             CreateResponsableUser(userInfo)
                 .then((data) => {
                     if (data.id) {
-                        etablissement_info.responsable_TourOperateur = data.id;
-
-                        CreateTour(etablissement_info)
+                        etablissement_info.responsable = data.id;
+                        console.log(etablissement_info);
+                        CreateHandcraft(etablissement_info)
                             .then(async (created) => {
                                 if (created) {
 

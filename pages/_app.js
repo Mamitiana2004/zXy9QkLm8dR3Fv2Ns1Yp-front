@@ -15,6 +15,8 @@ import 'react-calendar/dist/Calendar.css';
 import { Button } from "primereact/button";
 import ChatBot from "@/components/ChatBot";
 import { NavigationProvider } from "@/layouts/context/navigation";
+import AdminLayout from "@/layouts/admin/AdminLayout";
+import AdminLayoutContext, { AdminLayoutProvider } from "@/layouts/context/adminLayoutContext";
 const Loader = dynamic(() => import('@/layouts/Loader'), { ssr: false });
 
 
@@ -45,7 +47,28 @@ function MyApp({ Component, pageProps }) {
         }
     }, [])
 
-
+    if(router.asPath.includes("/admin")  && !Component.getLayout){
+        return (
+            <PrimeReactProvider>
+                <AdminLayoutProvider>
+                    <AdminLayout>
+                        {loading && <Loader/>}
+                        <Component {...pageProps}/>
+                    </AdminLayout>
+                </AdminLayoutProvider>
+            </PrimeReactProvider>
+        )
+    }
+    if(router.asPath.includes("/admin")  && Component.getLayout){
+        return (
+            <PrimeReactProvider>
+                <AdminLayoutProvider>
+                    {loading && <Loader/>}
+                    {Component.getLayout(<Component {...pageProps}/>)}
+                </AdminLayoutProvider>
+            </PrimeReactProvider>
+        )
+    }
     if (router.asPath.includes("/responsable") && !Component.getLayout) {
         return (
             <PrimeReactProvider>
