@@ -62,15 +62,15 @@ export default function Product() {
 
 
     const categoryTemplate = (item) => {
-        let categoryName = "";
-        let category = categories.find(category => category.id == item.category);
-    
-        if (category) {
-            categoryName = category.name;
-        }
-    
-        return <span>{categoryName}</span>;
+        const categoryNames = item.category && Array.isArray(item.category) ? item.category.map(specId => {
+            const category = categories.find(category => category.id === specId);
+            return category ? category.name : 'Unknown';
+        }).join(', ') : 'No Category';
+
+        return <span>{categoryNames}</span>;
     };
+
+
    
 
     const accept = () =>{
@@ -117,34 +117,38 @@ export default function Product() {
                 })
                     .then(response => response.json())
                     .then(data => {
+                        console.log(data);
+                        
                         const formattedData = data.map(item => ({
                             id: item.id || 'N/A',
                             name: item.nom_produit_artisanal || 'N/A',
-                            category: item.artisanat || 'N/A',
+                            category: Array.isArray(item.specifications) ? item.specifications : [], // Assurez-vous que category est toujours un tableau.
                             quantity: item.nb_produit_dispo || 'N/A',
                             price: item.prix_artisanat || 'N/A'
                         }));
+
+
                         setProducts(formattedData);
                         setAllProducts(formattedData);
                     })
                     .catch(err => console.error('Erreur lors de la récupération des Listes des Products:', err));
         
                 fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/specifications/`, {
-                        method: "GET",
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        const formattedData = data.map(item => ({
-                            id: item.id || 'N/A',
-                            name: item.type_specification || 'N/A',
-                        }));
-                        setProducts(formattedData);
-                        setCategories(formattedData);
-                    })
-                    .catch(err => console.error('Erreur lors de la récupération des Listes des Categorie:', err));
+    method: "GET",
+    headers: {
+        'Content-Type': 'application/json',
+    }
+})
+    .then(response => response.json())
+    .then(data => {
+        const formattedData = data.map(item => ({
+            id: item.id || 'N/A',
+            name: item.type_specification || 'N/A',
+        }));
+        setCategories(formattedData);
+    })
+    .catch(err => console.error('Erreur lors de la récupération des Listes des Categorie:', err));
+
     }
 
     return(
