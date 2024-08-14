@@ -19,7 +19,6 @@ import { useRouter } from "next/router";
 import { getAccessAdmin } from "@/util/Cookies";
 
 export default function Handcraft() {
-    const router = useRouter();
 
     const dt = useRef(null);
     const toast = useRef(null);
@@ -33,6 +32,7 @@ export default function Handcraft() {
         });
         setGlobalFilter('');
     };
+    const router = useRouter();
 
     const { user, setUser } = useContext(AdminLayoutContext);
 

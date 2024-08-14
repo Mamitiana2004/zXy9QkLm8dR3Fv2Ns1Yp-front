@@ -78,7 +78,7 @@ export default function Accommodation() {
         if (!accessToken) {
             accessToken = getNewAdminAccess();
         }
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/deleted/`, {
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/list/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -93,7 +93,6 @@ export default function Accommodation() {
             })
             .then(data => {
                 setAccommodations(data);
-                console.log(data);
             })
             .catch(error => {
                 toast.current.show({
@@ -177,8 +176,8 @@ export default function Accommodation() {
         <React.Fragment>
             <div className={style.leftToolbar}>
                 <Button onClick={() => { setDialogVisible(true); setTypeDialog(0) }} label="New" icon="pi pi-plus" severity="success" />
-                <Button onClick={() => { confirmAllDelete() }} label="Delete" icon="pi pi-trash" severity="danger" disabled={!accommodationSelected || !accommodationSelected.length} />
-                <Button onClick={() => { router.push("/admin/accommodation/deleted") }} label="Deleted list" icon="pi pi-trash" severity="info" />
+                <Button onClick={() => { confirmAllDelete() }} label="Cancel" icon="pi pi-trash" severity="success" disabled={!accommodationSelected || !accommodationSelected.length} />
+                <Button onClick={() => { router.push("/admin/accommodation") }} label="Accomodation list" icon="pi pi-trash" severity="info" />
             </div>
         </React.Fragment>
     );

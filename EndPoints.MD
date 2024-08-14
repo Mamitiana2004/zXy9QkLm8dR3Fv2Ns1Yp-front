@@ -7,6 +7,30 @@
 
 `/api/artisanat/1/clients/`
 
+* GET / POST produits
+
+`/api/artisanat/{id_artisanat}/produits/`
+
+* PUT produits
+
+`/api/artisanat/{id_artisanat}/produits/{id_produit}/`
+
+* Forme de donnée pour produits
+
+        {
+            "nom_produit_artisanal": "",
+            "description_artisanat": "",
+            "prix_artisanat": null,
+            "disponible_artisanat": false,
+            "poid_kg": null,
+            "largeur": null,
+            "hauteur": null,
+            "nb_produit_dispo": null,
+            "artisanat": null,
+            "specifications": [],
+            "likes": []
+        }
+
 ## admin accomodation
 
 * Login Responsable (POST)

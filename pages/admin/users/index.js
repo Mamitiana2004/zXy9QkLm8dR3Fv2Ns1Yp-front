@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import AdminLayoutContext from "@/layouts/context/adminLayoutContext";
 import { getAccessAdmin, getNewAdminAccess } from "@/util/Cookies";
 import UrlConfig from "@/util/config";
+import { getCsrfTokenDirect } from "@/util/csrf";
 
 let emptyAccommodation = {
     id: null,
@@ -63,13 +64,13 @@ export default function Accommodation() {
 
     const [accommodationData, setAccommodationData] = useState(emptyAccommodation);
 
-    const [type_accommodation, setType_accommodation] = useState([]);
+    // const [type_accommodation, setType_accommodation] = useState([]);
 
     const [dialogVisible, setDialogVisible] = useState(false);
-    const [typeDialog, setTypeDialog] = useState(0);//0 insert - 1 update
+    const [typeDialog, setTypeDialog] = useState(0);
 
-    const [accommodations, setAccommodations] = useState([]);
-    const [accommodationSelected, setAccommodationSelected] = useState([]);
+    const [clients, setClients] = useState([]);
+    const [clientSelected, setClientSelected] = useState([]);
 
 
     const getAllAccommodation = async () => {
@@ -78,7 +79,8 @@ export default function Accommodation() {
         if (!accessToken) {
             accessToken = getNewAdminAccess();
         }
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/deleted/`, {
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/accounts/clients/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -92,8 +94,8 @@ export default function Accommodation() {
                 return res.json();
             })
             .then(data => {
-                setAccommodations(data);
-                console.log(data);
+                setClients(data);
+
             })
             .catch(error => {
                 toast.current.show({
@@ -106,47 +108,17 @@ export default function Accommodation() {
 
     };
 
-    const getAllType = () => {
-        // const accessToken = Cookies.get('isthisanotherpaimon');
-        getAccessAdmin().then((accessToken) => {
 
-            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type/`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    setType_accommodation(data);
-                })
-                .catch(error => {
-                    toast.current.show({
-                        severity: 'error',
-                        summary: 'Erreur',
-                        detail: 'Data error: ' + error.message,
-                        life: 3000
-                    });
-                });
-        })
-    };
 
-    const getTypeAccommodation = (id) => {
-        return type_accommodation.find(accom => accom.id === id);
-    };
+    // const getTypeAccommodation = (id) => {
+    //     return type_accommodation.find(accom => accom.id === id);
+    // };
 
 
     //datatable
     const [globalFilter, setGlobalFilter] = useState();
 
     useEffect(() => {
-        getAllType();
         getAllAccommodation();
         initFilters();
     }, [])
@@ -168,6 +140,7 @@ export default function Accommodation() {
             star: item.nombre_etoile_hebergement,
             type_accommodation: getTypeAccommodation(item.idTypeAccommodation)
         }
+        console.log(data);
         setAccommodationData(data);
         setTypeDialog(1);
         setDialogVisible(true);
@@ -177,8 +150,8 @@ export default function Accommodation() {
         <React.Fragment>
             <div className={style.leftToolbar}>
                 <Button onClick={() => { setDialogVisible(true); setTypeDialog(0) }} label="New" icon="pi pi-plus" severity="success" />
-                <Button onClick={() => { confirmAllDelete() }} label="Delete" icon="pi pi-trash" severity="danger" disabled={!accommodationSelected || !accommodationSelected.length} />
-                <Button onClick={() => { router.push("/admin/accommodation/deleted") }} label="Deleted list" icon="pi pi-trash" severity="info" />
+                <Button onClick={() => { confirmAllDelete() }} label="Delete" icon="pi pi-trash" severity="danger" disabled={!clientSelected || !clientSelected.length} />
+                <Button onClick={() => { router.push("/admin/users/responsable") }} label="Admin List" icon="pi pi-plus" severity="info" />
             </div>
         </React.Fragment>
     );
@@ -189,71 +162,51 @@ export default function Accommodation() {
         return <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />;
     };
 
-    const imageBodyTemplate = (item) => {
-        return <Image imageClassName={style.image_data} src={item.images[0].image} alt={item.name} />
-    }
 
-    const typeBodyTemplate = (item) => {
-        return <span>{getTypeAccommodation(item.type_hebergement).type_name}</span>
-    }
-
-    const starBodyTemplate = (item) => {
-        return <Rating
-            value={item.nombre_etoile_hebergement}
-            disabled
-            cancel={false}
-            pt={{
-                onIcon: () => ({
-                    style: {
-                        "color": "#FFD700"
-                    }
-                })
-            }}
-        />
-    }
     const statusChange = (id) => {
-        getAccessAdmin().then((accessToken) => {
-
-            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/toggle-autorisation/${id}/`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error('Network response was not ok');
+        getCsrfTokenDirect().then((csrf) => {
+            getAccessAdmin().then((accessToken) => {
+                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/${id}/ban/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${accessToken}`
                     }
-                    return res.json();
                 })
-                .then(data => {
-                    setAccommodations(accommodations.map(acc =>
-                        acc.id === id ? { ...acc, autorisation: !acc.autorisation } : acc
-                    ));
-                    toast.current.show({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: 'status changed to ' + data.autorisation,
-                        life: 3000
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        setClients(clients.map(acc =>
+                            acc.id === id ? { ...acc, ban: !acc.ban } : acc
+                        ));
+                        toast.current.show({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'status changed to ' + data.ban,
+                            life: 3000
+                        });
+                        return data
+                    })
+                    .catch(error => {
+                        toast.current.show({
+                            severity: 'error',
+                            summary: 'Erreur',
+                            detail: 'Error: ' + error.message,
+                            life: 3000
+                        });
                     });
-                    return data
-                })
-                .catch(error => {
-                    toast.current.show({
-                        severity: 'error',
-                        summary: 'Erreur',
-                        detail: 'Error: ' + error.message,
-                        life: 3000
-                    });
-                });
+            })
         })
     }
     const deleteChange = async (id) => {
         getAccessAdmin().then((accessToken) => {
 
-            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/toggle-delete/${id}/`, {
-                method: 'PATCH',
+            fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/delete/${id}/`, {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${accessToken}`
@@ -263,7 +216,7 @@ export default function Accommodation() {
                     if (!res.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return res.json();
+
                 })
                 .catch(error => {
                     toast.current.show({
@@ -277,7 +230,8 @@ export default function Accommodation() {
     }
 
     const actionBodyTemplate = (item) => {
-        const statusAcc = !item.autorisation
+        const statusAcc = item.ban;
+
         return (
             <div className={style.actionBodyTemplate}>
                 <Button onClick={() => { update(item) }} icon="pi pi-pencil" rounded outlined severity="success" />
@@ -303,9 +257,9 @@ export default function Accommodation() {
     }
 
     const confirmAllDelete = () => {
-        if (accommodationSelected.length) {
+        if (clientSelected.length) {
             confirmDialog({
-                message: `Do you want to delete this accommodation ${accommodationSelected.length} ?`,
+                message: `Do you want to delete this accommodation ${clientSelected.length} ?`,
                 header: 'Delete Confirmation',
                 icon: 'pi pi-info-circle',
                 defaultFocus: 'reject',
@@ -316,19 +270,19 @@ export default function Accommodation() {
     }
 
     const deleteAllAccommodation = () => {
-        let _accommodations = [...accommodations];
-        accommodationSelected.map((item) => {
+        let _accommodations = [...clients];
+        clientSelected.map((item) => {
             _accommodations = _accommodations.filter((val) => val.id !== item.id);
         })
-        setAccommodations(_accommodations);
-        toast.current.show({ severity: 'success', summary: 'Success', detail: `Accommodation(${accommodationSelected.length})  deleted`, life: 3000 });
-        setAccommodationSelected([]);
+        setClients(_accommodations);
+        toast.current.show({ severity: 'success', summary: 'Success', detail: `Accommodation(${clientSelected.length})  deleted`, life: 3000 });
+        setClientSelected([]);
     }
 
     const deleteAccommodation = async (item) => {
         await deleteChange(item.id);
-        let _accommodations = accommodations.filter((val) => val.id !== item.id);
-        setAccommodations(_accommodations);
+        let _accommodations = clients.filter((val) => val.id !== item.id);
+        setClients(_accommodations);
         toast.current.show({ severity: 'success', summary: 'Success', detail: 'Accommodation deleted', life: 3000 });
     }
 
@@ -343,7 +297,7 @@ export default function Accommodation() {
     )
 
     const sendData = () => {
-        let accommodationCopy = [...accommodations];
+        let accommodationCopy = [...clients];
 
         if (typeDialog == 0) {
 
@@ -393,22 +347,21 @@ export default function Accommodation() {
                 <Toolbar start={leftToolbarTemplate} end={rightToolbarTemplate} />
                 <DataTable
                     ref={dt}
-                    value={accommodations}
+                    value={clients}
                     header={header}
                     globalFilter={globalFilter}
                     filters={filters}
-                    selection={accommodationSelected}
-                    onSelectionChange={(e) => setAccommodationSelected(e.value)}
+                    selection={clientSelected}
+                    onSelectionChange={(e) => setClientSelected(e.value)}
                 >
                     <Column selectionMode="multiple" exportable={false} />
                     <Column sortable field="id" header="ID" exportable={false} />
-                    <Column sortable filter filterPlaceholder="Search by name" field="nom_hebergement" header="Name" />
-                    <Column body={imageBodyTemplate} header="Image" />
-                    <Column body={typeBodyTemplate} header="Type" />
-                    <Column sortable filter filterField="nombre_etoile_hebergement" dataType="numeric" field="nombre_etoile_hebergement" body={starBodyTemplate} header="Stars" />
-                    <Column dataType="numeric" filter filterField="prix_min_chambre" sortable field="prix_min_chambre" header="Price Min" />
+                    <Column sortable filter filterPlaceholder="Search by name" field="username" header="Name" />
+                    <Column sortable field="email" header="Email" />
+                    <Column sortable field="numero_client" header="Phone Number" />
                     <Column body={actionBodyTemplate} exportable={false} />
                 </DataTable>
+
             </div>
             <Toast ref={toast} />
             <ConfirmDialog />
@@ -422,7 +375,7 @@ export default function Accommodation() {
                         <input onChange={changeName} value={accommodationData.name} className={style.add_input} />
                     </div>
 
-                    <div className={style.input_container}>
+                    {/* <div className={style.input_container}>
                         <span>Type :</span>
                         <Dropdown
                             value={accommodationData.type_accommodation}
@@ -430,7 +383,7 @@ export default function Accommodation() {
                             optionLabel="type_name"
                             onChange={(e) => changeType(e)}
                         />
-                    </div>
+                    </div> */}
 
                     <div className={style.input_container}>
                         <span>Stars</span>
