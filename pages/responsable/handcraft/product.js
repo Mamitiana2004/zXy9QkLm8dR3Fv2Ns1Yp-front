@@ -101,7 +101,7 @@ export default function Product() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Product</span>
-                    <span className={style.top_container_subtitle}>Carlton Hotel</span>
+                    <span className={style.top_container_subtitle}>Nom Artisanat</span>
                 </div>
                 <Button onClick={()=>router.push("/responsable/handcraft/addProduct")} label="+ Add new prroduct" className={style.button_add}/>
             </div>
