@@ -1,66 +1,62 @@
 import Head from "next/head";
 import style from './../../../style/pages/responsable/tour/trip.module.css'
 import { Button } from "primereact/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useRouter } from "next/router";
 import TourCard from "@/components/responsable/TourCard";
 import { Dialog } from "primereact/dialog";
 import { Avatar } from "primereact/avatar";
 import { Image } from "primereact/image";
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import UrlConfig from "@/util/config";
 
 export default function Trip() {
 
     const router = useRouter();
-    const [category,setCategory] = useState(1);
-    const [visible,setVisible] = useState(false);
+    const [category, setCategory] = useState(null);
+    const [bookings, setBookings] = useState([]);
+    const [allVoyages, setAllVoyages] = useState([]);
+    const { user } = useContext(ResponsableLayoutContext);
+    const [totalTravelers, setTotalTravelers] = useState(0); 
 
+    const [visible, setVisible] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-    const [bookings,setBooking] = useState([])
-    const [allBooking,setAllBooking] = useState([]);
+    useEffect(() => {
+        if (user) {
+            const id_tour = user.id_etablissement;
+            fetch(`${UrlConfig.apiBaseUrl}/api/tour/${id_tour}/voyages/`)
+                .then(res => res.json())
+                .then(data => {
+                    setAllVoyages(data);
+                    if (data.length > 0) {
+                        const firstVoyage = data[0];
+                        setBookings(firstVoyage.reservations || []);
+                        setCategory(firstVoyage.id);
+                        calculateTotalTravelers(firstVoyage.reservations || []);
+                    }
+                })
+                .catch(error => console.log(error));
+        }
+    }, [user]);
 
-    useEffect(()=>{
-        fetch("/api/trip/getAllCustomer")
-        .then(res=>res.json())
-        .then(data=>{
-            setAllBooking(data);
-            const bookingCopy = [];
-            data.map(d=>{
-                if (d.tripID == category) {
-                    bookingCopy.push(d);
-                }
-            })
-            setBooking(bookingCopy);
-        })
-        .catch(error=>console.log(error))
-    },[category])
+    const changeTrip = (voyageId) => {
+        setCategory(voyageId);
+        const selectedVoyage = allVoyages.find(v => v.id === voyageId);
+        const reservations = selectedVoyage?.reservations || [];
+        setBookings(reservations);
+        calculateTotalTravelers(reservations);
+    };
 
-    const buttonTemplate = (item) =>{
-        return(
-            <>
-                <Button icon="pi pi-eye" onClick={()=>afficheDetail(item)} text severity="secondary"/>
-            </>
-        )
-    }
+    const calculateTotalTravelers = (reservations) => {
+        const total = reservations.reduce((sum, reservation) => sum + reservation.nombre_voyageurs, 0);
+        setTotalTravelers(total);
+    };
 
-    const changeTrip = (id) =>{
-        setCategory(id);
-        const bookingCopy = [];
-        allBooking.map(d=>{
-            if (d.tripID == id) {
-                bookingCopy.push(d);
-            }
-        })
-        setBooking(bookingCopy);
-    }
-
-
-    
-
-
-    const afficheDetail = (item) =>{
+    const showCustomerDetails = (customer) => {
+        setSelectedCustomer(customer);
         setVisible(true);
-    }
-
+    };
 
     return(
         <>
@@ -78,9 +74,14 @@ export default function Trip() {
 
             <div className={style.container}>
                 <div className={style.category_container}>
-                    <TourCard onClick={()=>changeTrip(1)}/>
-                    <TourCard onClick={()=>changeTrip(2)}/>
-                    <TourCard onClick={()=>changeTrip(3)}/>
+                    {allVoyages.map((voyage) => (
+                        <TourCard 
+                            key={voyage.id} 
+                            nom_voyage={voyage.nom_voyage} 
+                            onClick={() => changeTrip(voyage.id)}
+                            selected={category === voyage.id}
+                        />
+                    ))}
                 </div>
                 <div className={style.detail_container}>
                     <span className={style.title}>The wonders of madagascar</span>
@@ -102,25 +103,38 @@ export default function Trip() {
                                     <span className={style.value}>The wonders of madagascar</span>
                                 </div>
                                 <div className={style.detail_value}>
-                                    <span>Name</span>
+                                    <span>Check-in</span>
                                     <span className={style.value}>The wonders of madagascar</span>
                                 </div>
                                 <div className={style.detail_value}>
-                                    <span>Name</span>
+                                    <span>Check-out</span>
                                     <span className={style.value}>The wonders of madagascar</span>
                                 </div>
                                 <div className={style.detail_value}>
-                                    <span>Name</span>
+                                    <span>Départure</span>
                                     <span className={style.value}>The wonders of madagascar</span>
                                 </div>
                                 <div className={style.detail_value}>
-                                    <span>Name</span>
+                                    <span>Déstination</span>
                                     <span className={style.value}>The wonders of madagascar</span>
                                 </div>
                                 <div className={style.detail_value}>
-                                    <span>Name</span>
+                                    <span>Distance</span>
                                     <span className={style.value}>The wonders of madagascar</span>
                                 </div>
+                                <div className={style.detail_value}>
+                                    <span>Price per person</span>
+                                    <span className={style.value}>The wonders of madagascar</span>
+                                </div>
+                                <div className={style.detail_value}>
+                                    <span>Total place</span>
+                                    <span className={style.value}>The wonders of madagascar</span>
+                                </div>
+                                <div className={style.detail_value}>
+                                    <span>Available place</span>
+                                    <span className={style.value}>The wonders of madagascar</span>
+                                </div>
+                                
                             </div>
                         </div>
                         <Button icon="pi pi-pencil" label="Edit" className={style.button_modif}/>
@@ -132,8 +146,6 @@ export default function Trip() {
                             <div className={style.detail_inclusion_container}>
                                 <div className={style.detail_inclusion}>
                                     <span className={style.detail_inclusion_title}><i className="pi pi-check"/></span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
                                     <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
                                     <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
                                     <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
