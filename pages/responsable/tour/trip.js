@@ -139,15 +139,6 @@ export default function Trip() {
                                     <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
                                     <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
                                 </div>
-                                <div className={style.detail_inclusion}>
-                                    <span className={style.detail_inclusion_title}><i className="pi pi-times"/></span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
-                                    <span>sqdjqsldjqskldqsjdklqsjdlkqj</span>
-                                </div>
                             </div>
                         </div>
                         <Button icon="pi pi-pencil" label="Edit" className={style.button_modif}/>

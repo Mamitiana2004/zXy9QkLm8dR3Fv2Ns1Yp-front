@@ -43,7 +43,7 @@ export default function ProductCard(props) {
     // Determine the image to display
     const coverImage = props.images.find(img => img.couverture)?.image;
     const firstImage = props.images[0]?.image;
-    const placeholderImage = '/images/artisanat/artisanat.jpg'; // Placeholder image if no images
+    const placeholderImage = '/images/artisanat/aucun_image.jpeg'; // Placeholder image if no images
 
     const imageUrl = coverImage
         ? coverImage.startsWith('http') 
