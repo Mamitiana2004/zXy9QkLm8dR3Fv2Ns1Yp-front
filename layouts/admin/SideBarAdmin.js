@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 import AdminLayoutContext from '../context/adminLayoutContext';
 import { useRouter } from 'next/router';
 import { removeAllAdminAccess } from '@/util/Cookies';
+import { Divider } from 'primereact/divider';
 export default function SideBarAdmin(props) {
 
     const { sideBar } = useContext(AdminLayoutContext);
@@ -18,6 +19,12 @@ export default function SideBarAdmin(props) {
 
     return (
         <div className={sideBar == true ? style.container_mini : style.container}>
+            <Link className={style.container_link} href={"/admin"}>
+                <i className='pi pi-building' />
+                <span className={style.link}>DashBoard</span>
+                <i style={{ display: sideBar == true ? "none" : "block" }} className='pi pi-chevron-right' />
+            </Link>
+            <Divider></Divider>
             <Link className={style.container_link} href={"/admin/accommodation"}>
                 <i className='pi pi-building' />
                 <span className={style.link}>Accommodation</span>
@@ -28,7 +35,7 @@ export default function SideBarAdmin(props) {
                 <span className={style.link}>Hancraft</span>
                 <i style={{ display: sideBar == true ? "none" : "block" }} className='pi pi-chevron-right' />
             </Link>
-            <Link className={style.container_link} href={""}>
+            <Link className={style.container_link} href={"/admin/trip"}>
                 <i className='pi pi-compass' />
                 <span className={style.link}>Trip</span>
                 <i style={{ display: sideBar == true ? "none" : "block" }} className='pi pi-chevron-right' />

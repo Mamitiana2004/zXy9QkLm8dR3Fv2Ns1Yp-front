@@ -20,6 +20,7 @@ import AdminLayoutContext from "@/layouts/context/adminLayoutContext";
 import { getAccessAdmin, getNewAdminAccess } from "@/util/Cookies";
 import UrlConfig from "@/util/config";
 import { getCsrfTokenDirect } from "@/util/csrf";
+import { Tag } from "primereact/tag";
 
 let emptyAccommodation = {
     id: null,
@@ -244,6 +245,9 @@ export default function Accommodation() {
         )
     }
 
+    const bodyTag = (item) => {
+        return !item.ban ? <Tag severity="success" value="Active"></Tag> : <Tag severity="warning" value="Disabled"></Tag>
+    }
     const confirmDelete = (item) => {
         confirmDialog({
             message: 'Do you want to delete this accommodation?',
@@ -351,6 +355,7 @@ export default function Accommodation() {
                     <Column sortable field="email" header="Email" />
                     <Column sortable field="numero_responsable" header="Phone Number" />
                     <Column sortable field="type_responsable.type_name" header="Type Reponsable" />
+                    <Column body={bodyTag} header="Status" />
                     <Column body={actionBodyTemplate} exportable={false} />
                 </DataTable>
 

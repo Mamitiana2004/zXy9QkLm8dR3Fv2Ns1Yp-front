@@ -47,24 +47,24 @@ function MyApp({ Component, pageProps }) {
         }
     }, [])
 
-    if(router.asPath.includes("/admin")  && !Component.getLayout){
+    if (router.asPath.includes("/admin") && !Component.getLayout) {
         return (
             <PrimeReactProvider>
                 <AdminLayoutProvider>
                     <AdminLayout>
-                        {loading && <Loader/>}
-                        <Component {...pageProps}/>
+                        {loading && <Loader />}
+                        <Component {...pageProps} />
                     </AdminLayout>
                 </AdminLayoutProvider>
             </PrimeReactProvider>
         )
     }
-    if(router.asPath.includes("/admin")  && Component.getLayout){
+    if (router.asPath.includes("/admin") && Component.getLayout) {
         return (
             <PrimeReactProvider>
                 <AdminLayoutProvider>
-                    {loading && <Loader/>}
-                    {Component.getLayout(<Component {...pageProps}/>)}
+                    {loading && <Loader />}
+                    {Component.getLayout(<Component {...pageProps} />)}
                 </AdminLayoutProvider>
             </PrimeReactProvider>
         )

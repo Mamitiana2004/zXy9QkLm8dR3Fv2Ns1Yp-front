@@ -3,7 +3,7 @@ import { getAccessAdmin, getNewAdminAccess } from "@/util/Cookies";
 import { useContext, useEffect, useState } from "react"
 
 import Head from "next/head";
-import style from '@/style/pages/responsable/handcraft/dahsboard.module.css'
+import style from '@/style/pages/admin/dahsboard.module.css'
 import { Button } from "primereact/button";
 import { Chart } from "primereact/chart";
 
@@ -13,12 +13,22 @@ import { Calendar } from "primereact/calendar";
 import { useRouter } from "next/router";
 import { TabView } from "primereact/tabview";
 import { TabPanel } from "@mui/lab";
+import { SelectButton } from "primereact/selectbutton";
+import { Tag } from "primereact/tag";
 export default function DashBoard() {
 
     const { user, setUser } = useContext(AdminLayoutContext);
     const [chartData, setChartData] = useState({});
     const [chartOptions, setChartOptions] = useState({});
 
+    const options = ['Accommodation', 'Craft', "Tour"];
+
+    const [value, setValue] = useState(options[0]);
+
+
+    const justifyTemplate = (option) => {
+        return <i className={option.icon}></i>;
+    }
     const router = useRouter();
 
     const [barHorizontalData, setBarHorizontalData] = useState({});
@@ -29,11 +39,11 @@ export default function DashBoard() {
     const [lineOptions, setLineOptions] = useState({});
 
     const [recentBooking, setRecentBooking] = useState([
-        { id: "#41", name: "Paul Adamas", room: "203", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" },
-        { id: "#41", name: "Paul Adamas", room: "203", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" },
-        { id: "#41", name: "Paul Adamas", room: "203", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" },
-        { id: "#41", name: "Paul Adamas", room: "203", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" },
-        { id: "#41", name: "Paul Adamas", room: "203", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" }
+        { id: "#41", name: "Paul Adamas", room: "203", email: "arlecchino@gmail.com", ban: "false", check_in: "07-07-2024", check_out: "08-07-2024" },
+        { id: "#41", name: "Paul Adamas", room: "203", email: "arlecchino@gmail.com", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" },
+        { id: "#41", name: "Paul Adamas", room: "203", email: "arlecchino@gmail.com", ban: "false", check_in: "07-07-2024", check_out: "08-07-2024" },
+        { id: "#41", name: "Paul Adamas", room: "203", email: "arlecchino@gmail.com", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" },
+        { id: "#41", name: "Paul Adamas", room: "203", email: "arlecchino@gmail.com", guests: "2", check_in: "07-07-2024", check_out: "08-07-2024" }
     ])
 
     useEffect(() => {
@@ -219,6 +229,14 @@ export default function DashBoard() {
         setChartData(data);
         setChartOptions(options);
     }, []);
+
+    const bodyTag = (item) => {
+        return !item.ban ? <Tag severity="success" value="900$"></Tag> : <Tag severity="warning" value="600$"></Tag>
+    }
+
+    const switchValue = (item) => {
+        setValue(item);
+    }
     return (
         <>
             <Head>
@@ -228,7 +246,7 @@ export default function DashBoard() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Dashboard</span>
-                    <span className={style.top_container_subtitle}>Craft-Aftrip Admin</span>
+                    <span className={style.top_container_subtitle}>Craft-Aftrip</span>
                 </div>
                 <div className={style.card_detail_container}>
 
@@ -299,36 +317,57 @@ export default function DashBoard() {
                         <span className={style.detail_dashboard_title}>Latest Transactions</span>
                         <div className={style.card}>
                             <DataTable value={recentBooking}>
-                                <Column sortable field="id" header="No" />
-                                <Column sortable field="name" header="Name" />
-                                <Column sortable field="room" header="Room" />
-                                <Column sortable field="guests" header="Guests" />
-                                <Column sortable field="check_in" header="Check in" />
-                                <Column sortable field="check_out" header="Check out" />
+                                <Column field="id" header="No" />
+                                <Column field="name" header="Name" />
+                                <Column field="room" header="Room" />
+                                <Column field="guests" header="Guests" />
+                                <Column field="check_in" header="Check in" />
+                                <Column field="check_out" header="Check out" />
                             </DataTable>
                         </div>
-                    </div>
-                </div>
-                <div className={style.right_container}>
-                    <Calendar inline showWeek />
-                    <div className={style.card}>
-                        <div className="card">
-
-                        </div>
-                    </div>
-                    <div className={style.card}>
-                        <span className={style.detail_dashboard_title}>Latest Transactions</span>
-
-                        <DataTable value={recentBooking}>
-                            <Column sortable field="id" header="No" />
-                            <Column sortable field="name" header="Name" />
-                            <Column sortable field="room" header="Room" />
-                            <Column sortable field="check_out" header="Check out" />
-                        </DataTable>
                     </div>
                     <div className={style.card}>
                         <Chart type="line" data={lineData} options={lineOptions} />
                     </div>
+                </div>
+                <div className={style.right_container}>
+
+                    <div className={style.card}>
+                        <span className={style.centered_title}>
+                            <SelectButton
+                                value={value}
+                                onChange={(e) => {
+                                    switchValue(e.value);
+                                }
+                                } options={options} />
+                        </span>
+
+                        <DataTable value={recentBooking}>
+                            <Column field="name" header="Username" />
+                            <Column field="email" header="Email" />
+                            <Column field="check_out" header="Date" />
+                            <Column field="id" body={bodyTag} header="$" />
+                        </DataTable>
+                    </div>
+                    <Calendar inline showWeek />
+                    <div className={style.card}>
+                        <span className={style.centered_title}>
+                            <SelectButton
+                                value={value}
+                                onChange={(e) => {
+                                    switchValue(e.value);
+                                }
+                                } options={options} />
+                        </span>
+
+                        <DataTable value={recentBooking}>
+                            <Column field="name" header="Username" />
+                            <Column field="email" header="Email" />
+                            <Column field="check_out" header="Date" />
+                            <Column field="id" body={bodyTag} header="$" />
+                        </DataTable>
+                    </div>
+
                 </div>
             </div>
 
