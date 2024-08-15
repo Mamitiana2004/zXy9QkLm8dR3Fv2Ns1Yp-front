@@ -16,9 +16,7 @@ export default function ProductCard(props) {
     const { user } = useContext(LayoutContext);
     const [nbLike, setNbLike] = useState(props.nb_like);
 
-
     const handleButtonClick = () => {
-        console.log(props.href);
         if (!props.href) {
             console.error('URL is undefined');
             return;
@@ -26,8 +24,6 @@ export default function ProductCard(props) {
         router.push(props.href);
     };
 
-
-    // Always call useEffect, but add condition inside
     useEffect(() => {
         const fetchLikeStatus = () => {
             if (props.id) {
@@ -44,23 +40,39 @@ export default function ProductCard(props) {
         }
     }, [props.id, user]);
 
+    // Determine the image to display
     const coverImage = props.images.find(img => img.couverture)?.image;
-    const usedImage = coverImage ? `${UrlConfig.apiBaseUrl}${coverImage}` : props.images[0] ? `${UrlConfig.apiBaseUrl}${props.images[0].image}` : '/images/artisanat/artisanat.jpg';
-    const imageUrl = `${usedImage}`;
+    const firstImage = props.images[0]?.image;
+    const placeholderImage = '/images/artisanat/artisanat.jpg'; // Placeholder image if no images
+
+    const imageUrl = coverImage
+        ? coverImage.startsWith('http') 
+            ? coverImage 
+            : `${UrlConfig.apiBaseUrl}${coverImage}`
+        : firstImage
+        ? firstImage.startsWith('http') 
+            ? firstImage 
+            : `${UrlConfig.apiBaseUrl}${firstImage}`
+        : placeholderImage;
+
+    // console.log("Cover Image:", coverImage);
+    // console.log("First Image:", firstImage);
+    // console.log("Image URL:", imageUrl);
 
     const handleLikeClick = () => {
         if (!user) {
             toast.current.show({
                 severity: 'info',
-                summary: 'Not Connecter',
+                summary: 'Not Connected',
                 detail: <>No user connected <Link href="/users/login">Login here</Link>.</>,
                 life: 5000
-            }); return;
+            }); 
+            return;
         }
         if (props.id) {
             LikeProduct(props.id).then(() => {
-                setIsLiked((prev) => !prev);
-                setNbLike((prevNbLike) => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
+                setIsLiked(prev => !prev);
+                setNbLike(prevNbLike => (isLiked ? prevNbLike - 1 : prevNbLike + 1));
             }).catch((error) => {
                 console.error('Error liking the product:', error);
             });
@@ -77,6 +89,7 @@ export default function ProductCard(props) {
                     alt={props.nom_produit}
                     imageClassName={style.image_product}
                     className={style.image_product}
+                    placeholder={<img src={placeholderImage} alt="Placeholder" />}
                 />
                 <div className={style.background}></div>
                 {props.discount != null && (
@@ -108,7 +121,7 @@ export default function ProductCard(props) {
                     </div>
                     <Button onClick={handleButtonClick} className={style.button} label='View' />
                 </div>
-            </div>  <Toast ref={toast} />
+            </div>
         </div>
     );
 }

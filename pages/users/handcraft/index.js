@@ -15,6 +15,7 @@ export default function Handcraft() {
     const router = useRouter();
     const [handcrafts, setHandcrafts] = useState([]);
 
+    
     // Recuperer tous les liste des produits artisanaux
     useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
@@ -22,6 +23,7 @@ export default function Handcraft() {
             .then(data => setHandcrafts(data))
             .catch(error => console.log(error));
     }, []);
+
 
     return (
         <>
