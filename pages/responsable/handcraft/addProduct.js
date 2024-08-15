@@ -7,24 +7,33 @@ import { InputText } from "primereact/inputtext";
 import { InputNumber } from "primereact/inputnumber";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
+import { MultiSelect } from 'primereact/multiselect';
 import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
 import UrlConfig from "@/util/config";
+import { useRouter } from 'next/router';
 
 export default function AddNewRoom() {
     const { user } = useContext(ResponsableLayoutContext);
     const inputRef = useRef(null);
     const [listImage, setListImage] = useState([]);
-
     const [productName, setProductName] = useState("");
     const [productDescription, setProductDescription] = useState("");
     const [productPrice, setProductPrice] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+
     const [selectedStatus, setSelectedStatus] = useState(null);
     const [productWeight, setProductWeight] = useState(null);
     const [productWidth, setProductWidth] = useState(null);
     const [productHeight, setProductHeight] = useState(null);
     const [productQuantity, setProductQuantity] = useState(null);
     const [productCategorie, setProductCategorie] = useState([]);
+
+    const router = useRouter();
+
+    const { id } = router.query;
+
+    console.log(id); // L'ID dynamique obtenu à partir de l'URL
+
     
     const [statusOptions] = useState([
         { label: 'Available', value: true },
@@ -57,36 +66,86 @@ export default function AddNewRoom() {
     }
 
     const handleSubmit = () => {
-    const id_artisanat = user.id_etablissement;
+        const id_artisanat = user.id_etablissement;
 
-    const payload = {
-        nom_produit_artisanal: productName,
-        description_artisanat: productDescription,
-        prix_artisanat: productPrice ? productPrice.toFixed(2) : "0.00", // Format price as a string
-        disponible_artisanat: selectedStatus,
-        poid_kg: productWeight !== null ? productWeight : null,
-        largeur: productWidth !== null ? productWidth : null,
-        hauteur: productHeight !== null ? productHeight : null,
-        nb_produit_dispo: productQuantity !== null ? productQuantity : 0,
-        artisanat: id_artisanat,
-        specifications: selectedCategory ? [selectedCategory.id] : [], // Array of selected specification IDs
+        const payload = {
+            nom_produit_artisanal: productName,
+            description_artisanat: productDescription,
+            prix_artisanat: productPrice ? productPrice.toFixed(2) : "0.00",
+            disponible_artisanat: selectedStatus,
+            poid_kg: productWeight !== null ? productWeight : null,
+            largeur: productWidth !== null ? productWidth : null,
+            hauteur: productHeight !== null ? productHeight : null,
+            nb_produit_dispo: productQuantity !== null ? productQuantity : 0,
+            artisanat: id_artisanat,
+            specifications: selectedCategories.map(category => category.id),
+        };
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/${id_artisanat}/produits/`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Product added:', data);
+
+            if (data.id) {
+                const files = inputRef.current.files;
+                if (files.length > 0) {
+                    Array.from(files).forEach(file => {
+                        if (file.type.startsWith('image/')) {
+                            uploadImage(file, data.id); 
+                        }
+                    });
+                }
+            }
+        })
+        .catch(err => console.error('Error adding product:', err));
+    };
+    
+    const handleFileUpload = () => {
+        const files = inputRef.current.files;
+        if (files.length > 0) {
+            const fileUrls = Array.from(files).map(file => {
+                if (file.type.startsWith('image/')) {
+                    return URL.createObjectURL(file);
+                }
+                return null;
+            }).filter(url => url !== null);
+
+            setListImage(prevList => [...prevList, ...fileUrls]);
+
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    uploadImage(file);
+                }
+            });
+        }
     };
 
-    fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/${id_artisanat}/produits/`, {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Product added:', data);
-        // Handle success, e.g., show a notification or redirect
-    })
-    .catch(err => console.error('Erreur lors de l ajoute des Products', err));
-};
+    const uploadImage = (file, productId) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('produit', productId);
 
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/images-produits/`, {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Backend error:', data.error);
+            } else {
+                console.log('Image uploaded successfully:', data);
+                setListImage(prevList => [...prevList, data.imageUrl]);
+            }
+        })
+        .catch(err => console.error('Error uploading image:', err));
+    };
 
     return (
         <>
@@ -94,12 +153,18 @@ export default function AddNewRoom() {
                 <title>Add new Room</title>
             </Head>
             <div className={style.container}>
-                {/* Image Upload Section (No changes) */}
                 <div className={style.image_container}>
                     <div onClick={() => inputRef.current.click()} className={style.button_image}>
                         <i className="pi pi-plus" />
                         <span>Add image</span>
-                        <input ref={inputRef} type="file" accept="image/*" style={{ display: "none" }} />
+                        <input 
+                            ref={inputRef} 
+                            type="file" 
+                            accept="image/*" 
+                            style={{ display: "none" }} 
+                            onChange={handleFileUpload} 
+                            multiple 
+                        />
                     </div>
                     {listImage.map((image, index) => (
                         <div key={index} className={style.image_add_container}>
@@ -108,7 +173,6 @@ export default function AddNewRoom() {
                     ))}
                 </div>
 
-                {/* Product Details Section */}
                 <div className={style.room_detail_container}>
                     <span className={style.room_detail_title}>Product details</span>
                     <div className={style.room_detail}>
@@ -139,7 +203,6 @@ export default function AddNewRoom() {
                     </div>
                 </div>
 
-                {/* Product Specification Section */}
                 <div className={style.room_detail_container}>
                     <span className={style.room_detail_title}>Product specification</span>
                     <div className={style.room_specification}>
@@ -151,15 +214,18 @@ export default function AddNewRoom() {
                             </div>
                         </div>
                         <div className={style.add_dimension}>
-                            <label htmlFor="addDimmension">Categories</label>
-                            <div className={style.input_container_add_container}>
-                                <Dropdown
-                                    value={selectedCategory}
+                             <div className={style.add_dimension}>
+                                <label htmlFor="categories">Categories</label>
+                                <MultiSelect
+                                    id="categories"
+                                    value={selectedCategories}
                                     options={productCategorie}
-                                    onChange={(e) => setSelectedCategory(e.value)}
+                                    onChange={(e) => setSelectedCategories(e.value)}
                                     optionLabel="name"
-                                    placeholder="Select a Category"
-                                    className={style.select_container}
+                                    placeholder="Select Categories"
+                                    className={style.multiselect}
+                                    display="chip" 
+                                    filter
                                 />
                             </div>
                         </div>
@@ -172,13 +238,11 @@ export default function AddNewRoom() {
                     </div>
                 </div>
 
-                {/* Product Description Section */}
                 <div className={style.room_description_container}>
                     <span className={style.room_description_title}>Product description</span>
                     <textarea className={style.room_description_textarea} value={productDescription} onChange={(e) => setProductDescription(e.target.value)} />
                 </div>
 
-                {/* Buttons */}
                 <div className={style.button_list}>
                     <Button className="button-secondary" raised label="Cancel" />
                     <Button className="button-primary" label="+ Add room" onClick={handleSubmit} />
