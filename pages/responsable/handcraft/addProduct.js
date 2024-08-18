@@ -32,7 +32,6 @@ export default function AddNewRoom() {
 
     const router = useRouter();
 
-
     const [statusOptions] = useState([
         { label: 'Available', value: true },
         { label: 'Unavailable', value: false },
@@ -97,16 +96,16 @@ export default function AddNewRoom() {
         const payload = {
             nom_produit_artisanal: productName,
             description_artisanat: productDescription,
-            prix_artisanat: productPrice ? productPrice.toFixed(2) : "0.00",
+            prix_artisanat: parseFloat(productPrice) ? productPrice.toFixed(2) : "0.00",
             disponible_artisanat: selectedStatus,
-            poid_kg: productWeight !== null ? productWeight : null,
-            largeur: productWidth !== null ? productWidth : null,
-            hauteur: productHeight !== null ? productHeight : null,
+            poid_kg: parseFloat(productWeight) !== null ? productWeight : null,
+            largeur: parseInt(productWidth) !== null ? productWidth : null,
+            hauteur: parseInt(productHeight) !== null ? productHeight : null,
             nb_produit_dispo: productQuantity !== null ? productQuantity : 0,
             artisanat: id_artisanat,
             specifications: selectedCategories.map(category => category.id),
         };
-
+        console.log(payload);
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/${id_artisanat}/produits/`, {
             method: "POST",
             headers: {
@@ -171,6 +170,7 @@ export default function AddNewRoom() {
                 if (data.error) {
                     console.error('Backend error:', data.error);
                 } else {
+                    resetForm();
                     toast.current.show({
                         severity: 'success',
                         summary: 'Success',
@@ -184,6 +184,19 @@ export default function AddNewRoom() {
     };
 
 
+    const resetForm = () => {
+        setListImage([]);
+        setProductName("");
+        setProductDescription("");
+        setProductPrice(null);
+        setSelectedCategories([]);
+        setSelectedStatus(null);
+        setProductWeight(null);
+        setProductWidth(null);
+        setProductHeight(null);
+        setProductQuantity(null);
+        setProductCategorie([]);
+    };
     return (
         <>
             <Head>
