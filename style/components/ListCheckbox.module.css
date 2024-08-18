@@ -74,3 +74,21 @@
     justify-content: space-between;
     font-size: 14px;
 }
+
+/* ListCheckbox.module.css */
+
+.container {
+    /* Your existing styles */
+}
+
+.title {
+    /* Your existing styles */
+}
+
+.multiSelectContainer {
+    /* Container styles for MultiSelect if needed */
+}
+
+.multiSelect {
+    width: 100%; /* Adjust width as needed */
+}
