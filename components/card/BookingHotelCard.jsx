@@ -64,14 +64,14 @@ export default function BookingHotelCard(props) {
                                 </>
                             )
                         })}
-                        <div className={style.tour_detail_container}>
+                        {/* <div className={style.tour_detail_container}>
                             <span className={style.tour_detail}>Cleaning fee</span>
                             <span className={style.tour_value}>$1.75</span>
                         </div>
                         <div className={style.tour_detail_container}>
                             <span className={style.tour_detail}>AirBnb fee</span>
                             <span className={style.tour_value}>$3</span>
-                        </div>
+                        </div> */}
 
                     </div>
                 </div>
