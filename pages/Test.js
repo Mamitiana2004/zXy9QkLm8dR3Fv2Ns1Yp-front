@@ -1,6 +1,9 @@
 import Payment from "@/components/payment/Payment";
+import Paypal from "@/components/payment/PayPal";
 import { CardElement, Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import Head from "next/head";
+import Script from "next/script";
 import { Card } from "primereact/card";
 import { useEffect, useState } from "react";
 import Stripe from "stripe";
@@ -26,17 +29,17 @@ const CARD_ELEMENT_OPTIONS = {
 };
 
 
-const stripePomise =loadStripe("pk_test_51PnDWSP8Vhow5iFlGuYgULfcwQXfI5FU9Zz2XmYrD4yaHW6YMrWPMCW6MsqB8BJVbxTcLGROvvpcuo7YIOmlWd9V002g9sXWk4");
+const stripePomise = loadStripe("pk_test_51PnDWSP8Vhow5iFlGuYgULfcwQXfI5FU9Zz2XmYrD4yaHW6YMrWPMCW6MsqB8BJVbxTcLGROvvpcuo7YIOmlWd9V002g9sXWk4");
 
 
 
 export default function Test() {
-    const [clientSecret,setClientSecret] = useState();
+    const [clientSecret, setClientSecret] = useState();
 
 
     const createPaymentIntent = async () => {
         const stripe = new Stripe('sk_test_51PnDWSP8Vhow5iFl7nifEoCfR454ZYuBkjQyx7GqJwEYzKeTqZDdngeavb83dnH1qcF9N8U19QjPXMHNDGQIFHNc00LmejjohL');
-        
+
         const customer = await stripe.customers.create({
             name: 'John Doe',      // Nom du client
             email: 'mamitianafaneva2004@gmail.com',  // Email du client
@@ -47,37 +50,53 @@ export default function Test() {
             const paymentIntent = await stripe.paymentIntents.create({
                 amount: 5000, // Par exemple, 50.00 USD
                 currency: 'usd',
-                customer:customer.id,
-                receipt_email:customer.email,
-                metadata: {            
-                    hebergement_hotel:"Hotel le louvre",
+                customer: customer.id,
+                receipt_email: customer.email,
+                metadata: {
+                    hebergement_hotel: "Hotel le louvre",
                     order_id: '6735',
                 }
             });
-    
+
             setClientSecret(paymentIntent.client_secret);
             setOption({
-                clientSecret:paymentIntent.client_secret
+                clientSecret: paymentIntent.client_secret
             })
         } catch (error) {
             console.error('Error creating PaymentIntent:', error);
         }
     };
 
-    const [option,setOption] =useState(null);
-    
-    useEffect(()=>{
+    const [option, setOption] = useState(null);
+    const [checkout, setCheckOut] = useState(false);
+
+    useEffect(() => {
         createPaymentIntent();
-    },[])
+    }, [])
 
 
     return (
         <div>
-            {option!=null &&
+            {/* {option!=null &&
                 <Elements stripe={stripePomise} options={option}>
                     <Payment/>
                 </Elements>
-            }
+            } */}
+
+            <div className="App">
+                {checkout ? (
+                    <Paypal />
+                ) : (
+                    <button
+                        onClick={() => {
+                            setCheckOut(true);
+                        }}
+                    >
+                        Checkout
+                    </button>
+                )}
+            </div>
+
         </div>
     )
 }
@@ -87,6 +106,11 @@ export default function Test() {
 Test.getLayout = function getLayout(page) {
     return (
         <>
+            <Head>
+                <title>Truc truc</title>
+
+            </Head>
+
             {page}
         </>
     );

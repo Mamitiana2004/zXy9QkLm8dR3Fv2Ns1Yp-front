@@ -18,7 +18,7 @@ export default function Handcraft() {
     
     // Recuperer tous les liste des produits artisanaux
     useEffect(() => {
-        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/filter/`)
             .then(res => res.json())
             .then(data => setHandcrafts(data))
             .catch(error => console.log(error));

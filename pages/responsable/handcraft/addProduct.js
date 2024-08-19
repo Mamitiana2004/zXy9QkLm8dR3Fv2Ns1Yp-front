@@ -11,6 +11,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
 import UrlConfig from "@/util/config";
 import { useRouter } from 'next/router';
+import { Toast } from "primereact/toast";
 
 export default function AddNewRoom() {
     const { user } = useContext(ResponsableLayoutContext);
@@ -27,14 +28,10 @@ export default function AddNewRoom() {
     const [productHeight, setProductHeight] = useState(null);
     const [productQuantity, setProductQuantity] = useState(null);
     const [productCategorie, setProductCategorie] = useState([]);
+    const toast = useRef(null);
 
     const router = useRouter();
 
-    const { id } = router.query;
-
-    console.log(id); // L'ID dynamique obtenu à partir de l'URL
-
-    
     const [statusOptions] = useState([
         { label: 'Available', value: true },
         { label: 'Unavailable', value: false },
@@ -54,33 +51,61 @@ export default function AddNewRoom() {
                 'Content-Type': 'application/json',
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            const formattedData = data.map(item => ({
-                id: item.id || 'N/A',
-                name: item.type_specification || 'N/A',
-            }));
-            setProductCategorie(formattedData);
-        })
-        .catch(err => console.error('Erreur lors de la récupération des Listes des Categorie:', err));
+            .then(response => response.json())
+            .then(data => {
+                const formattedData = data.map(item => ({
+                    id: item.id || 'N/A',
+                    name: item.type_specification || 'N/A',
+                }));
+                setProductCategorie(formattedData);
+            })
+            .catch(err => console.error('Erreur lors de la récupération des Listes des Categorie:', err));
     }
 
+    // const handleFileUpload = () => {
+    //     const files = inputRef.current.files;
+    //     if (files.length > 0) {
+    //         const fileUrls = Array.from(files).map(file => {
+    //             if (file.type.startsWith('image/')) {
+    //                 return URL.createObjectURL(file);
+    //             }
+    //             return null;
+    //         }).filter(url => url !== null);
+
+    //         setListImage(prevList => [...prevList, ...fileUrls]);
+
+    //         Array.from(files).forEach(file => {
+    //             if (file.type.startsWith('image/')) {
+    //                 // uploadImage(file);
+    //             }
+    //         });
+    //     }
+    // };
+
+    // const handleSubmit = () => {
+    //     const files = inputRef.current.files;
+
+    //     if (files.length > 0) {
+    //         uploadImages(files, 3);
+    //     }
+
+    // }
     const handleSubmit = () => {
         const id_artisanat = user.id_etablissement;
 
         const payload = {
             nom_produit_artisanal: productName,
             description_artisanat: productDescription,
-            prix_artisanat: productPrice ? productPrice.toFixed(2) : "0.00",
+            prix_artisanat: parseFloat(productPrice) ? productPrice.toFixed(2) : "0.00",
             disponible_artisanat: selectedStatus,
-            poid_kg: productWeight !== null ? productWeight : null,
-            largeur: productWidth !== null ? productWidth : null,
-            hauteur: productHeight !== null ? productHeight : null,
+            poid_kg: parseFloat(productWeight) !== null ? productWeight : null,
+            largeur: parseInt(productWidth) !== null ? productWidth : null,
+            hauteur: parseInt(productHeight) !== null ? productHeight : null,
             nb_produit_dispo: productQuantity !== null ? productQuantity : 0,
             artisanat: id_artisanat,
             specifications: selectedCategories.map(category => category.id),
         };
-
+        console.log(payload);
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/${id_artisanat}/produits/`, {
             method: "POST",
             headers: {
@@ -88,24 +113,30 @@ export default function AddNewRoom() {
             },
             body: JSON.stringify(payload),
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Product added:', data);
-
-            if (data.id) {
-                const files = inputRef.current.files;
-                if (files.length > 0) {
-                    Array.from(files).forEach(file => {
-                        if (file.type.startsWith('image/')) {
-                            uploadImage(file, data.id); 
-                        }
+            .then(response => {
+                if (!response.ok) {
+                    toast.current.show({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Please complete all fields',
+                        life: 3000
                     });
+                    return null;
                 }
-            }
-        })
-        .catch(err => console.error('Error adding product:', err));
+                return response.json()
+            })
+            .then(data => {
+                if (data) {
+                    const files = inputRef.current.files;
+                    if (files.length > 0) {
+                        uploadImages(files, data.id);
+                    }
+                }
+
+            })
+            .catch(err => console.error('Error adding product:', err));
     };
-    
+
     const handleFileUpload = () => {
         const files = inputRef.current.files;
         if (files.length > 0) {
@@ -117,36 +148,55 @@ export default function AddNewRoom() {
             }).filter(url => url !== null);
 
             setListImage(prevList => [...prevList, ...fileUrls]);
-
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith('image/')) {
-                    uploadImage(file);
-                }
-            });
         }
     };
 
-    const uploadImage = (file, productId) => {
+    const uploadImages = (files, productId) => {
         const formData = new FormData();
-        formData.append('image', file);
+        Array.from(files).forEach(file => {
+            if (file.type.startsWith('image/')) {
+                formData.append('image[]', file);
+            }
+        });
+
         formData.append('produit', productId);
 
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/images-produits/`, {
             method: "POST",
             body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error('Backend error:', data.error);
-            } else {
-                console.log('Image uploaded successfully:', data);
-                setListImage(prevList => [...prevList, data.imageUrl]);
-            }
-        })
-        .catch(err => console.error('Error uploading image:', err));
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Backend error:', data.error);
+                } else {
+                    resetForm();
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'Product added succefuly',
+                        life: 3000
+                    });
+                    setListImage(prevList => [...prevList, ...data]);
+                }
+            })
+            .catch(err => console.error('Error uploading images:', err));
     };
 
+
+    const resetForm = () => {
+        setListImage([]);
+        setProductName("");
+        setProductDescription("");
+        setProductPrice(null);
+        setSelectedCategories([]);
+        setSelectedStatus(null);
+        setProductWeight(null);
+        setProductWidth(null);
+        setProductHeight(null);
+        setProductQuantity(null);
+        setProductCategorie([]);
+    };
     return (
         <>
             <Head>
@@ -157,13 +207,13 @@ export default function AddNewRoom() {
                     <div onClick={() => inputRef.current.click()} className={style.button_image}>
                         <i className="pi pi-plus" />
                         <span>Add image</span>
-                        <input 
-                            ref={inputRef} 
-                            type="file" 
-                            accept="image/*" 
-                            style={{ display: "none" }} 
-                            onChange={handleFileUpload} 
-                            multiple 
+                        <input
+                            ref={inputRef}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            onChange={handleFileUpload}
+                            multiple
                         />
                     </div>
                     {listImage.map((image, index) => (
@@ -214,7 +264,7 @@ export default function AddNewRoom() {
                             </div>
                         </div>
                         <div className={style.add_dimension}>
-                             <div className={style.add_dimension}>
+                            <div className={style.add_dimension}>
                                 <label htmlFor="categories">Categories</label>
                                 <MultiSelect
                                     id="categories"
@@ -224,7 +274,7 @@ export default function AddNewRoom() {
                                     optionLabel="name"
                                     placeholder="Select Categories"
                                     className={style.multiselect}
-                                    display="chip" 
+                                    display="chip"
                                     filter
                                 />
                             </div>
@@ -248,6 +298,7 @@ export default function AddNewRoom() {
                     <Button className="button-primary" label="+ Add room" onClick={handleSubmit} />
                 </div>
             </div>
+            <Toast ref={toast} />
         </>
     );
 }
