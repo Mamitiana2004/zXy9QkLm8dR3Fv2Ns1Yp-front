@@ -9,53 +9,102 @@ import { Rating } from "primereact/rating";
 import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
 import { Dropdown } from "primereact/dropdown";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { Dialog } from "primereact/dialog";
 import { Chip } from 'primereact/chip';
 import { Tooltip } from "primereact/tooltip";
-        
+import { Toast } from "primereact/toast";
+
 
 export default function Handcraft() {
-
-    const [rateValue,setRateValue] = useState(0);
+    const toast = useRef(null);
+    const [rateValue, setRateValue] = useState(0);
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [nif, setNif] = useState('');
+    const [address, setAddress] = useState('');
+    const [stat, setStat] = useState('');
+    const [countryCode, setCountryCode] = useState('+261');
+    const [countryOptions, setCountryOptions] = useState();
 
     const router = useRouter();
-    const [deleteChip,setDeleteChip] = useState(false);
+    const [deleteChip, setDeleteChip] = useState(false);
 
-    const [socialLink,setSocialLink] = useState([]);
-    const [visible,setVisible] = useState(false);
+    const [socialLink, setSocialLink] = useState([]);
+    const [visible, setVisible] = useState(false);
 
 
-    const [socialLabel,setSocialLabel] = useState();
-    const [socialSelected,setSocialSelected] = useState();
-    const [allSocial,setAllSocial] = useState([]);
-    const getAllSocial = () =>{
+    const [socialLabel, setSocialLabel] = useState();
+    const [socialSelected, setSocialSelected] = useState();
+    const [allSocial, setAllSocial] = useState([]);
+    const getAllSocial = () => {
         fetch("/api/social")
-        .then(res=>res.json())
-        .then(data=>setAllSocial(data))
-        .catch(error=>console.log(error));
+            .then(res => res.json())
+            .then(data => setAllSocial(data))
+            .catch(error => console.log(error));
     }
-    
-    useEffect(()=>{
+    useEffect(() => {
+        const fetchCountryCodes = async () => {
+            try {
+                const response = await fetch('/api/social/countryCodes');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setCountryOptions(data);
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+            }
+        };
+
+        fetchCountryCodes();
+    }, []);
+
+    useEffect(() => {
         getAllSocial();
-    },[])
+    }, [])
 
-    const [socialLabelUpdat,setSocialLabelUpdat] = useState();
+    const [socialLabelUpdat, setSocialLabelUpdat] = useState();
 
 
-    const informationAccommodationFini = () =>{
-        router.push("/users/etablissement/handcraft/addImage")
-    }
 
-    const addSocialLink = () =>{
+    const saveToLocalStorage = () => {
+        if (name && phone && nif && address && stat) {
+            const email = localStorage.getItem("email_etablissement");
+
+            const data = {
+                nom: name,
+                responsable: null,
+                email: email,
+                telephone: `${countryCode}${phone}`,
+                address: address,
+                stat: stat,
+                nif: nif,
+            };
+
+            localStorage.setItem("formData", JSON.stringify(data));
+
+            setTimeout(() => {
+                router.push("/users/etablissement/addInfoUser");
+            }, 3000);
+        } else {
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Please complete all fields',
+                life: 3000,
+            });
+        }
+    };
+    const addSocialLink = () => {
         const allSocialCopy = [];
-        allSocial.map((social)=>{
+        allSocial.map((social) => {
             if (socialSelected != social) {
                 allSocialCopy.push({
-                    id:social.id,
-                    label:social.label,
-                    icon:social.icon
+                    id: social.id,
+                    label: social.label,
+                    icon: social.icon
                 });
             }
         })
@@ -63,47 +112,47 @@ export default function Handcraft() {
         setSocialSelected();
         const socialLinkCopy = [...socialLink];
         socialLinkCopy.push({
-            icon:socialSelected.icon,
-            label:socialLabel,
-            visible:false
+            icon: socialSelected.icon,
+            label: socialLabel,
+            visible: false
         });
         setSocialLabel();
         setSocialLink(socialLinkCopy);
         setVisible(false);
     }
 
-    const updateSocialLink = (social) =>{
+    const updateSocialLink = (social) => {
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             if (social == s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:socialLabelUpdat,
-                    visible:false
+                    icon: s.icon,
+                    label: socialLabelUpdat,
+                    visible: false
                 });
                 setSocialLabelUpdat();
             }
-            else{
+            else {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
         setSocialLink(socialLinkCopy);
     }
-    
-    const deleteSocialLink = (social) =>{
+
+    const deleteSocialLink = (social) => {
         setDeleteChip(true);
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             setSocialLabelUpdat();
             if (social != s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
@@ -111,27 +160,27 @@ export default function Handcraft() {
         setDeleteChip(false);
     }
 
-    const detailSocial = (social,event) =>{
+    const detailSocial = (social, event) => {
         if (event.ctrlKey) {
             router.push(social.label);
         }
-        else{
+        else {
             if (!deleteChip) {
                 const socialLinkCopy = [];
-                socialLink.map((s)=>{
+                socialLink.map((s) => {
                     if (social == s) {
                         socialLinkCopy.push({
-                            icon:s.icon,
-                            label:s.label,
-                            visible:true
+                            icon: s.icon,
+                            label: s.label,
+                            visible: true
                         });
                         setSocialLabelUpdat(s.label);
                     }
-                    else{
+                    else {
                         socialLinkCopy.push({
-                            icon:s.icon,
-                            label:s.label,
-                            visible:s.visible
+                            icon: s.icon,
+                            label: s.label,
+                            visible: s.visible
                         });
                     }
                 })
@@ -140,21 +189,21 @@ export default function Handcraft() {
         }
     }
 
-    const hideSocialDetail = (social) =>{
+    const hideSocialDetail = (social) => {
         const socialLinkCopy = [];
-        socialLink.map((s)=>{
+        socialLink.map((s) => {
             if (social == s) {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:false
+                    icon: s.icon,
+                    label: s.label,
+                    visible: false
                 });
             }
-            else{
+            else {
                 socialLinkCopy.push({
-                    icon:s.icon,
-                    label:s.label,
-                    visible:s.visible
+                    icon: s.icon,
+                    label: s.label,
+                    visible: s.visible
                 });
             }
         })
@@ -165,20 +214,20 @@ export default function Handcraft() {
 
     const socialOptionTemplate = (option) => {
         return (
-            <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
-                <i className={option.icon}/>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <i className={option.icon} />
                 {option.label}
             </div>
         );
     };
 
 
-    return(
+    return (
         <>
             <div className={style.container}>
                 <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png"/>
-                    <Stepper activeStep={2}  linear className={style.stepper}>
+                    <Image alt="logo" src="/images/logo-aftrip.png" />
+                    <Stepper activeStep={2} linear className={style.stepper}>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
@@ -198,129 +247,131 @@ export default function Handcraft() {
                                 <FloatLabel>
                                     <InputText
                                         id="input_name"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-warehouse"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_name">
+                                        <i className="pi pi-warehouse" />
                                         Name
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
-                                    <InputText
-                                        id="input_address"
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_address">
-                                        <i className="pi pi-map-marker"/>
-                                        Address
-                                    </label>
+                                    <div className="phone-input-container" style={{ display: "flex", alignItems: "center" }}>
+                                        <Dropdown
+                                            pt={{
+                                                trigger: { style: { display: "none", width: "100%" } }
+                                            }}
+                                            value={countryCode}
+                                            options={countryOptions}
+                                            onChange={(e) => { setCountryCode(e.value); }}
+                                            style={{ width: "100px", marginRight: "15px" }}
+
+                                            optionLabel="label"
+                                            optionValue="value"
+                                        />
+                                        <FloatLabel>
+                                            <InputText
+                                                id="input_phone"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                            />
+                                            <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_phone">
+                                                <i className="pi pi-phone" />
+                                                Phone
+                                            </label>
+                                        </FloatLabel>
+                                    </div>
                                 </FloatLabel>
+                            </div>
+
+                            <div className={style.right_accommodation_1}>
                                 <FloatLabel>
                                     <InputText
-                                        id="input_phone"
+                                        id="input_nif"
+                                        value={nif}
+                                        onChange={(e) => setNif(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_phone">
-                                        <i className="pi pi-phone"/>
-                                        Phone
-                                    </label>
-                                </FloatLabel>
-                                <FloatLabel>
-                                    <InputText
-                                        id="input_phone"
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_phone">
-                                        <i className="pi pi-credit-card"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_nif">
+                                        <i className="pi pi-credit-card" />
                                         NIF
                                     </label>
                                 </FloatLabel>
-                            </div>
-                            <div className={style.right_accommodation_1}>
-                                <FloatLabel>
-                                    <Dropdown 
-                                        pt={{
-                                            trigger: { style: {display:"none"} }
-                                        }} style={{width:"100%"}}
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-warehouse"/>
-                                        Accommodation type
-                                    </label>
-                                </FloatLabel>
+
                                 <FloatLabel>
                                     <InputText
-                                        id="input_name"
+                                        id="input_address"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-map-marker"/>
-                                        City
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_address">
+                                        <i className="pi pi-map-marker" />
+                                        Address
                                     </label>
                                 </FloatLabel>
+
                                 <FloatLabel>
                                     <InputText
-                                        id="input_name"
+                                        id="input_stat"
+                                        value={stat}
+                                        onChange={(e) => setStat(e.target.value)}
                                     />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-map-marker"/>
-                                        Country
-                                    </label>
-                                </FloatLabel>
-                                <FloatLabel>
-                                    <InputText
-                                        id="input_name"
-                                    />
-                                    <label style={{display:"flex",alignItems:"center",gap:"8px"}} htmlFor="input_name">
-                                        <i className="pi pi-credit-card"/>
+                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_stat">
+                                        <i className="pi pi-credit-card" />
                                         STAT
                                     </label>
                                 </FloatLabel>
                             </div>
                         </div>
-                        <Button onClick={()=>setVisible(true)} className={style.addSocial} label="Add social link" icon="pi pi-plus"/>
+                        <Button onClick={() => setVisible(true)} className={style.addSocial} label="Add social link" icon="pi pi-plus" />
                         <div className={style.chip_container}>
-                            {socialLink.map((social,key)=>{
+                            {socialLink.map((social, key) => {
                                 return (<>
-                                <Tooltip target="#chip"/>
-                                        <Chip id="chip" data-pr-tooltip="Ctrl+Key : aperçu" data-pr-position="right" data-pr-at="right+5 top" data-pr-my="left center-2" style={{cursor:"pointer"}} onClick={(event)=>detailSocial(social,event)} label={social.label} icon={social.icon} removable onRemove={()=>deleteSocialLink(social)}/>
+                                    <Tooltip target="#chip" />
+                                    <Chip id="chip" data-pr-tooltip="Ctrl+Key : aperçu" data-pr-position="right" data-pr-at="right+5 top" data-pr-my="left center-2" style={{ cursor: "pointer" }} onClick={(event) => detailSocial(social, event)} label={social.label} icon={social.icon} removable onRemove={() => deleteSocialLink(social)} />
                                 </>
                                 )
                             })}
                         </div>
-                        <Button onClick={informationAccommodationFini} style={{width:"60%"}} className="button-primary" label="Continue"/>
+                        <Button onClick={saveToLocalStorage} style={{ width: "60%" }} className="button-primary" label="Continue" />
                     </div>
 
                 </div>
             </div>
 
-            <Dialog visible={visible} onHide={()=>setVisible(false)}>
+            <Dialog visible={visible} onHide={() => setVisible(false)}>
                 <Dropdown
                     value={socialSelected}
-                    onChange={(e)=>setSocialSelected(e.value)}
+                    onChange={(e) => setSocialSelected(e.value)}
                     placeholder="Social link"
                     options={allSocial}
                     optionLabel="label"
                     itemTemplate={socialOptionTemplate}
                 />
-                <InputText value={socialLabel} onChange={(e)=>setSocialLabel(e.target.value)}/>
-                <Button label="test" onClick={addSocialLink}/>
+                <InputText value={socialLabel} onChange={(e) => setSocialLabel(e.target.value)} />
+                <Button label="test" onClick={addSocialLink} />
             </Dialog>
 
-            {socialLink.map((social,index)=>{
-                return(
-                    <Dialog draggable={false} key={index} visible={social.visible} onHide={()=>hideSocialDetail(social)}>
-                        <InputText value={socialLabelUpdat} onChange={(e)=>setSocialLabelUpdat(e.target.value)}/>
-                        <Button onClick={()=>updateSocialLink(social)} icon="pi pi-pencil" label="Upadte"/>
+            {socialLink.map((social, index) => {
+                return (
+                    <Dialog draggable={false} key={index} visible={social.visible} onHide={() => hideSocialDetail(social)}>
+                        <InputText value={socialLabelUpdat} onChange={(e) => setSocialLabelUpdat(e.target.value)} />
+                        <Button onClick={() => updateSocialLink(social)} icon="pi pi-pencil" label="Upadte" />
                     </Dialog>
                 )
             })}
+            <Toast ref={toast} />
+
         </>
     )
 }
 
 Handcraft.getLayout = function getLayout(page) {
-    return(
+    return (
         <>
             <Head>
                 <title>Handcraft</title>
             </Head>
-            <AppTopbar/>
+            <AppTopbar />
             {page}
         </>
     )

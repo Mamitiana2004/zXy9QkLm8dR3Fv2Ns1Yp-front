@@ -1,27 +1,67 @@
 
 # EndPoints
 
+## admin Artisanat
+
+* (GET) pour <http://localhost:3000/responsable/handcraft/customer>
+
+`/api/artisanat/1/clients/`
+
+* (GET / POST) produits
+
+`/api/artisanat/{id_artisanat}/produits/`
+
+* (PUT) produits
+
+`/api/artisanat/{id_artisanat}/produits/{id_produit}/`
+
+* Forme de donnée pour produits
+
+        {
+            "nom_produit_artisanal": "",
+            "description_artisanat": "",
+            "prix_artisanat": null,
+            "disponible_artisanat": false,
+            "poid_kg": null,
+            "largeur": null,
+            "hauteur": null,
+            "nb_produit_dispo": null,
+            "artisanat": null,
+            "specifications": [id, id, id],
+            "likes": []
+        }
+
+* (GET) list de tout les endpoints
+
+`/api/artisanat/specifications/`
+
 ## admin accomodation
 
 * Login Responsable (POST)
+
 `/api/accounts/responsable/login/`
 
 * GET reservations pour <http://localhost:3000/responsable/accommodation/booking> :
+
 `/api/hebergement/reservations/{id_hebergement}/`
 
 * GET pour list client-reservation pour <http://localhost:3000/responsable/accommodation/guest> :
+
 `/api/hebergement/clients-et-chambres/{id_hebergement}/`
 
 * detail du responsable (GET, PATCH)
+
 `/api/accounts/detail-responsable/{id_responsable}/`
 
 * detail etablissement (GET, PUT, PATCH)
+
 `/api/hebergement/info/{id_hebergement}/`
 
 PUT rah anova ny information rehetra
 PATCH rah misy zavatra ts niova
 
 * Detail guest
+
 `/api/hebergement/client-reservations/{id_client}/hebergement/{id_hebergement}/`
 
 ### Dashboard accomodation
@@ -142,7 +182,13 @@ Format de donnée m ise à jour voyage  (afaka ts fenoina)
 # super-admin
 
 * GET list responsable par type (1 accomodation, 2 handcraft, 3 tour)
+
 `/api/accounts/responsables/type/{id_hebergement}/`
 
 * GET detail du responsable
+
 `/api/accounts/detail-responsable/{id_hebergement}/`
+
+* Ajout artisanat
+
+`/api/artisanat/create/`

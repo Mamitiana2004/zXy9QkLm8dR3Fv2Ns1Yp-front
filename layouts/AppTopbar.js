@@ -11,6 +11,7 @@ import { Button } from 'primereact/button';
 import { Image } from 'primereact/image';
 import { Sidebar } from 'primereact/sidebar';
 import { Divider } from 'primereact/divider';
+import { removeAllAdminAccess } from '@/util/Cookies';
 
 export default function AppTopbar(props) {
     const { t } = useTranslation();
@@ -20,7 +21,7 @@ export default function AppTopbar(props) {
     const { user, setUser } = useContext(LayoutContext);
     const { lang, setLang } = useContext(LayoutContext);
 
-    const [sidebarVisible,setSidebarVisible] = useState(false);
+    const [sidebarVisible, setSidebarVisible] = useState(false);
 
     const langMenu = [
         { label: "En", command: () => setLang("en") },
@@ -38,7 +39,10 @@ export default function AppTopbar(props) {
         Cookies.remove("profile_user");
         Cookies.remove("username");
         Cookies.remove("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_");
+        localStorage.removeItem('adminUser');
+        removeAllAdminAccess();
         router.push("/users/login");
+
         setUser(null);
     };
 
@@ -56,10 +60,10 @@ export default function AppTopbar(props) {
                 <div className={style.navbar}>
                     <div className={style.nav_title}>
                         <Link href={"/users"}>
-                            <Image imageClassName={style.nav_image}  src={"/images/logo-aftrip.png"} alt='logo' />
+                            <Image imageClassName={style.nav_image} src={"/images/logo-aftrip.png"} alt='logo' />
                         </Link>
                     </div>
-                    <Button onClick={()=>setSidebarVisible(true)} className={style.button_bar} icon="pi pi-bars"/>
+                    <Button onClick={() => setSidebarVisible(true)} className={style.button_bar} icon="pi pi-bars" />
                     <div className={style.navbar_menu_container}>
                         <Link style={{ textDecoration: "none" }} href={"/users"}>
                             <span className={style.navbar_menu_item}>{t("home")}</span>
@@ -118,51 +122,51 @@ export default function AppTopbar(props) {
                     </div>
                 </div>
             </div>
-            <Sidebar position='right' onHide={()=>setSidebarVisible(false)} visible={sidebarVisible}>
+            <Sidebar position='right' onHide={() => setSidebarVisible(false)} visible={sidebarVisible}>
                 <div className={style.sidebar_container}>
-                        <Link className={style.sidebar_link} href={"/users"}>
-                            <span className={style.navbar_menu_item}>{t("home")}</span>
-                        </Link>
-                        <Link className={style.sidebar_link} href={"/users/accommodation"}>
-                            <span className={style.navbar_menu_item}>{t("accommodation")}</span>
-                        </Link>
-                        <Link className={style.sidebar_link} href={"/users/handcraft"}>
-                            <span className={style.navbar_menu_item}>{t("handcraft")}</span>
-                        </Link>
-                        <Link className={style.sidebar_link} href={"/users/tour"}>
-                            <span className={style.navbar_menu_item}>{t("tour")}</span>
-                        </Link>
-                        <Link className={style.sidebar_link} href={"/users/about"}>
-                            <span className={style.navbar_menu_item}>{t("about_us")}</span>
-                        </Link>
-                        <Divider/>
-                        {user == null && (
-                            <>
-                                <Link className={style.sidebar_link} href={"/users/login"}>
-                                    <span className={style.navbar_menu_item}>{t("login")}</span>
-                                </Link>
-                                <Link className={style.sidebar_link} href={"/users/register"}>
-                                    <span className={style.navbar_menu_item}>{t("register")}</span>
-                                </Link>
-                                <Link className={style.sidebar_link} href={"/users/etablissement/addEmail"}>
-                                    <span className={style.navbar_menu_item}>Add etablissement</span>
-                                </Link>
-                            </>
-                        )}
-                        {user != null && (
-                            <Link href={"/users/profil"} className={style.sidebar_profil}>
-                                <Avatar
-                                    label={getLabelAvatar(user.username)}
-                                    shape='circle'
-                                    className={style.username_image}
-                                    image={user.userImage}
-                                />
-                                <span>{user.username}</span>
+                    <Link className={style.sidebar_link} href={"/users"}>
+                        <span className={style.navbar_menu_item}>{t("home")}</span>
+                    </Link>
+                    <Link className={style.sidebar_link} href={"/users/accommodation"}>
+                        <span className={style.navbar_menu_item}>{t("accommodation")}</span>
+                    </Link>
+                    <Link className={style.sidebar_link} href={"/users/handcraft"}>
+                        <span className={style.navbar_menu_item}>{t("handcraft")}</span>
+                    </Link>
+                    <Link className={style.sidebar_link} href={"/users/tour"}>
+                        <span className={style.navbar_menu_item}>{t("tour")}</span>
+                    </Link>
+                    <Link className={style.sidebar_link} href={"/users/about"}>
+                        <span className={style.navbar_menu_item}>{t("about_us")}</span>
+                    </Link>
+                    <Divider />
+                    {user == null && (
+                        <>
+                            <Link className={style.sidebar_link} href={"/users/login"}>
+                                <span className={style.navbar_menu_item}>{t("login")}</span>
                             </Link>
-                        )}
-                        
-                        
-                        
+                            <Link className={style.sidebar_link} href={"/users/register"}>
+                                <span className={style.navbar_menu_item}>{t("register")}</span>
+                            </Link>
+                            <Link className={style.sidebar_link} href={"/users/etablissement/addEmail"}>
+                                <span className={style.navbar_menu_item}>Add etablissement</span>
+                            </Link>
+                        </>
+                    )}
+                    {user != null && (
+                        <Link href={"/users/profil"} className={style.sidebar_profil}>
+                            <Avatar
+                                label={getLabelAvatar(user.username)}
+                                shape='circle'
+                                className={style.username_image}
+                                image={user.userImage}
+                            />
+                            <span>{user.username}</span>
+                        </Link>
+                    )}
+
+
+
                 </div>
 
 

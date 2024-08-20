@@ -1,6 +1,7 @@
 [
     {
         "id":1,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -9,6 +10,7 @@
     },
     {
         "id":2,
+        "idTypeAccommodation":1,
         "nom_hebergement":" le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -17,6 +19,7 @@
     },
     {
         "id":3,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -25,6 +28,7 @@
     },
     {
         "id":4,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -33,6 +37,7 @@
     },
     {
         "id":5,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hot",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/hotel.jpg",
@@ -41,6 +46,7 @@
     },
     {
         "id":6,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -49,6 +55,7 @@
     },
     {
         "id":7,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -57,6 +64,7 @@
     },
     {
         "id":8,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -65,6 +73,7 @@
     },
     {
         "id":9,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -73,6 +82,7 @@
     },
     {
         "id":10,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -81,6 +91,7 @@
     },
     {
         "id":11,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/hotel.jpg",
@@ -89,6 +100,7 @@
     },
     {
         "id":12,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -97,6 +109,7 @@
     },
     {
         "id":13,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",
@@ -105,6 +118,7 @@
     },
     {
         "id":14,
+        "idTypeAccommodation":1,
         "nom_hebergement":"Hotel le louvrer",
         "nombre_etoile_hebergement":4,
         "images":"/images/hotel/chambre.jpg",

@@ -12,10 +12,18 @@ import { Chip } from "primereact/chip";
 import { classNames } from "primereact/utils";
 import { Calendar } from "primereact/calendar";
 import { Dialog } from "primereact/dialog";
+import { MultiSelect } from "primereact/multiselect";
 export default function AddTrip() {
 
     const [imageFile,setImageFile]=useState();
     const inputRef = useRef(null);
+    const [selectedInclusions, setSelectedInclusions] = useState([]);
+    const inclusionOptions = [
+        { name: 'Option 1', code: 'O1' },
+        { name: 'Option 2', code: 'O2' },
+        { name: 'Option 3', code: 'O3' },
+        { name: 'Option 4', code: 'O4' }
+    ];
 
     const [visibleInclude,setVisibleInclude] = useState(false);
     const [visibleNotInclude,setVisibleNotInclude] = useState(false);
@@ -82,7 +90,7 @@ export default function AddTrip() {
                             </FloatLabel>
                             <FloatLabel>
                                 <InputText className={style.input_text} id="name_input" type="text"/>
-                                <label htmlFor="name_input">Departure</label>
+                                <label htmlFor="name_input">Départure</label>
                             </FloatLabel>
                             <FloatLabel>
                                 <InputText className={style.input_text} id="name_input" type="text"/>
@@ -92,44 +100,49 @@ export default function AddTrip() {
                         <div className={style.right_detail}>
                             <FloatLabel>
                                 <Calendar selectionMode="range" className={style.input_text} id="name_input" type="text"/>
-                                <label htmlFor="name_input">Check in - Check out</label>
+                                <label htmlFor="name_input">Check in</label>
                             </FloatLabel>
                             <FloatLabel>
                                 <InputText className={style.input_text} id="name_input" type="text"/>
-                                <label htmlFor="name_input">Destination</label>
+                                <label htmlFor="name_input">Déstination</label>
                             </FloatLabel>
                             <FloatLabel>
                                 <InputText className={style.input_text} id="name_input" type="text"/>
                                 <label htmlFor="name_input">Total place</label>
                             </FloatLabel>
                         </div>
+                        <div className={style.right_detail}>
+                            <FloatLabel>
+                                <Calendar selectionMode="range" className={style.input_text} id="name_input" type="text"/>
+                                <label htmlFor="name_input">Check out</label>
+                            </FloatLabel>
+                            <FloatLabel>
+                                <InputText className={style.input_text} id="name_input" type="text"/>
+                                <label htmlFor="name_input">Distance</label>
+                            </FloatLabel>
+                            <FloatLabel>
+                                <InputText className={style.input_text} id="name_input" type="text"/>
+                                <label htmlFor="name_input">Available place</label>
+                            </FloatLabel>
+                        </div>
                     </div>
                 </div>
                 <div className="separateur"></div>
                 <div className={style.room_detail_container}>
-                    <span className={style.room_detail_title}>Travel inclusion</span>
-                    <div className={style.travel_inclusion_container}>
-                        <div className={style.travel_inclusion}>
-                            <i className={"pi pi-check"}/>
-                            <span>Add slmdkqsmdl</span>
-                            <span>Add slmdkqsmdl</span>
-                            <span>Add slmdkqsmdl</span>
-                            <span>Add slmdkqsmdl</span>
-                            <span>Add slmdkqsmdl</span>
-                            <Button onClick={()=>setVisibleInclude(true)} className={style.travel_inclusion_button} label="+ Add included"/>
-                        </div>
-                        <div className={style.travel_inclusion}>
-                            <i className={"pi pi-times"}/>
-                            <span>sqdkqmldkqmsldkqsmdqklm</span>
-                            <span>sqdkqmldkqmsldkqsmdqklm</span>
-                            <span>sqdkqmldkqmsldkqsmdqklm</span>
-                            <span>sqdkqmldkqmsldkqsmdqklm</span>
-                            <span>sqdkqmldkqmsldkqsmdqklm</span>
-                            <span>sqdkqmldkqmsldkqsmdqklm</span>
-                            <Button onClick={()=>setVisibleNotInclude(true)} className={style.travel_inclusion_button} label="+ Add not included"/>
-                        </div>
-                    </div>
-                </div>
+    <span className={style.room_detail_title}>Travel inclusion</span>
+    <div className={style.travel_inclusion_container}>
+        <MultiSelect 
+            value={selectedInclusions} 
+            onChange={(e) => setSelectedInclusions(e.value)} 
+            options={inclusionOptions} 
+            optionLabel="name" 
+            placeholder="Select Inclusions" 
+            maxSelectedLabels={3} 
+            className="w-full md:w-20rem" 
+        />
+    </div>
+</div>
+
                 <div className={style.room_description_container}>
                     <span className={style.room_description_title}>Trip description</span>
                     <textarea  className={style.room_description_textarea}/>

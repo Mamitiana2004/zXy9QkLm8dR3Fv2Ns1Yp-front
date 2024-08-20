@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import style from './../../../style/pages/users/handcraft/filter.module.css';
 import FilterHandcraft from "@/components/FilterHandCraft";
 import ListCheckbox from "@/components/ListCheckbox";
+import ListCheckboxPrice from "@/components/ListCheckboxPrice";
 import dynamic from "next/dynamic";
 import ProductCard from "@/components/card/ProductCard";
 import { DataView } from 'primereact/dataview';
@@ -74,7 +75,7 @@ export default function FilterHandCraftPage() {
                             lng={47.5288271}
                         />
                         <ListCheckbox />
-                        <ListCheckbox />
+                        <ListCheckboxPrice />
                     </div>
                     <div className={style.filter_right}>
                         <DataView

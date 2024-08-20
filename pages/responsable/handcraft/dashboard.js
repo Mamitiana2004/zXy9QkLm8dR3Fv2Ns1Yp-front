@@ -192,9 +192,9 @@ export default function DashBoard() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Dashboard</span>
-                    <span className={style.top_container_subtitle}>Carlton Hotel</span>
+                    <span className={style.top_container_subtitle}>Nom Artisanat</span>
                 </div>
-                <Button onClick={()=>router.push("/responsable/accommodation/addNewRoom")} label="+ Add new room" className={style.button_add}/>
+                <Button onClick={()=>router.push("/responsable/handcraft/addProduct,")} label="+ Add new room" className={style.button_add}/>
             </div>
 
 
