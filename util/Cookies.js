@@ -91,7 +91,23 @@ const getNewAdminAccess = () => {
         });
 };
 
+const getClientAccess = async () => {
+    let token = Cookies.get("accessToken");
 
+    if (!token) {
+        console.log("No access token found, trying to refresh...");
+        await getNewAccess();
+        token = Cookies.get("accessToken");
+    }
+
+    if (!token) {
+        console.error("Failed to obtain access token");
+        return;
+    }
+
+
+    return token;
+}
 const getNewAccess = () => {
     const refreshToken = Cookies.get('refreshToken');
 
@@ -186,4 +202,4 @@ function getResponsableAccessToken() {
     });
 }
 
-export { setTokensInCookies, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
+export { setTokensInCookies, getClientAccess, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
