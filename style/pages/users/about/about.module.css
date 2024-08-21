@@ -64,6 +64,11 @@
     justify-content : center;
 }
 
+.missionText {
+    margin-top : -1rem;
+    width : 75%;
+}
+
 .section_step2_container {
     display : flex;
     flex-direction : row-reverse;
@@ -217,6 +222,7 @@
     }
     .aboutTitle {
         margin-left : -10rem;
+        font-size: 2.3em;
     }
     .section_mission_text {
         margin-left : -3rem;
@@ -363,5 +369,129 @@
     }
 }
 
+@media (max-width : 480px) {
+    .img_mission {
+        width : 14rem;
+        height : 8rem;
+        margin : -1rem auto 0rem 0rem;
+    }
+    .section_mission_text {
+        width : 190%;
+        margin-left : -3rem;
+    }
+    .registerTitle {
+        margin-left : 0rem;
+    }
+    .registerTxt {
+        margin-left : -3rem;
+        width : 150%;
+    }
+    .img_step_container {
+        margin : auto auto auto -3rem;
+    }
+    .register2Title {
+        width : 12rem;
+        margin-left : -2rem;
+    }
+    .register2Txt {
+        margin-left : -5rem;
+        width : 350%;
+    }
+    .img_step2_container {
+        margin : auto -6rem auto -10rem;
+    }
+    .section_faq_container {
+        font-size : 0.75em;
+    }
+    .img_header_container {
+        flex-direction : column;
+    }
+    .img_header {
+        width : 17rem;
+        height : 10rem;
+        margin : 0rem 0rem 3rem 1rem;
+    }
+    .aboutAftrip_txt {
+        margin-left : -1rem;
+    }
+    .aboutTitle {
+        margin-left : -7.5rem;
+    }
+}
+
+@media (max-width : 390px) {
+    .aboutTitle {
+        font-size : 1.7em;
+    }
+    .img_header {
+        width : 12rem;
+        height : 7rem;
+        margin : 0rem 0rem 1.5rem 1rem;
+    }
+    .mission_container {
+        width : 80%;
+        margin-left : 3rem;
+    }
+    .img_mission {
+        margin : 0rem 3rem 0rem 2rem;
+    }
+    .section_mission_text {
+        width : 120%;
+        margin-left : 0rem;
+    }
+    .steps_container {
+        width : 65%;
+        margin-left : 4.25rem;
+    }
+    .registerTxt {
+        margin-left : 0rem;
+        width : 100%;
+    }
+    .img_step_container {
+        width : 200px;
+        height : 200px;
+        margin-left : 0rem; 
+    }
+    .img_register {
+        width : 150px;
+        height : 150px;
+    }
+    .steps2_container {
+        width : 65%;
+        margin-left : 4.25rem;
+    }
+    .register2Txt {
+        margin-left : 0rem;
+        width : 180%;
+        margin-left : -2rem;
+    }
+    .register2Title {
+        margin-left : -1rem;
+    }
+    .img_step2_container {
+        width : 200px;
+        height : 200px;
+        margin-left : -7rem; 
+    }
+    .img2_register {
+        width : 150px;
+        height : 150px;
+    }
+    .reviewsContainer {
+        font-size : 0.65em;
+    }
+    .faqContainer {
+        font-size : 0.7em;
+        margin : 3rem 3rem;
+    }
+    .accordion {
+        width : 160%;
+        margin-left : -2.5rem;
+    }
+    .custom_btn_faq {
+        padding : 0.5rem 3rem;
+        font-size : 0.8rem;
+    }
+}
 
 
