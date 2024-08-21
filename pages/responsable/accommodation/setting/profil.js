@@ -21,7 +21,7 @@ export default function Profil() {
     const [infosHotel, setInfosHotel] = useState(null);
     const [totalRooms, setTotalRooms] = useState(0);
     const [detailProfil, setDetailProfil] = useState(null);
-    
+
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingHotel, setIsEditingHotel] = useState(false);
 
@@ -31,7 +31,7 @@ export default function Profil() {
             const id_hebergement = user.id_etablissement;
             FetchProfil(id_hebergement, id);
         }
-    }, [user]);
+    }, [id, user]);
 
     function FetchProfil(id_hebergement) {
         getCsrfFromToken()
@@ -49,7 +49,7 @@ export default function Profil() {
                         setNameHotel(hotelData);
                     })
                     .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
-                
+
                 //Fetch Detail Responsable
                 fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${id_hebergement}/`, {
                     method: "GET",
@@ -63,8 +63,8 @@ export default function Profil() {
                         setDetailProfil(hotelData);
                     })
                     .catch(err => console.error('Erreur lors de la récupération des details des responsable:', err));
-                
-                
+
+
                 //Fetch Informations Hotels
                 fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/info/${id_hebergement}/`, {
                     method: "GET",
@@ -78,8 +78,8 @@ export default function Profil() {
                         setInfosHotel(hotelData);
                     })
                     .catch(err => console.error('Erreur lors de la récupération des informations des Hotels:', err));
-                
-                
+
+
                 // Fetch Total Rooms
                 fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${id_hebergement}/stats/`, {
                     method: "GET",
@@ -88,18 +88,18 @@ export default function Profil() {
                         'X-CSRFTOKEN': csrfToken,
                     }
                 })
-                .then(response => response.json())
-                .then(totalRoom => {
-                    setTotalRooms(totalRoom);
-                })
+                    .then(response => response.json())
+                    .then(totalRoom => {
+                        setTotalRooms(totalRoom);
+                    })
                     .catch(err => console.error('Erreur lors de la récupération des statistiques de l\'hôtel:', err));
-                
+
             })
-            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));   
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
     }
 
     function handleSave() {
-    // Envoyer les informations mises à jour au backend
+        // Envoyer les informations mises à jour au backend
         getCsrfFromToken()
             .then(csrfToken => {
                 fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${user.id_etablissement}/`, {
@@ -110,18 +110,18 @@ export default function Profil() {
                     },
                     body: JSON.stringify(detailProfil),
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erreur lors de la mise à jour');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Données mises à jour:', data);
-                    setIsEditingPersonal(false);
-                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la mise à jour');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Données mises à jour:', data);
+                        setIsEditingPersonal(false);
+                    })
                     .catch(err => console.error('Erreur lors de la mise à jour des informations personnelles:', err));
-                
+
             })
             .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
     }
@@ -137,18 +137,18 @@ export default function Profil() {
                     },
                     body: JSON.stringify(infosHotel),
                 })
-                .then(response => {
-                    return response.json().then(data => ({ status: response.status, body: data }));
-                })
-                .then(({ status, body }) => {
-                    if (status !== 200 && status !== 204) {
-                        console.error('Erreur lors de la mise à jour:', body);
-                        throw new Error(`Erreur lors de la mise à jour des informations de l'hôtel: ${body.detail || status}`);
-                    }
-                    console.log('Informations de l\'hôtel mises à jour:', body);
-                    setIsEditingHotel(false); 
-                })
-                .catch(err => console.error('Erreur lors de la mise à jour des informations de l\'hôtel:', err));
+                    .then(response => {
+                        return response.json().then(data => ({ status: response.status, body: data }));
+                    })
+                    .then(({ status, body }) => {
+                        if (status !== 200 && status !== 204) {
+                            console.error('Erreur lors de la mise à jour:', body);
+                            throw new Error(`Erreur lors de la mise à jour des informations de l'hôtel: ${body.detail || status}`);
+                        }
+                        console.log('Informations de l\'hôtel mises à jour:', body);
+                        setIsEditingHotel(false);
+                    })
+                    .catch(err => console.error('Erreur lors de la mise à jour des informations de l\'hôtel:', err));
             })
             .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
     }
@@ -235,7 +235,7 @@ export default function Profil() {
                                         <input
                                             type="text"
                                             value={detailProfil?.first_name || ''}
-                                            onChange={(e) => setDetailProfil({...detailProfil, first_name: e.target.value})}
+                                            onChange={(e) => setDetailProfil({ ...detailProfil, first_name: e.target.value })}
                                         />
                                     ) : (
                                         <span>{detailProfil?.first_name || 'No Name'}</span>
@@ -244,38 +244,38 @@ export default function Profil() {
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>Lasts name</span>
                                     {isEditingPersonal ? (
-                                         <input
+                                        <input
                                             type="text"
                                             value={detailProfil?.last_name || ''}
-                                            onChange={(e) => setDetahandleSaveilProfil({...detailProfil, last_name: e.target.value})}
+                                            onChange={(e) => setDetahandleSaveilProfil({ ...detailProfil, last_name: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{detailProfil?.last_name || 'No Last name'}</span>                                         
+                                        <span>{detailProfil?.last_name || 'No Last name'}</span>
                                     )
                                     }
                                 </div>
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>Email address</span>
                                     {isEditingPersonal ? (
-                                         <input
+                                        <input
                                             type="text"
                                             value={detailProfil?.email || ''}
-                                            onChange={(e) => setDetailProfil({...detailProfil, email: e.target.value})}
+                                            onChange={(e) => setDetailProfil({ ...detailProfil, email: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{detailProfil?.email || 'No Email'}</span>
+                                        <span>{detailProfil?.email || 'No Email'}</span>
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>Phone number</span>
                                     {isEditingPersonal ? (
-                                         <input
+                                        <input
                                             type="text"
                                             value={detailProfil?.numero_responsable || ''}
-                                            onChange={(e) => setDetailProfil({...detailProfil, numero_responsable: e.target.value})}
+                                            onChange={(e) => setDetailProfil({ ...detailProfil, numero_responsable: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{detailProfil?.numero_responsable || 'No Number'}</span>         
+                                        <span>{detailProfil?.numero_responsable || 'No Number'}</span>
                                     )}
                                 </div>
                             </div>
@@ -284,7 +284,7 @@ export default function Profil() {
                         <div className={style_profile.detail_user_container}>
                             <div className={style_profile.detail_user_top_container}>
                                 <span className={style_profile.title}>Hotel information</span>
-                               {isEditingHotel ? (
+                                {isEditingHotel ? (
                                     <>
                                         <Button
                                             text
@@ -318,27 +318,27 @@ export default function Profil() {
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>Hotel name</span>
                                     {isEditingHotel ? (
-                                         <input
+                                        <input
                                             type="text"
                                             value={infosHotel?.nom_hebergement || ''}
-                                            onChange={(e) => setInfosHotel({...infosHotel, nom_hebergement: e.target.value})}
+                                            onChange={(e) => setInfosHotel({ ...infosHotel, nom_hebergement: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{infosHotel?.nom_hebergement || 'No Number'}</span>
-                                            
+                                        <span>{infosHotel?.nom_hebergement || 'No Number'}</span>
+
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>Address</span>
                                     {isEditingHotel ? (
-                                         <input
+                                        <input
                                             type="text"
                                             value={infosHotel?.localisation.adresse || ''}
-                                            onChange={(e) => setInfosHotel({...infosHotel, localisation: {...infosHotel.localisation, adresse: e.target.value}})}
+                                            onChange={(e) => setInfosHotel({ ...infosHotel, localisation: { ...infosHotel.localisation, adresse: e.target.value } })}
                                         />
                                     ) : (
-                                    <span>{infosHotel?.localisation.adresse || 'No Number'}</span>
-                                            
+                                        <span>{infosHotel?.localisation.adresse || 'No Number'}</span>
+
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
@@ -347,23 +347,23 @@ export default function Profil() {
                                         <input
                                             type="text"
                                             value={infosHotel?.localisation.ville || ''}
-                                            onChange={(e) => setInfosHotel({...infosHotel, localisation: {...infosHotel.localisation, ville: e.target.value}})}
+                                            onChange={(e) => setInfosHotel({ ...infosHotel, localisation: { ...infosHotel.localisation, ville: e.target.value } })}
                                         />
                                     ) : (
-                                    <span>{infosHotel?.localisation.ville || 'No Number'}</span>
+                                        <span>{infosHotel?.localisation.ville || 'No Number'}</span>
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>NIF</span>
                                     {isEditingHotel ? (
-                                         <input
+                                        <input
                                             type="text"
                                             value={infosHotel?.nif || ''}
-                                            onChange={(e) => setInfosHotel({...infosHotel, nif: e.target.value})}
+                                            onChange={(e) => setInfosHotel({ ...infosHotel, nif: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{infosHotel?.nif || 'No Number'}</span>
-                                            
+                                        <span>{infosHotel?.nif || 'No Number'}</span>
+
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
@@ -372,11 +372,11 @@ export default function Profil() {
                                         <input
                                             type="text"
                                             value={infosHotel?.stat || ''}
-                                            onChange={(e) => setInfosHotel({...infosHotel, stat: e.target.value})}
+                                            onChange={(e) => setInfosHotel({ ...infosHotel, stat: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{infosHotel?.stat || 'No Number'}</span>
-                                            
+                                        <span>{infosHotel?.stat || 'No Number'}</span>
+
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
@@ -385,24 +385,24 @@ export default function Profil() {
                                         <input
                                             type="text"
                                             value={infosHotel?.type_hebergement || ''}
-                                            onChange={(e) => setInfosHotel({...infosHotel, type_hebergement: e.target.value})}
+                                            onChange={(e) => setInfosHotel({ ...infosHotel, type_hebergement: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{infosHotel?.type_hebergement || 'No Number'}</span>
-                                            
+                                        <span>{infosHotel?.type_hebergement || 'No Number'}</span>
+
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>Total rooms</span>
                                     {isEditingHotel ? (
-                                         <input
+                                        <input
                                             type="text"
                                             value={infosHotel?.available_room_count || ''}
-                                            onChange={(e) => setInfosHotel({...infosHotel, available_room_count: e.target.value})}
+                                            onChange={(e) => setInfosHotel({ ...infosHotel, available_room_count: e.target.value })}
                                         />
                                     ) : (
-                                    <span>{totalRooms.available_room_count}</span>
-                                            
+                                        <span>{totalRooms.available_room_count}</span>
+
                                     )}
                                 </div>
                             </div>
