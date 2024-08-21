@@ -10,6 +10,7 @@ import { UrlConfig } from '@/util/config';
 import { useRouter } from "next/router";
 import addToCart from '@/util/Cart';
 import { Toast } from 'primereact/toast';
+import HandcraftModal from '../modal/HandcraftModal';
 
 // Fonction pour formater les critiques en notation lisible
 const formatReviews = (count) => {
@@ -30,7 +31,10 @@ const calculateAverageRating = (reviews) => {
 };
 
 export default function DetailProduct(props) {
+
     const [product, setProduct] = useState(null);
+    const [bookingVisible, setBookingVisible] = useState(null);
+
     const router = useRouter();
     const { id } = router.query;
     const [quantity, setQuantity] = useState(1);
@@ -183,10 +187,20 @@ export default function DetailProduct(props) {
                     </div>
                     <div className={style.button_group}>
                         <Button icon="pi pi-shopping-cart" onClick={handleAddToCart} raised label='Add to cart' className='button-secondary' />
-                        <Button icon="pi pi-shopping-bag" label='Buy now' className='button-primary' />
+                        <Button icon="pi pi-shopping-bag" onClick={() => setBookingVisible(true)} label='Buy now' className='button-primary' />
                     </div>
                 </div>
             </div>
+            <HandcraftModal
+                id={product.id}
+                description={`Achat de ${product.nom_produit_artisanal} à ${product.artisanat.nom}`}
+                artisanat={product.artisanat.nom}
+                images={product.images > 0 && product.images[0]}
+                quantity={quantity}
+                visible={bookingVisible}
+
+                onHide={() => setBookingVisible(false)}
+            />
             <Toast ref={toast} />
         </div>
 
