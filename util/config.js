@@ -1,5 +1,9 @@
 const UrlConfig = {
     // apiBaseUrl: 'https://admin-server.craft-aftrip.com',
+<<<<<<< HEAD
+=======
+    // apiBaseUrl: 'http://127.0.0.1:8000',
+>>>>>>> origin/jerry
     apiBaseUrl: 'http://192.168.88.57:8000',
     // apiBaseUrl: ' http://192.168.88.94:8000',
     adminUrl: '/admin',
