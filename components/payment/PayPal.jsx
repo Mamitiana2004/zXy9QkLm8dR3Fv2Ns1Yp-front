@@ -5,8 +5,6 @@ import { getClientAccess } from "@/util/Cookies";
 
 export default function Paypal(props) {
   const paypal = useRef();
-  console.log(props);
-  const [infoChambre, setInfoChambre] = useState(null)
   const toast = useRef(null);
 
   const createTransaction = (order, reservation) => {
@@ -78,7 +76,7 @@ export default function Paypal(props) {
           }
           return response.json();
         }).then((data) => {
-          console.log(data)
+
           return data;
         })
         .catch((error) => {
@@ -118,8 +116,7 @@ export default function Paypal(props) {
               if (order.status === "COMPLETED") {
                 createTransaction(order, infoChambre.reservation_details)
                   .then((data) => {
-
-                    console.log(data)
+                    console.log(data);
                   })
 
               }
