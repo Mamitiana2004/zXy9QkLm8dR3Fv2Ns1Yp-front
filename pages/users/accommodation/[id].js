@@ -9,7 +9,7 @@ import { Rating } from "primereact/rating";
 import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
 import BookingModal from "../../../components/modal/BookingModal";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import DetailChambre from "@/components/modal/DetailChambre";
 import Filter from "@/components/Filter";
 import { useRouter } from "next/router";
@@ -18,6 +18,7 @@ import { FloatLabel } from 'primereact/floatlabel';
 import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
 import { Toast } from "primereact/toast";
+import LayoutContext from '@/layouts/context/layoutContext';
 
 
 
@@ -47,6 +48,8 @@ export default function HotelInfos() {
     const [chambre_id, setChambre_id] = useState(false);
     const [accessoires, setAccessoires] = useState({});
     const [accessoiresHaves, setAccessoiresHaves] = useState([]);
+    const { user, setUser } = useContext(LayoutContext);
+
     const toast = useRef(null);
 
 
