@@ -1,0 +1,21 @@
+.header_faq {
+    margin : 12rem 16rem;
+    display : flex;
+    flex-direction : row;
+    justify-content : between;
+}
+
+.img_header_faq {
+    width : 20vw;
+    height : 45vh;
+    border-radius : 10px;
+}
+
+.faq_container {
+    width : 75%;
+    margin : 4rem 16rem;
+}
+
+.faq_div_container {
+    margin-bottom : 4rem;
+}
