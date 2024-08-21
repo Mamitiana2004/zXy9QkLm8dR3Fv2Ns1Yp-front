@@ -6,7 +6,7 @@ import { getCsrfTokenDirect } from './csrf';
 
 const FetchUser = () => {
     let access = Cookies.get('accessToken');
-
+    
     const handleFetch = (accessToken) => {
         return fetch(`${UrlConfig.apiBaseUrl}/api/accounts/profil-client/`, {
             method: 'GET',

@@ -14,6 +14,7 @@ export default function AddImage() {
     const inputFileRef = useRef();
     const router = useRouter();
     const imageRef = useRef();
+    const [info, setInfo] = useState();
 
     const inputRef = useRef(null);
 

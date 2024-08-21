@@ -35,12 +35,12 @@ export default function Booking() {
                     .then(response => response.json())
                     .then(bookingData => {
                         const mappedData = bookingData.map(item => ({
-                            title: item.client_reserve.username,
+                            title: item.client_reserve.username || 'N/A',
                             nuit: null, // A modifer rehefa misy 
                             jour: null, // A modifer rehefa misy 
-                            start: item.date_debut_reserve,
-                            end: item.date_fin_reserve,
-                            resourceId: item.chambre_reserve
+                            start: item.date_debut_reserve || 'N/A',
+                            end: item.date_fin_reserve || 'N/A',
+                            resourceId: item.chambre_reserve || 'N/A'
                         }));
                         setBook(mappedData);
                     })

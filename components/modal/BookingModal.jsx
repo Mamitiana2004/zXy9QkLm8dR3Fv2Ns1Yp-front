@@ -2,9 +2,137 @@ import { Dialog } from 'primereact/dialog';
 import style from './../../style/components/modal/BookingModal.module.css';
 import BookingHotelCard from '../card/BookingHotelCard';
 import { Button } from 'primereact/button';
+import Paypal from '../payment/PayPal';
+import { useContext, useEffect, useRef, useState } from 'react';
+import LayoutContext from "@/layouts/context/layoutContext";
+import { Toast } from 'primereact/toast';
+import { Image } from 'primereact/image';
+import stylePassword from '@/style/components/PasswordInput.module.css';
+import { Divider } from '@mui/material';
+import { Password } from 'primereact/password';
+import Cookies from 'js-cookie';
+import { getNewAccess } from '@/util/Cookies';
+import UrlConfig from '@/util/config';
+
 export default function BookingModal(props) {
 
-    const headerTemplate = () =>{
+    const [paystep, setPaystep] = useState(0);
+    const [isFirstOutlined, setIsFirstOutlined] = useState(true);
+    const [userInfo, setUserInfo] = useState(null);
+    const [firstname, setFirstname] = useState("");
+    const [lastname, setLastname] = useState("");
+    const [adresse, setAdresse] = useState("");
+    const [accId, setId] = useState("");
+    const [email, setEmail] = useState("");
+    const [numero, setNumero] = useState("");
+    const [pass, setPass] = useState("");
+    const [confPass, setConfPass] = useState("");
+    const [confPassword, setConfPassword] = useState("");
+    const [confPasswordErreur, setConfPasswordErreur] = useState(null);
+    const confPasswordInput = useRef(null);
+    const [passwordErreur, setPasswordErreur] = useState(null);
+    const passwordInput = useRef(null);
+    const [checkLenght, setCheckLenght] = useState(false);
+    const [checkUppercase, setCheckUppercase] = useState(false);
+    const [checkLowercase, setCheckLowercase] = useState(false);
+    const [checkNumber, setCheckNumber] = useState(false);
+    const [checkSpecial, setCheckSpecial] = useState(false);
+    const [total_days, setTotalDays] = useState(false);
+    const { user, setUser } = useContext(LayoutContext);
+    const [city, setCity] = useState("");
+    const toast = useRef(null);
+
+
+    useEffect(() => {
+        const getNombreJour = (date1, date2) => {
+            if (props.check_in && props.check_out) {
+                let dateMin = date1 < date2 ? date1 : date2;
+                let dateMax = date1 > date2 ? date1 : date2;
+                const differenceInTime = dateMax.getTime() - dateMin.getTime();
+                return (differenceInTime / (1000 * 3600 * 24)) + 1;
+            }
+            return 1;
+        }
+
+        const total = getNombreJour(props.check_in, props.check_out)
+        setTotalDays(total);
+        console.log("total : ", total);
+    }, [props.check_in, props.check_out]);
+
+    const checkChacun = (password) => {
+        setCheckLenght(password.length > 8);
+        setCheckSpecial(/[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/.test(password));
+        setCheckNumber(/\d/.test(password));
+        setCheckUppercase(/[A-Z]/.test(password));
+        setCheckLowercase(/[a-z]/.test(password));
+    }
+    const passwordInputHeader = <span className={stylePassword.header_container}>Pick a new password</span>;
+    const toggleOutlined = (things) => {
+        setIsFirstOutlined(things);
+    };
+
+    const FetchUser = () => {
+        let access = Cookies.get('accessToken');
+
+        const handleFetch = (accessToken) => {
+            return fetch(`${UrlConfig.apiBaseUrl}/api/accounts/profil-client/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        return response.json().then((errorData) => {
+                            throw new Error('Error during user fetch operation: ' + (errorData.error || 'Unknown error'));
+                        });
+                    }
+                    return response.json();
+                })
+                .catch((error) => {
+                    console.error('Error during user fetch operation:', error);
+                    return null;
+                });
+        };
+
+        if (!access) {
+            return getNewAccess()
+                .then(() => {
+                    access = Cookies.get('accessToken');
+                    if (!access) {
+                        console.error('No access token available');
+                        return null;
+                    }
+                    return handleFetch(access);
+                })
+                .catch((error) => {
+                    console.error('Error fetching new access token:', error);
+                    return null;
+                });
+        }
+
+        return handleFetch(access);
+    };
+    useEffect(() => {
+        FetchUser()
+            .then((data) => {
+                setUserInfo(data);
+                setId(data.id)
+                setFirstname(data.first_name);
+                setLastname(data.last_name);
+                setEmail(data.email);
+                setAdresse(data.adresse);
+                setCity(data.ville);
+                setNumero(data.numero_client);
+            })
+            .catch((error) => {
+                console.error('Error fetching user info:', error);
+            });
+    }, []);
+    const roomIds = props.rooms.map(room => room.id);
+
+    const headerTemplate = () => {
         return (
             <div>
                 <span>Accommodation/ Hotel / Le Louvre & Spa</span>
@@ -12,17 +140,65 @@ export default function BookingModal(props) {
         )
     }
 
-    const getNombreJour = (date1,date2) =>{
-        if (check!=null && check.length==2 && check[1]!=null) {
-            let dateMin = date1 < date2 ? date1 : date2;
-            let dateMax = date1 > date2 ? date1 : date2;
-            const differenceInTime = dateMax.getTime() - dateMin.getTime();
-            return (differenceInTime / (1000 * 3600 * 24))+1;
+
+    const passwordInputFooter = (
+        <>
+            <Divider />
+            <div className={stylePassword.check_wrapper}>
+                <div className={stylePassword.check}>
+                    <Image alt='check' imageClassName={stylePassword.check_logo} src={checkLenght ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
+                    <span className={stylePassword.check_label}>Must be at least 8 characters</span>
+                </div>
+                <div className={stylePassword.check}>
+                    <Image alt='check' imageClassName={stylePassword.check_logo} src={checkUppercase ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
+                    <span className={stylePassword.check_label}>Must contain at least one uppercase character</span>
+                </div>
+                <div className={stylePassword.check}>
+                    <Image alt='check' imageClassName={stylePassword.check_logo} src={checkLowercase ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
+                    <span className={stylePassword.check_label}>Must contain at least one lowercase character</span>
+                </div>
+                <div className={stylePassword.check}>
+                    <Image alt='check' imageClassName={stylePassword.check_logo} src={checkNumber ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
+                    <span className={stylePassword.check_label}>Must contain at least one number</span>
+                </div>
+                <div className={stylePassword.check}>
+                    <Image alt='check' imageClassName={stylePassword.check_logo} src={checkSpecial ? "/images/auth/check_logo.svg" : "/images/auth/check_unknow.svg"} />
+                    <span className={stylePassword.check_label}>Must contain at least one special character</span>
+                </div>
+            </div>
+        </>
+    )
+
+    const handleSubmit = async () => {
+        let canSendData = true;
+        if (pass.length < 8 || pass.trim() == "") {
+            passwordInput.current.className = style.form_input_erreur;
+            setPasswordErreur("Password required");
+            canSendData = false;
         }
-        return 1;
+        if (confPass != pass) {
+            confPasswordInput.current.className = style.form_input_erreur;
+            setConfPasswordErreur("Password does not match");
+            canSendData = false;
+        }
+        if (canSendData) {
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: "Profil updated successfully",
+                life: 5000
+            });
+            setPaystep(1);
+        }
+
     }
-    
-    return(
+
+    const handleStep = () => {
+        paystep == 0 ? !isFirstOutlined ? handleSubmit() : setPaystep(1) : setPaystep(0);
+    }
+
+
+    return (
         <Dialog draggable={false} header={headerTemplate} className={style.dialog_container} visible={props.visible} onHide={props.onHide}>
             <div className={style.container}>
                 <div className={style.head_container}>
@@ -35,56 +211,199 @@ export default function BookingModal(props) {
                             <span className={style.body_title_numero}>1</span>
                             <span className={style.body_title_label}>Personal detail</span>
                         </div>
-                        <div className={style.form_group_container}>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Firstname</span>
-                                    <input 
-                                        type="text" 
-                                        className={style.form_input} 
-                                        placeholder="Enter your firstname"
+                        {(paystep == 0 ?
+                            <>
+                                <div className={style.centered_div}>
+                                    <Button
+                                        label="Current Account"
+                                        outlined={isFirstOutlined}
+                                        rounded
+                                        icon="pi pi-user"
+                                        onClick={() => toggleOutlined(true)}
+                                    />
+                                    <hr />
+                                    <Button
+                                        label="New Account"
+                                        outlined={!isFirstOutlined}
+                                        rounded
+                                        icon="pi pi-user"
+                                        onClick={() => toggleOutlined(false)}
                                     />
                                 </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Lastname</span>
-                                    <input 
-                                        type="text" 
-                                        className={style.form_input} 
-                                        placeholder="Enter your lastname"
-                                    />
+
+                                {!isFirstOutlined ? (
+                                    <div className={style.centered_div_info}>
+
+                                        <div className={style.profil_detail}>
+                                            <div className={style.profil}>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>First name</span>
+                                                    <input
+                                                        type="text"
+                                                        value={firstname || ''}
+                                                        onChange={(e) => setFirstname(e.target.value)}
+                                                        className={style.inputField}
+                                                    />
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Last name</span>
+                                                    <input
+                                                        type="text"
+                                                        value={lastname || ''}
+                                                        onChange={(e) => setLastname(e.target.value)}
+                                                        className={style.inputField}
+                                                    />
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Email</span>
+                                                    <input
+                                                        type="text"
+                                                        value={email || ''}
+                                                        onChange={(e) => setEmail(e.target.value)}
+                                                        className={style.inputField}
+                                                    />
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Contact</span>
+                                                    <input
+                                                        type="text"
+                                                        value={numero || ''}
+                                                        onChange={(e) => setNumero(e.target.value)}
+                                                        className={style.inputField}
+                                                    />
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Adresse</span>
+                                                    <input
+                                                        type="text"
+                                                        value={adresse || ''}
+                                                        onChange={(e) => setAdresse(e.target.value)}
+                                                        className={style.inputField}
+                                                    />
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>City</span>
+                                                    <input
+                                                        type="text"
+                                                        value={city || ''}
+                                                        onChange={(e) => setCity(e.target.value)}
+                                                        className={style.inputField}
+                                                    />
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>New Password</span>
+                                                    <Password
+                                                        ref={passwordInput}
+                                                        inputClassName={style.form_input_password}
+                                                        className={style.form_input_password_container}
+                                                        placeholder="Enter your pasword"
+                                                        value={pass || ''}
+                                                        toggleMask
+                                                        header={passwordInputHeader}
+                                                        footer={passwordInputFooter}
+                                                        onChange={(e) => {
+                                                            passwordInput.current.className = style.form_input;
+                                                            setPass(e.target.value)
+                                                            setPasswordErreur(null);
+                                                            checkChacun(e.target.value);
+                                                        }}
+                                                    />
+
+
+                                                    <span style={passwordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{passwordErreur}</span>
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Confirm Password</span>
+                                                    <Password
+                                                        ref={confPasswordInput}
+                                                        inputClassName={style.form_input_password}
+                                                        className={style.form_input_password_container}
+                                                        type="password"
+                                                        value={confPass || ''}
+                                                        onChange={(e) => setConfPass(e.target.value)}
+                                                    />
+                                                    <Image style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!" />
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className={style.centered_div_info}>
+
+                                        <div className={style.profil_detail}>
+
+                                            <div className={style.profil}>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>First name</span>
+                                                    <span>{firstname} </span>
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Last name</span>
+                                                    <span>{lastname} </span>
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Email</span>
+                                                    <span>{email} </span>
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Contact</span>
+                                                    <span>{numero} </span>
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>Adresse</span>
+                                                    <span>{adresse} </span>
+                                                </div>
+                                                <div className={style.detail}>
+                                                    <span className={style.label}>City</span>
+                                                    <span>{city} </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className={style.bottom}>
+                                    <Button label='Continue' onClick={() => handleStep()} className='button-primary' style={{ width: "30%" }} />
                                 </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Region</span>
-                                    <select className={style.form_select_green}>
-                                        <option style={{color:"#c3c3c3"}}>Enter your region</option>
-                                        <option>Antananarivo</option>
-                                    </select>
-                                    <span className={style.form_icon}>
-                                        <i style={{fontSize:"20px"}} className='pi pi-map-marker'/>
-                                    </span>
+                                <div className={style.body_title_container}>
+                                    <span className={style.body_title_numero}>2</span>
+                                    <span className={style.body_title_label}>Payement method</span>
                                 </div>
-                                <div className={style.form_group_input}>
-                                    <span className={style.form_label}>Phone</span>
-                                    <div className={style.input_tel_container}>
-                                        <select className={style.form_select_green_mini}>
-                                            <option style={{color:"#c3c3c3"}}>+261</option>
-                                            <option>+33</option>
-                                        </select>
-                                        <input className={style.form_input_green} type='text'/>
+                            </>
+                            :
+                            <>
+                                <div className={style.body_title_container}>
+                                    <span className={style.body_title_numero}>2</span>
+                                    <span className={style.body_title_label}>Payement method</span>
+                                </div>
+                                <div className={style.centered_div}>
+                                    <div className={style.button_container}>
+                                        <Paypal
+                                            description={props.description}
+                                            nom={props.hotel_name}
+                                            id_chambres={roomIds}
+                                            days_total={total_days}
+                                            guest={props.guest}
+                                            check_in={props.check_in != null ? new Date(props.check_in) : null}
+                                            check_out={props.check_out != null ? new Date(props.check_out) : null}
+                                        />
                                     </div>
                                 </div>
-                        </div>
-                        <div className={style.body_title_container}>
-                            <span className={style.body_title_numero}>2</span>
-                            <span className={style.body_title_label}>Payement method</span>
-                        </div>
+                                <div className={style.bottom}>
+                                    <Button label='Go Back' onClick={() => handleStep()} className='button-primary' style={{ width: "30%" }} />
+                                </div>
+                            </>
+                        )}
                     </div>
                     <div className={style.body_right}>
                         <BookingHotelCard
                             hotel_name={props.hotel_name}
                             hotel_image={props.hotel_image}
                             hotel_location={props.hotel_location}
-                            check_in={props.check_out!=null ? new Date(props.check_in) : null}
-                            check_out={props.check_out!=null ? new Date(props.check_out): null}
+                            check_in={props.check_out != null ? new Date(props.check_in) : null}
+                            check_out={props.check_out != null ? new Date(props.check_out) : null}
                             guest={props.guest}
                             rooms={props.rooms}
                         />
@@ -92,9 +411,9 @@ export default function BookingModal(props) {
                             <span className={style.ground_rule_title}>Ground rules</span>
                             <div className={style.ground_rule_body}>
                                 <span className={style.paragraphe}>
-                                    Lorem ipsum dolor sit amet eu possim et. Adipiscing vel et ut in qui et. 
-                                    Dolor vulputate dolore aliquip et dolore ut vero aliquam amet rebum sit at lorem duis sanctus. 
-                                    Duis aliquyam elitr eirmod ullamcorper ipsum in ut quis sit duo delenit eirmod clita. 
+                                    Lorem ipsum dolor sit amet eu possim et. Adipiscing vel et ut in qui et.
+                                    Dolor vulputate dolore aliquip et dolore ut vero aliquam amet rebum sit at lorem duis sanctus.
+                                    Duis aliquyam elitr eirmod ullamcorper ipsum in ut quis sit duo delenit eirmod clita.
                                     Sed eum justo sit gubergren erat labore justo voluptua dolores et.
                                 </span>
                                 <ul className={style.list}>
@@ -106,10 +425,11 @@ export default function BookingModal(props) {
                         </div>
                     </div>
                 </div>
-                <div className={style.bottom}>
-                    <Button label='Confirm & pay $150' className='button-primary' style={{width:"30%"}}/>
-                </div>
+                {/* <div className={style.bottom}>
+                    <Button label='Confirm & pay $150' className='button-primary' style={{ width: "30%" }} />
+                </div> */}
             </div>
+            <Toast ref={toast} />
         </Dialog>
     );
 

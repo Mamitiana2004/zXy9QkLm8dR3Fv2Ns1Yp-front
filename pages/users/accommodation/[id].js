@@ -9,7 +9,7 @@ import { Rating } from "primereact/rating";
 import { Divider } from "primereact/divider";
 import { ScrollPanel } from "primereact/scrollpanel";
 import BookingModal from "../../../components/modal/BookingModal";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DetailChambre from "@/components/modal/DetailChambre";
 import Filter from "@/components/Filter";
 import { useRouter } from "next/router";
@@ -17,28 +17,29 @@ import { UrlConfig } from "@/util/config";
 import { FloatLabel } from 'primereact/floatlabel';
 import { InputNumber } from "primereact/inputnumber";
 import { Calendar } from "primereact/calendar";
-        
+import { Toast } from "primereact/toast";
 
 
-const Map = dynamic(()=> import('@/components/Map'),{ssr:false});
+
+const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
 export default function HotelInfos() {
 
     const router = useRouter();
 
-    const [allAccessoirce,setAllAccessoire]= useState([]);
-    const [accessoireUtil,setAccessoireUtil]= useState([]);
+    const [allAccessoirce, setAllAccessoire] = useState([]);
+    const [accessoireUtil, setAccessoireUtil] = useState([]);
 
 
     const { id } = router.query;
 
-    const [guest,setGuest] = useState(null);
-    const [check,setCheck] = useState(null);
+    const [guest, setGuest] = useState(null);
+    const [check, setCheck] = useState(null);
 
-    const [discount,setDiscount] = useState(0);
-    const [chambreSelected,setChambreSelected] = useState([]);
+    const [discount, setDiscount] = useState(0);
+    const [chambreSelected, setChambreSelected] = useState([]);
 
-    const [bookingVisible,setBookingVisible]=useState(false);
+    const [bookingVisible, setBookingVisible] = useState(false);
     const [availability, setAvailability] = useState(false);
     const [data, setData] = useState(false);
     const [imageHotel, setImageHotels] = useState(false);
@@ -46,118 +47,153 @@ export default function HotelInfos() {
     const [chambre_id, setChambre_id] = useState(false);
     const [accessoires, setAccessoires] = useState({});
     const [accessoiresHaves, setAccessoiresHaves] = useState([]);
+    const toast = useRef(null);
 
 
-    const checkAvailability = () =>{
-        guest && console.log("Guest :",guest);
-        if (check!=null && check.length==2 && check[1]!=null) {
-            console.log("Date check in",new Date(check[0]));
-            console.log("Date check out",new Date(check[1]));
+    const checkAvailability = () => {
+        guest && console.log("Guest :", guest);
+        if (check != null && check.length == 2 && check[1] != null) {
+            console.log("Date check in", new Date(check[0]));
+            console.log("Date check out", new Date(check[1]));
         }
     }
 
-    const getNombreJour = () =>{
-        if (check!=null && check.length==2 && check[1]!=null) {
+    const handleBooking = () => {
+        const date_status = check != null ? new Date(check[0]).toISOString().split('T')[0] == new Date(check[1]).toISOString().split('T')[0] : true;
+        if (check != null && check.length == 2 && check[1] != null && !date_status && guest && chambreSelected.length > 0) {
+            setBookingVisible(true);
+        } else if (chambreSelected.length < 1) {
+            toast.current.show({
+                severity: "info",
+                summary: "Error",
+                detail: "No room selected",
+                life: 5000
+            });
+        } else if (!guest) {
+            toast.current.show({
+                severity: "info",
+                summary: "Error",
+                detail: "Please set Guest number",
+                life: 5000
+            });
+
+        } else if (date_status) {
+            toast.current.show({
+                severity: "info",
+                summary: "Error",
+                detail: "Please set different Check-in - Check-out",
+                life: 5000
+            });
+        }
+        else if (check == null || check.length != 2 || check[1] == null) {
+            toast.current.show({
+                severity: "info",
+                summary: "Error",
+                detail: "Please set your Check-in - Check-out",
+                life: 5000
+            });
+        }
+    }
+    const getNombreJour = () => {
+        if (check != null && check.length == 2 && check[1] != null) {
             let date1 = new Date(check[0]);
             let date2 = new Date(check[1]);
             let dateMin = date1 < date2 ? date1 : date2;
             let dateMax = date1 > date2 ? date1 : date2;
             const differenceInTime = dateMax.getTime() - dateMin.getTime();
-            return (differenceInTime / (1000 * 3600 * 24))+1;
+            return (differenceInTime / (1000 * 3600 * 24)) + 1;
         }
         return 1;
     }
 
-    
-    
+
+
     useEffect(() => {
         const fetchData = async () => {
             if (!id) return;
-                try {
-                    const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
-                    if (!response.ok) {
-                        throw new Error('Erreur lors de la récupération des données');
-                    }
-                    const result = await response.json();
+            try {
+                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`);
+                if (!response.ok) {
+                    throw new Error('Erreur lors de la récupération des données');
+                }
+                const result = await response.json();
 
-                    console.log(result);
-                    setData(result);
-                    if(result.accessoires && result.accessoires_haves.length!=0 && result.accessoires_haves) {
-                        setAllAccessoire(result.accessoires);
-                        let accessoireData =[];
-                        let accValue = [];
-                        result.accessoires_haves.map((a)=>{
-                            let type=a.type_accessoire_nom;
+                setData(result);
+                if (result.accessoires && result.accessoires_haves.length != 0 && result.accessoires_haves) {
+                    setAllAccessoire(result.accessoires);
+                    let accessoireData = [];
+                    let accValue = [];
+                    result.accessoires_haves.map((a) => {
+                        let type = a.type_accessoire_nom;
+                        if (type) {
+                            if (!accessoireData.includes(type)) {
+                                accessoireData.push(type);
+                            }
+                        }
+                    })
+                    accessoireData.map((a) => {
+                        let accessoireDataID = [];
+                        result.accessoires_haves.map((have) => {
+                            let type = have.type_accessoire_nom;
                             if (type) {
-                                if (!accessoireData.includes(type)) {
-                                    accessoireData.push(type);
+                                if (a == type) {
+                                    accessoireDataID.push(have);
                                 }
                             }
                         })
-                        accessoireData.map((a)=>{
-                            let accessoireDataID=[];
-                            result.accessoires_haves.map((have)=>{
-                                let type=have.type_accessoire_nom;
-                                if (type) {
-                                    if (a == type) {
-                                        accessoireDataID.push(have);
-                                    }
-                                }
-                            })
-                            accValue.push({
-                                type:a,
-                                id:accessoireDataID
-                            });
-                        })
-                        setAccessoireUtil(accValue);
-                    }
-                    if (result.images) setImageHotels(result.images);
-                    if (result.chambres) setChambre(result.chambres);
-                    if (result.accessoires) setAccessoires(result.accessoires);
-                    if (result.accessoires_haves) setAccessoiresHaves(result.accessoires_haves);
-                } catch (error) {
-                    console.error('Erreur:', error);
+                        accValue.push({
+                            type: a,
+                            id: accessoireDataID
+                        });
+                    })
+                    setAccessoireUtil(accValue);
                 }
+                if (result.images) setImageHotels(result.images);
+                if (result.chambres) setChambre(result.chambres);
+                if (result.accessoires) setAccessoires(result.accessoires);
+                if (result.accessoires_haves) setAccessoiresHaves(result.accessoires_haves);
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
         };
 
         fetchData();
     }, [id]);
-    
+
     const panelClassName = (parent, index) => {
         if (parent.state.activeIndex === index)
             return style.tab_active;
-        else 
+        else
             return style.tab;
     }
 
 
-    
-    
 
-    const selectChambre = (room)=>{
+
+
+    const selectChambre = (room) => {
         let chambreCopy = [];
-        let find=false;
+        let find = false;
         let isDelete = false;
-        chambreSelected.map((c)=>{
+        chambreSelected.map((c) => {
             if (c.id != room.id) {
                 chambreCopy.push(c);
             }
-            else{
-                find=true;
-                isDelete=true;
+            else {
+                find = true;
+                isDelete = true;
             }
         })
-        if (chambre.length==0 || !find) {
+        if (chambre.length == 0 || !find) {
             chambreCopy.push(room);
         }
-        console.log(chambreCopy);
         setChambreSelected(chambreCopy);
     }
 
-    const getPriceChambreSelected = () =>{
-        let price =0;
-        chambreSelected.map((c)=>{
-            price+=parseFloat(c.prix_nuit_chambre);
+    const getPriceChambreSelected = () => {
+        let price = 0;
+        chambreSelected.map((c) => {
+            price += parseFloat(c.prix_nuit_chambre);
         })
         return price;
     }
@@ -187,18 +223,17 @@ export default function HotelInfos() {
         ));
     };
 
-    const getPriceTotal=()=> {
-        console.log(getNombreJour());
-        let priceTotal = getPriceChambreSelected()*getNombreJour(); 
+    const getPriceTotal = () => {
+        let priceTotal = getPriceChambreSelected() * getNombreJour();
         if (priceTotal < 0 || discount < 0 || discount > 100) {
-          throw new Error("Invalid input: getPriceChambreSelected() and discount must be non-negative, and discount must be between 0 and 100.");
+            throw new Error("Invalid input: getPriceChambreSelected() and discount must be non-negative, and discount must be between 0 and 100.");
         }
         const discountAmount = (priceTotal * discount) / 100;
         const finalPrice = priceTotal - discountAmount;
         return finalPrice;
     }
 
-    return(
+    return (
         <>
             <Head>
                 <title>Accommodation</title>
@@ -211,33 +246,33 @@ export default function HotelInfos() {
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
-                        <Filter/>
+                        <Filter />
                     </div>
                 </div>
                 <div className={style.header_container}>
                     <div className={style.header_left}>
                         <span className={style.header_left_title}>{data.nom_hebergement}</span>
                         <div className={style.header_left_detail}>
-                            <Image alt="star" src="/images/star_filled.svg"/>
+                            <Image alt="star" src="/images/star_filled.svg" />
                             <span>{data.nombre_etoile_hebergement}</span>
                             <span className={style.header_left_review}> ( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                             <span className={style.header_left_localisation}>
-                                <i className='pi pi-map-marker'/>
+                                <i className='pi pi-map-marker' />
                                 {data.localisation?.adresse}, {data.localisation?.ville}
                             </span>
-                        </div>  
+                        </div>
                     </div>
                     <div className={style.header_right}>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-heart" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-heart" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Like</span>
                         </div>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-send" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-send" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Share</span>
                         </div>
                         <div className={style.header_right_button_container}>
-                            <Button raised icon="pi pi-save" rounded text className={style.header_right_button}/>
+                            <Button raised icon="pi pi-save" rounded text className={style.header_right_button} />
                             <span className={style.header_right_button_label}>Save</span>
                         </div>
                     </div>
@@ -247,74 +282,74 @@ export default function HotelInfos() {
                     <TabView
                         pt={{
                             root: { className: style.tab_container },
-                            panelContainer:{ className: style.tab_container },
-                            navContainer:{ className: style.tab_container }
+                            panelContainer: { className: style.tab_container },
+                            navContainer: { className: style.tab_container }
                         }}
                     >
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,0)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 0)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header="Overview"
                         >
-                        <div className={style.overview}>
-                             <div className={style.accommodation_detail}>
-                            <span className={style.accommodation_detail_title}>Description</span>
-                            <div className={style.paragraphe}>
-                                {data?.description_hebergement || 'No description available'}
-                            </div>
-                        </div>
-                              <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Amenities</span>
-                                <div className={style.amenties_container}>
-                                    {renderAmenities()}
-                                </div>
-                            </div>
-                            <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Reviews & ratings</span>
-                                <div className={style.review_container}>
-                                    <div className={style.note_container_header}>
-                                        <div className={style.note_container_header_left}>
-                                            <span className={style.note_container_header_label}>{data.nombre_etoile_hebergement}</span>
-                                            <div className={style.note_container_header_value}>
-                                                <Rating
-                                                    value={4}
-                                                    disabled 
-                                                    cancel={false}
-                                                    pt={{
-                                                        onIcon:()=>({
-                                                            style:{
-                                                                "color":"#FFD700"
-                                                            }
-                                                        })
-                                                    }}
-                                                />
-                                                <span className={style.note_container_header_left_review}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
-                                            </div>
-                                        </div>
-                                        <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
+                            <div className={style.overview}>
+                                <div className={style.accommodation_detail}>
+                                    <span className={style.accommodation_detail_title}>Description</span>
+                                    <div className={style.paragraphe}>
+                                        {data?.description_hebergement || 'No description available'}
                                     </div>
                                 </div>
-                                <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
-                            </div> 
-                            <div className={style.accommodation_detail}>
-                                <span className={style.accommodation_detail_title}>Map</span>
-                                {data.localisation?.latitude && data.localisation?.longitude ? (
-                                    <Map 
-                                        style={{ width: "100%", height: 500 }}
-                                        lat={data.localisation.latitude}
+                                <div className={style.accommodation_detail}>
+                                    <span className={style.accommodation_detail_title}>Amenities</span>
+                                    <div className={style.amenties_container}>
+                                        {renderAmenities()}
+                                    </div>
+                                </div>
+                                <div className={style.accommodation_detail}>
+                                    <span className={style.accommodation_detail_title}>Reviews & ratings</span>
+                                    <div className={style.review_container}>
+                                        <div className={style.note_container_header}>
+                                            <div className={style.note_container_header_left}>
+                                                <span className={style.note_container_header_label}>{data.nombre_etoile_hebergement}</span>
+                                                <div className={style.note_container_header_value}>
+                                                    <Rating
+                                                        value={4}
+                                                        disabled
+                                                        cancel={false}
+                                                        pt={{
+                                                            onIcon: () => ({
+                                                                style: {
+                                                                    "color": "#FFD700"
+                                                                }
+                                                            })
+                                                        }}
+                                                    />
+                                                    <span className={style.note_container_header_left_review}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
+                                                </div>
+                                            </div>
+                                            <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter" />
+                                        </div>
+                                    </div>
+                                    <Button style={{ width: "250px" }} label="See all reviews" className="button-primary" />
+                                </div>
+                                <div className={style.accommodation_detail}>
+                                    <span className={style.accommodation_detail_title}>Map</span>
+                                    {data.localisation?.latitude && data.localisation?.longitude ? (
+                                        <Map
+                                            style={{ width: "100%", height: 500 }}
+                                            lat={data.localisation.latitude}
                                             lng={data.localisation.longitude}
-                                            name = {data.nom_hebergement}
-                                    />
-                                ) : (
-                                    <p>Loading map...</p>
-                                )}
-                            </div>
+                                            name={data.nom_hebergement}
+                                        />
+                                    ) : (
+                                        <p>Loading map...</p>
+                                    )}
+                                </div>
 
-                        </div>
+                            </div>
                         </TabPanel>
                         <TabPanel
                             pt={{
@@ -334,10 +369,10 @@ export default function HotelInfos() {
                         </TabPanel>
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,2)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 2)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header="Reviews"
                         >
@@ -346,16 +381,16 @@ export default function HotelInfos() {
                                 <div className={style.review_container}>
                                     <div className={style.note_container_header}>
                                         <div className={style.note_container_header_left}>
-                                            <span className={style.note_container_header_label}>{ data.nombre_etoile_hebergement}</span>
+                                            <span className={style.note_container_header_label}>{data.nombre_etoile_hebergement}</span>
                                             <div className={style.note_container_header_value}>
                                                 <Rating
                                                     value={4}
-                                                    disabled 
+                                                    disabled
                                                     cancel={false}
                                                     pt={{
-                                                        onIcon:()=>({
-                                                            style:{
-                                                                "color":"#FFD700"
+                                                        onIcon: () => ({
+                                                            style: {
+                                                                "color": "#FFD700"
                                                             }
                                                         })
                                                     }}
@@ -363,7 +398,7 @@ export default function HotelInfos() {
                                                 <span className={style.note_container_header_left_review}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                                             </div>
                                         </div>
-                                        <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter"/>
+                                        <Button className={style.button_review_filter} label="Filter" icon="pi pi-filter" />
                                     </div>
                                     {/* <div className={style.note_content_container}>
                                         <NoteBar
@@ -388,15 +423,15 @@ export default function HotelInfos() {
                                         />
                                     </div> */}
                                 </div>
-                                <Button style={{width:"250px"}} label="See all reviews" className="button-primary"/>
-                            </div>  
+                                <Button style={{ width: "250px" }} label="See all reviews" className="button-primary" />
+                            </div>
                         </TabPanel>
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,3)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 3)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header="Policies"
                         >
@@ -404,21 +439,21 @@ export default function HotelInfos() {
                         </TabPanel>
                         <TabPanel
                             pt={{
-                                headerAction:({parent})=>({
-                                    className: panelClassName(parent,4)
+                                headerAction: ({ parent }) => ({
+                                    className: panelClassName(parent, 4)
                                 }),
-                                header:{ className: style.tab_container }
+                                header: { className: style.tab_container }
                             }}
                             header="Map"
                         >
-                            <Map 
-                                style={{width:"100%",height:500}}
+                            <Map
+                                style={{ width: "100%", height: 500 }}
                                 lat={-18.9433924}
                                 lng={47.5288271}
                                 name="Hotel le Louvre & spa"
                             />
                         </TabPanel>
-                    </TabView>  
+                    </TabView>
                     <div className={style.accommodation_card_container}>
                         <div className={style.accommodation_card}>
                             <div className={style.card_check_header}>
@@ -426,18 +461,18 @@ export default function HotelInfos() {
                                 <div className={style.card_check_header_right}>
                                     <Image src="/images/star_filled.svg" alt="star" />
                                     <span>4</span>
-                                    <span style={{textDecoration:"underline"}}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
+                                    <span style={{ textDecoration: "underline" }}>( {data.avis_hotel ? data.avis_hotel.length : 0} reviews )</span>
                                 </div>
                             </div>
                             <div className={style.check_parent}>
-                                    <FloatLabel>
+                                <FloatLabel>
                                     <Calendar dateFormat="dd-mm-yy" className={style.input_number} id="check" value={check} onChange={(e) => setCheck(e.value)} selectionMode="range" readOnlyInput hideOnRangeSelection />
-                                        <label htmlFor="check">Check in | Check out</label>
-                                    </FloatLabel>
-                                    <FloatLabel>
-                                        <InputNumber className={style.input_number} id="guest" value={guest} onChange={(e)=>setGuest(e.value)}/>
-                                        <label htmlFor="guest">Guest</label>
-                                    </FloatLabel>
+                                    <label htmlFor="check">Check in | Check out</label>
+                                </FloatLabel>
+                                <FloatLabel>
+                                    <InputNumber className={style.input_number} id="guest" value={guest} onChange={(e) => setGuest(e.value)} />
+                                    <label htmlFor="guest">Guest</label>
+                                </FloatLabel>
                             </div>
                             <div className={style.check_detail_price_container}>
                                 <div className={style.check_detail_price}>
@@ -448,16 +483,16 @@ export default function HotelInfos() {
                                     <span className={style.check_detail_price_label}>Discount</span>
                                     <span className={style.check_detail_price_value}>{discount}%</span>
                                 </div>
-                                <Divider/>
+                                <Divider />
                                 <div className={style.check_detail_price}>
                                     <span className={style.check_detail_price_total_label}>Total</span>
                                     <span className={style.check_detail_price_total_value}>${getPriceTotal()}</span>
                                 </div>
                             </div>
-                            <Button onClick={()=>setBookingVisible(true)} className="button-primary" label="Book now"/>
+                            <Button onClick={() => handleBooking()} className="button-primary" label="Book now" />
                         </div>
-                        
-                         <div className={style.accommodation_card}>
+
+                        <div className={style.accommodation_card}>
                             <span className={style.card_availability_title}>Availability ({chambre.length})</span>
                             <div className={style.separateur}></div>
                             <ScrollPanel className={style.card_availability_parent}>
@@ -467,13 +502,23 @@ export default function HotelInfos() {
                                             <div className={style.chambre_container}>
                                                 <div className={style.chambre_top}>
                                                     <div className={style.checkbox_container}>
-                                                        <input onChange={()=>selectChambre(roomData)} type='checkbox' className={style.checkbox}/>
-                                                        <span className={style.checkbox_label}>{roomData.chambre.type_chambre}</span>
+                                                        <input
+                                                            id={`checkbox-${roomData.id}`}
+                                                            onChange={() => selectChambre(roomData)}
+                                                            type='checkbox'
+                                                            className={style.checkbox}
+                                                        />
+                                                        <label
+                                                            htmlFor={`checkbox-${roomData.id}`}
+                                                            className={style.checkbox_label}
+                                                        >
+                                                            {roomData.chambre.type_chambre}
+                                                        </label>
                                                     </div>
                                                     <span className={style.chambre_price}>${roomData.prix_nuit_chambre}</span>
                                                 </div>
                                                 <div className={style.chambre_body}>
-                                                    <Image imageClassName={style.chambre_image} alt="chambre" src={roomData.images_chambre[0] != null ? UrlConfig.apiBaseUrl+roomData.images_chambre[0].images : "/images/hotel/chambre.jpg"} />
+                                                    <Image imageClassName={style.chambre_image} alt="chambre" src={roomData.images_chambre[0] != null ? UrlConfig.apiBaseUrl + roomData.images_chambre[0].images : "/images/hotel/chambre.jpg"} />
                                                     <div className={style.chambre_detail}>
                                                         <span><i className="pi pi-home" /> {roomData.chambre.nombre_min_personnes} - {roomData.chambre.nombre_max_personnes} Personnes</span>
                                                         {roomData.accessoires.slice(0, 4).map(accessoire => (
@@ -481,7 +526,7 @@ export default function HotelInfos() {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <Button onClick={() => { setChambre_id(roomData.id) ,setAvailability(true) }} className="button-primary" label="Details" />
+                                                <Button onClick={() => { setChambre_id(roomData.id), setAvailability(true) }} className="button-primary" label="Details" />
 
                                             </div>
                                             <div className={style.separateur}></div>
@@ -490,24 +535,27 @@ export default function HotelInfos() {
                                 </div>
                             </ScrollPanel>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
 
 
-            <BookingModal 
-                hotel_location={data.localisation?.adresse+","+data.localisation?.ville}
-                hotel_name={data.nom_hebergement} 
+            <BookingModal
+                id_hebergement={data.id}
+                description={`Reservation de ${chambreSelected.length} chambre dans ${data.nom_hebergement}`}
+                hotel_location={data.localisation?.adresse + "," + data.localisation?.ville}
+                hotel_name={data.nom_hebergement}
                 hotel_image={imageHotel.length > 0 && imageHotel[0]}
-                check_in={check!=null ? check[0] : null}
-                check_out={check!=null ? check[1] : null}
+                check_in={check != null ? check[0] : null}
+                check_out={check != null ? check[1] : null}
                 guest={guest}
                 visible={bookingVisible}
-                rooms={chambreSelected} 
-                onHide={()=>setBookingVisible(false)} 
+                rooms={chambreSelected}
+                onHide={() => setBookingVisible(false)}
             />
-            <DetailChambre visible={availability} id={chambre_id} onHide={()=>setAvailability(false)}/>
+            <DetailChambre visible={availability} id={chambre_id} onHide={() => setAvailability(false)} />
+            <Toast ref={toast} />
 
         </>
     )

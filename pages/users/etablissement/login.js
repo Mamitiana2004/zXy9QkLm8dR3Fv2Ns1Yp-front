@@ -65,6 +65,7 @@ export default function Login() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Accept": "application/json",
                 },
                 body: JSON.stringify({ email, password }),
             })
@@ -90,12 +91,19 @@ export default function Login() {
                 })
                 .then((data) => {
                     if (data.access) {
-                        Cookies.set('responsable_access_token', data.access, { expires: 7, secure: true, sameSite: 'strict' });
+                        Cookies.set('responsable_access_token', data.access, {
+                            expires: 5 / (24 * 60),
+                            secure: true,
+                            sameSite: 'strict'
+                        });
                     }
                     if (data.refresh) {
-                        Cookies.set('responsable_refresh_token', data.refresh, { expires: 30, secure: true, sameSite: 'strict' });
+                        Cookies.set('responsable_refresh_token', data.refresh, {
+                            expires: 1,
+                            secure: true,
+                            sameSite: 'strict'
+                        });
                     }
-
                     const type_etablissement = data.type_etablissement
                     setUser({
                         username: data.user.username,

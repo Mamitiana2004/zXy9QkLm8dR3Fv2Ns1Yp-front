@@ -211,3 +211,35 @@
     color: #fff;
     height: fit-content;
 }
+
+.card_body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card_body_detail {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px; /* Ajoutez une marge pour séparer les lignes */
+}
+
+.detail_container {
+    flex: 1;
+    margin-right: 20px; /* Ajoutez une marge entre les détails des produits */
+}
+
+.product_name, .product_price {
+    display: block;
+    margin-bottom: 5px; /* Espacement entre les lignes de texte */
+}
+
+.image_product {
+    max-width: 150px; /* Ajustez la taille de l'image si nécessaire */
+    height: auto;
+}
+
+.order_summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
