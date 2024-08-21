@@ -25,16 +25,16 @@ export default function Order() {
     }
 
     const buttonTemplate = (item) => {
-    return (
-        <>
-            <Button onClick={() => router.push(`/responsable/handcraft/order_detail?id=${item.id}`)} icon="pi pi-eye" text />
-        </>
-    );
-};
+        return (
+            <>
+                <Button onClick={() => router.push(`/responsable/handcraft/order_detail?id=${item.id}`)} icon="pi pi-eye" text />
+            </>
+        );
+    };
 
 
     const actionTemplate = (item) => {
-    return (
+        return (
             <Button onClick={() => afficheDetail(item)} icon="pi pi-eye" text />
         );
     };
@@ -52,6 +52,41 @@ export default function Order() {
     const { user } = useContext(ResponsableLayoutContext);
 
     useEffect(() => {
+
+        function FetchList_Orders(id_client) {
+            getCsrfFromToken()
+                .then(csrfToken => {
+                    // Fetch List Client
+                    fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/${id_client}/commandes/`, {
+                        method: "GET",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFTOKEN': csrfToken,
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            const formattedData = data.map((item, index) => {
+                                return item.commandes.map((commande) => {
+                                    const totalAmount = commande.quantite * parseFloat(item.prix_artisanat);
+                                    return {
+                                        id: `#${commande?.id_commande}`,
+                                        name: commande?.client?.nom || 'No Client Name',
+                                        email: commande.client.email || 'No Email client ',
+                                        product: item.nom_produit_artisanal || 'No Product Name ',
+                                        amount: `$${totalAmount.toFixed(2)}` || 'No Total Count',
+                                        quantity: commande.quantite || 'No Quantite',
+                                        date: commande.date_commande || new Date().toLocaleDateString(),
+                                        status: getStatus(commande.statut_commande)
+                                    };
+                                });
+                            }).flat();
+                            setBooking(formattedData);
+                        })
+                        .catch(err => console.error('Erreur lors de la récupération des Liste des Customers:', err));
+                })
+                .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
+        }
         if (user) {
             const id_client = user.id_etablissement;
             console.log(user);
@@ -65,40 +100,6 @@ export default function Order() {
         return statut_commande ? " Deliver" : " Pending";
     };
 
-    function FetchList_Orders(id_client) {
-        getCsrfFromToken()
-            .then(csrfToken => {
-                // Fetch List Client
-                fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/${id_client}/commandes/`, {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFTOKEN': csrfToken,
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        const formattedData = data.map((item, index) => {
-                            return item.commandes.map((commande) => {
-                                const totalAmount = commande.quantite * parseFloat(item.prix_artisanat);
-                                return {
-                                    id: `#${commande?.id_commande}`,
-                                    name: commande?.client?.nom || 'No Client Name',
-                                    email: commande.client.email || 'No Email client ',
-                                    product: item.nom_produit_artisanal || 'No Product Name ',
-                                    amount: `$${totalAmount.toFixed(2)}` || 'No Total Count',
-                                    quantity: commande.quantite || 'No Quantite',
-                                    date: commande.date_commande || new Date().toLocaleDateString(),
-                                    status: getStatus(commande.statut_commande)
-                                };
-                            });
-                        }).flat();
-                        setBooking(formattedData);
-                    })
-                    .catch(err => console.error('Erreur lors de la récupération des Liste des Customers:', err));
-            })
-            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
-    }
 
     return (
         <>
