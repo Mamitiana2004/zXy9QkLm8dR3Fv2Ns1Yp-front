@@ -181,25 +181,28 @@ const getNewResponsabeAccess = () => {
 };
 
 function getResponsableAccessToken() {
-    return new Promise((resolve, reject) => {
-        const accessToken = Cookies.get('responsable_access_token');
+    const accessToken = Cookies.get('responsable_access_token');
 
-        if (accessToken) {
-            console.log(accessToken);
-            resolve(accessToken);
+
+    if (accessToken) {
+        console.log(accessToken);
+        return accessToken;
+    }
+
+
+    getNewResponsabeAccess().then(() => {
+        const newAccessToken = Cookies.get('responsable_access_token');
+        if (newAccessToken) {
+            return newAccessToken;
         } else {
-            getNewResponsabeAccess()
-                .then(() => {
-                    const newAccessToken = Cookies.get('responsable_access_token');
-                    if (newAccessToken) {
-                        resolve(newAccessToken);
-                    } else {
-                        reject('Failed to retrieve new access token.');
-                    }
-                })
-                .catch(error => reject(error));
+            console.error('Failed to retrieve new access token.');
+            return null;
         }
+    }).catch(error => {
+        console.error(error);
+        return null;
     });
 }
+
 
 export { setTokensInCookies, getClientAccess, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
