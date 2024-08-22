@@ -18,7 +18,9 @@ const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false }
 export default function FilterHandCraftPage() {
     const { t } = useTranslation();
     const [handcrafts, setHandcrafts] = useState([]);
+    const [allHandcrafts, setAllHandcrafts] = useState([]);
     const [priceIntervalle, setPriceIntervalle] = useState([1, 600]);
+    const [selectedSpecifications, setSelectedSpecifications] = useState([]);
     const router = useRouter();
     const { location, store, type } = router.query;
 
@@ -27,26 +29,43 @@ export default function FilterHandCraftPage() {
         const minValue = 5;
         const maxValue = 600;
 
-        // Clamp the percentage between 0 and 100
         percentage = Math.max(0, Math.min(100, percentage));
+        return parseFloat((minValue + (percentage / 100) * (maxValue - minValue)).toFixed(2));
+    };
 
-        const value = minValue + (percentage / 100) * (maxValue - minValue);
-        return parseFloat(value.toFixed(2)); // Convertir en nombre et arrondir
-    }
+    const applyFilters = (priceValues, specs) => {
+        const priceMin = priceByPourcentage(priceValues[0] < priceValues[1] ? priceValues[0] : priceValues[1]);
+        const priceMax = priceByPourcentage(priceValues[0] > priceValues[1] ? priceValues[0] : priceValues[1]);
+
+        const filteredHandcrafts = allHandcrafts.filter(handcraft => {
+            const matchesPrice = parseFloat(handcraft.prix_artisanat) >= priceMin && parseFloat(handcraft.prix_artisanat) <= priceMax;
+            const matchesSpecs = specs.length === 0 || specs.every(spec => handcraft.specifications.includes(spec));
+            return matchesPrice && matchesSpecs;
+        });
+
+        setHandcrafts(filteredHandcrafts);
+    };
 
     const filterPrice = (e) => {
         const priceValues = e.value;
         setPriceIntervalle(priceValues);
+        applyFilters(priceValues, selectedSpecifications);
+    };
 
-        const priceMin = priceByPourcentage(priceValues[0] < priceValues[1] ? priceValues[0] : priceValues[1]);
-        const priceMax = priceByPourcentage(priceValues[0] > priceValues[1] ? priceValues[0] : priceValues[1]);
+    const handleSpecChange = (selectedSpecs) => {
+        setSelectedSpecifications(selectedSpecs);
+        applyFilters(priceIntervalle, selectedSpecs);
+    };
 
-        const handcraftCopy = handcrafts.filter(handcraft =>
-            parseFloat(handcraft.prix_artisanat) >= priceMin && parseFloat(handcraft.prix_artisanat) <= priceMax
-        );
-
-        setHandcrafts(handcraftCopy);
-    }
+    useEffect(() => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
+            .then(res => res.json())
+            .then(data => {
+                setAllHandcrafts(data);  // Stocke la liste complète des produits
+                setHandcrafts(data);     // Liste des produits actuellement affichés
+            })
+            .catch(error => console.log(error));
+    }, []);
 
     let itemTemplate = (handcraft) => {
         return <ProductCard
@@ -67,14 +86,12 @@ export default function FilterHandCraftPage() {
     useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
             .then(res => res.json())
-            .then(data => setHandcrafts(data))
+            .then(data => {
+                setAllHandcrafts(data);
+                setHandcrafts(data)
+            })
             .catch(error => console.log(error));
     }, []);
-
-    // if (handcrafts == null || handcrafts.length === 0) {
-    //     return <div>Loading...</div>;
-    // }
-
 
     return (
         <>
@@ -116,7 +133,7 @@ export default function FilterHandCraftPage() {
                                 </div>
                             </div>
                         </div>
-                        <ListCheckbox />
+                        <ListCheckbox onSpecChange={handleSpecChange} />
                     </div>
                     <div className={style.filter_right}>
                         <DataView
