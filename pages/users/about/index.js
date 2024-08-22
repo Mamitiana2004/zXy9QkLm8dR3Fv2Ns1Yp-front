@@ -72,7 +72,7 @@ export default function About() {
 
             <article className={style.header_container}>
                 <div className={style.aboutAftrip_container}>
-                    <h1 style={{ fontStyle: "italic", fontSize: "2.3em" }} className={style.aboutTitle}>{t('aboutAftrip')}</h1>
+                    <h1 style={{ fontStyle: "italic" }} className={style.aboutTitle}>{t('aboutAftrip')}</h1>
                     <p className={style.aboutAftrip_txt}>{t('aboutAftripTxt')}</p>
                 </div>
 
@@ -95,7 +95,7 @@ export default function About() {
 
                                 <div style={{ marginLeft: "2rem" }}>
                                     <h5>{missionData.title}</h5>
-                                    <p style={{ marginTop: "-1rem", width: "75%" }}>{missionData.text}</p>
+                                    <p className={style.missionText}>{missionData.text}</p>
                                 </div>
                             </div>
                         ))}
