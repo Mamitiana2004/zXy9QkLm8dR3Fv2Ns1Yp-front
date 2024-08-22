@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useTranslation } from "react-i18next";
+import styleDropdown from './../../../style/components/ListCheckbox.module.css';
 import style from './../../../style/pages/users/handcraft/filter.module.css';
 import FilterHandcraft from "@/components/FilterHandCraft";
 import ListCheckbox from "@/components/ListCheckbox";
@@ -10,14 +11,42 @@ import { DataView } from 'primereact/dataview';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { UrlConfig } from "@/util/config";
+import { Slider } from "primereact/slider";
 
 const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false });
 
 export default function FilterHandCraftPage() {
     const { t } = useTranslation();
     const [handcrafts, setHandcrafts] = useState([]);
+    const [priceIntervalle, setPriceIntervalle] = useState([1, 600]);
     const router = useRouter();
     const { location, store, type } = router.query;
+
+    // Function pour Price
+    const priceByPourcentage = (percentage) => {
+        const minValue = 5;
+        const maxValue = 600;
+
+        // Clamp the percentage between 0 and 100
+        percentage = Math.max(0, Math.min(100, percentage));
+
+        const value = minValue + (percentage / 100) * (maxValue - minValue);
+        return parseFloat(value.toFixed(2)); // Convertir en nombre et arrondir
+    }
+
+    const filterPrice = (e) => {
+        const priceValues = e.value;
+        setPriceIntervalle(priceValues);
+
+        const priceMin = priceByPourcentage(priceValues[0] < priceValues[1] ? priceValues[0] : priceValues[1]);
+        const priceMax = priceByPourcentage(priceValues[0] > priceValues[1] ? priceValues[0] : priceValues[1]);
+
+        const handcraftCopy = handcrafts.filter(handcraft =>
+            parseFloat(handcraft.prix_artisanat) >= priceMin && parseFloat(handcraft.prix_artisanat) <= priceMax
+        );
+
+        setHandcrafts(handcraftCopy);
+    }
 
     let itemTemplate = (handcraft) => {
         return <ProductCard
@@ -40,11 +69,12 @@ export default function FilterHandCraftPage() {
             .then(res => res.json())
             .then(data => setHandcrafts(data))
             .catch(error => console.log(error));
-    }, [])
+    }, []);
 
-    if (!handcrafts) {
-        return <div>Loading...</div>
-    }
+    // if (handcrafts == null || handcrafts.length === 0) {
+    //     return <div>Loading...</div>;
+    // }
+
 
     return (
         <>
@@ -74,8 +104,19 @@ export default function FilterHandCraftPage() {
                             lat={-18.9433924}
                             lng={47.5288271}
                         />
+                        <div className={styleDropdown.container}>
+                            <span className={styleDropdown.title}>Price per night</span>
+                            <div className={styleDropdown.listCheck}>
+                                <div style={{ display: "flex", flexDirection: "column" }} className={styleDropdown.checkbox_container}>
+                                    <Slider value={priceIntervalle} onChange={filterPrice} className="w-14rem" range />
+                                    <div className={styleDropdown.price}>
+                                        <span>${priceByPourcentage(priceIntervalle[0])}</span>
+                                        <span>${priceByPourcentage(priceIntervalle[1])}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <ListCheckbox />
-                        <ListCheckboxPrice />
                     </div>
                     <div className={style.filter_right}>
                         <DataView
@@ -95,5 +136,5 @@ export default function FilterHandCraftPage() {
                 </div>
             </div>
         </>
-    )
+    );
 }
