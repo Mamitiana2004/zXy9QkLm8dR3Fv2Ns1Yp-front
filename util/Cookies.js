@@ -91,7 +91,23 @@ const getNewAdminAccess = () => {
         });
 };
 
+const getClientAccess = async () => {
+    let token = Cookies.get("accessToken");
 
+    if (!token) {
+        console.log("No access token found, trying to refresh...");
+        await getNewAccess();
+        token = Cookies.get("accessToken");
+    }
+
+    if (!token) {
+        console.error("Failed to obtain access token");
+        return;
+    }
+
+
+    return token;
+}
 const getNewAccess = () => {
     const refreshToken = Cookies.get('refreshToken');
 
@@ -165,25 +181,28 @@ const getNewResponsabeAccess = () => {
 };
 
 function getResponsableAccessToken() {
-    return new Promise((resolve, reject) => {
-        const accessToken = Cookies.get('responsable_access_token');
+    const accessToken = Cookies.get('responsable_access_token');
 
-        if (accessToken) {
-            console.log(accessToken);
-            resolve(accessToken);
+
+    if (accessToken) {
+        console.log(accessToken);
+        return accessToken;
+    }
+
+
+    getNewResponsabeAccess().then(() => {
+        const newAccessToken = Cookies.get('responsable_access_token');
+        if (newAccessToken) {
+            return newAccessToken;
         } else {
-            getNewResponsabeAccess()
-                .then(() => {
-                    const newAccessToken = Cookies.get('responsable_access_token');
-                    if (newAccessToken) {
-                        resolve(newAccessToken);
-                    } else {
-                        reject('Failed to retrieve new access token.');
-                    }
-                })
-                .catch(error => reject(error));
+            console.error('Failed to retrieve new access token.');
+            return null;
         }
+    }).catch(error => {
+        console.error(error);
+        return null;
     });
 }
 
-export { setTokensInCookies, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
+
+export { setTokensInCookies, getClientAccess, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };

@@ -1,11 +1,56 @@
 import UrlConfig from "@/util/config";
 import React, { useRef, useEffect, useState } from "react";
+import { Toast } from "primereact/toast";
+import { getClientAccess } from "@/util/Cookies";
 
 export default function Paypal(props) {
   const paypal = useRef();
   console.log(props);
   const [infoChambre, setInfoChambre] = useState(null)
+  const toast = useRef(null);
 
+  const createTransaction = (order, reservation) => {
+
+    const data = {
+      transaction: order,
+      reservation_data: reservation
+    }
+    return getClientAccess()
+      .then((accessToken) => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/transactions/create/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(data)
+        })
+          .then((response) => {
+            if (response.status !== 201) {
+              throw new Error('Transaction failed');
+            }
+            return response.json();
+          }).then((data) => {
+
+            toast.current.show({
+              severity: "success",
+              summary: "Success",
+              detail: "Payement effectué",
+              life: 3000
+            });
+            return data;
+          })
+          .catch((error) => {
+            toast.current.show({
+              severity: "error",
+              summary: "Error",
+              detail: "Une erreur s'est produite lors du paiement",
+              life: 5000
+            });
+            return null;
+          });
+      })
+  };
 
   useEffect(() => {
 
@@ -16,7 +61,8 @@ export default function Paypal(props) {
       const booking_info = {
         "chambre_ids": props.id_chambres,
         "check_in": formatted_check_in,
-        "check_out": formatted_check_out
+        "check_out": formatted_check_out,
+        "guests": props.guest
       };
 
       return fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/check/`, {
@@ -32,7 +78,7 @@ export default function Paypal(props) {
           }
           return response.json();
         }).then((data) => {
-
+          console.log(data)
           return data;
         })
         .catch((error) => {
@@ -42,7 +88,7 @@ export default function Paypal(props) {
     };
     handleFetch().then((infoChambre) => {
       if (infoChambre.total_price) {
-        console.log("total :", infoChambre.total_price);
+
         window.paypal
           .Buttons({
             style: {
@@ -61,7 +107,6 @@ export default function Paypal(props) {
                     amount: {
                       currency_code: "EUR",
                       value: infoChambre.total_price,
-                      // value: 10,
                     },
                   },
                 ],
@@ -69,7 +114,15 @@ export default function Paypal(props) {
             },
             onApprove: async (data, actions) => {
               const order = await actions.order.capture();
-              console.log(order);
+
+              if (order.status === "COMPLETED") {
+                createTransaction(order, infoChambre.reservation_details)
+                  .then((data) => {
+
+                    console.log(data)
+                  })
+
+              }
             },
             onError: (err) => {
               console.log(err);
@@ -78,13 +131,23 @@ export default function Paypal(props) {
           .render(paypal.current);
       } else {
         console.error("Formulaire incomplet");
+
+        toast.current.show({
+          severity: "info",
+          summary: "Error",
+          detail: "Information not complete",
+          life: 5000
+        });
       }
     })
   }, [props]);
 
   return (
-    <div>
-      <div ref={paypal}></div>
-    </div>
+    <>
+      <div>
+        <div ref={paypal}></div>
+      </div>
+      <Toast ref={toast} />
+    </>
   );
 }

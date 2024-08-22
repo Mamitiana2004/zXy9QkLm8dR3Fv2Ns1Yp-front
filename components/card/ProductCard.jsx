@@ -46,14 +46,14 @@ export default function ProductCard(props) {
     const placeholderImage = '/images/artisanat/aucun_image.jpeg'; // Placeholder image if no images
 
     const imageUrl = coverImage
-        ? coverImage.startsWith('http') 
-            ? coverImage 
+        ? coverImage.startsWith('http')
+            ? coverImage
             : `${UrlConfig.apiBaseUrl}${coverImage}`
         : firstImage
-        ? firstImage.startsWith('http') 
-            ? firstImage 
-            : `${UrlConfig.apiBaseUrl}${firstImage}`
-        : placeholderImage;
+            ? firstImage.startsWith('http')
+                ? firstImage
+                : `${UrlConfig.apiBaseUrl}${firstImage}`
+            : placeholderImage;
 
     // console.log("Cover Image:", coverImage);
     // console.log("First Image:", firstImage);
@@ -66,7 +66,7 @@ export default function ProductCard(props) {
                 summary: 'Not Connected',
                 detail: <>No user connected <Link href="/users/login">Login here</Link>.</>,
                 life: 5000
-            }); 
+            });
             return;
         }
         if (props.id) {
@@ -89,7 +89,7 @@ export default function ProductCard(props) {
                     alt={props.nom_produit}
                     imageClassName={style.image_product}
                     className={style.image_product}
-                    placeholder={<img src={placeholderImage} alt="Placeholder" />}
+                    placeholder={<Image src={placeholderImage} alt="Placeholder" />}
                 />
                 <div className={style.background}></div>
                 {props.discount != null && (
