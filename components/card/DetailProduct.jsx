@@ -74,6 +74,8 @@ export default function DetailProduct(props) {
 
     return (
         <div className={style.container}>
+            <span className={style.breadcrumd2}>Handcraft / {product.artisanat.nom} / {product.nom_produit_artisanal}</span>
+
             <div className={style.left}>
                 <div className={style.image_view_container}>
                     <ViewProduct images={product.images} />
@@ -123,7 +125,9 @@ export default function DetailProduct(props) {
                             <span className={style.review_detail}>{reviewCount} reviews</span>
                         </div>
                     </div>
-                    <Button className='button-primary' label='See reviews' />
+
+                    <Button className={`${style.btn_reviews} button-primary`} label='See reviews' />
+
                 </div>
             </div>
             <div className={style.right}>
@@ -132,8 +136,8 @@ export default function DetailProduct(props) {
                         <span className={style.breadcrumd}>Handcraft / {product.artisanat.nom} / {product.nom_produit_artisanal}</span>
                         <span className={style.right_head_title}>{product.nom_produit_artisanal}</span>
                         <div className={style.right_head_detail}>
-                            <span>Store : {product.artisanat.nom}</span>
-                            <span>${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.ville : ""} - ${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.adresse : ""}</span>
+                            <span className={style.storeStyle}>Store : {product.artisanat.nom}</span>
+                            <span className={style.storeStyle}>${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.ville : ""} - ${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.adresse : ""}</span>
                         </div>
                     </div>
                     <span className={style.price}>${product.prix_artisanat}</span>
@@ -182,8 +186,8 @@ export default function DetailProduct(props) {
                         }} inputClassName={style.quantity} />
                     </div>
                     <div className={style.button_group}>
-                        <Button icon="pi pi-shopping-cart" onClick={handleAddToCart} raised label='Add to cart' className='button-secondary' />
-                        <Button icon="pi pi-shopping-bag" label='Buy now' className='button-primary' />
+                        <Button icon="pi pi-shopping-cart" onClick={handleAddToCart} raised label='Add to cart' className={`button-secondary ${style.btn_group}`} />
+                        <Button icon="pi pi-shopping-bag" label='Buy now' className={`button-primary ${style.btn_group}`} />
                     </div>
                 </div>
             </div>
