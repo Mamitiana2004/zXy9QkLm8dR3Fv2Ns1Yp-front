@@ -4,7 +4,6 @@ import styleDropdown from './../../../style/components/ListCheckbox.module.css';
 import style from './../../../style/pages/users/handcraft/filter.module.css';
 import FilterHandcraft from "@/components/FilterHandCraft";
 import ListCheckbox from "@/components/ListCheckbox";
-import ListCheckboxPrice from "@/components/ListCheckboxPrice";
 import dynamic from "next/dynamic";
 import ProductCard from "@/components/card/ProductCard";
 import { DataView } from 'primereact/dataview';
@@ -52,17 +51,19 @@ export default function FilterHandCraftPage() {
         applyFilters(priceValues, selectedSpecifications);
     };
 
+    // Function Filtre par specifications
     const handleSpecChange = (selectedSpecs) => {
         setSelectedSpecifications(selectedSpecs);
         applyFilters(priceIntervalle, selectedSpecs);
     };
 
+    // Recuperer tous les liste des produits Artisanats
     useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
             .then(res => res.json())
             .then(data => {
-                setAllHandcrafts(data);  // Stocke la liste complète des produits
-                setHandcrafts(data);     // Liste des produits actuellement affichés
+                setAllHandcrafts(data);
+                setHandcrafts(data);
             })
             .catch(error => console.log(error));
     }, []);
@@ -81,17 +82,6 @@ export default function FilterHandCraftPage() {
             images={handcraft.images}
         />
     }
-
-    // Recuperer tous les liste des produits artisanaux
-    useEffect(() => {
-        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/produits-artisanaux/`)
-            .then(res => res.json())
-            .then(data => {
-                setAllHandcrafts(data);
-                setHandcrafts(data)
-            })
-            .catch(error => console.log(error));
-    }, []);
 
     return (
         <>
