@@ -1,8 +1,6 @@
 import { Dialog } from 'primereact/dialog';
 import style from './../../style/components/modal/BookingModal.module.css';
-import BookingHotelCard from '../card/BookingHotelCard';
 import { Button } from 'primereact/button';
-import Paypal from '../payment/PayPal';
 import { useContext, useEffect, useRef, useState } from 'react';
 import LayoutContext from "@/layouts/context/layoutContext";
 import { Toast } from 'primereact/toast';
@@ -13,16 +11,13 @@ import { Password } from 'primereact/password';
 import Cookies from 'js-cookie';
 import { customLogin, getClientAccess, getNewAccess } from '@/util/Cookies';
 import UrlConfig from '@/util/config';
-import CraftPaypal from '../payment/CraftPayPal';
 import TourPaypal from '../payment/TourPayPal';
 import { InputText } from 'primereact/inputtext';
 
 export default function TripModal(props) {
-    console.log("Props: ", props);
     const [paystep, setPaystep] = useState(0);
     const [isFirstOutlined, setIsFirstOutlined] = useState(true);
     const [noCurrentAccounts, setNoCurrentAccounts] = useState(false);
-    const [userInfo, setUserInfo] = useState(null);
     const [accId, setId] = useState("");
     const [editOrCreate, setEditOrCreate] = useState("Create & Continue");
     const [firstname, setFirstname] = useState("");
@@ -269,7 +264,7 @@ export default function TripModal(props) {
         if (user) {
             FetchUser()
                 .then((data) => {
-                    setUserInfo(data);
+
                     setId(data.id)
                     setFirstname(data.first_name);
                     setLastname(data.last_name);
