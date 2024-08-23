@@ -3,18 +3,19 @@ import React, { useRef, useEffect, useState } from "react";
 import { Toast } from "primereact/toast";
 import { getClientAccess } from "@/util/Cookies";
 
-export default function CraftPaypal(props) {
+export default function TourPaypal(props) {
   const paypal = useRef();
   const toast = useRef(null);
 
   const createTransaction = (order, reservation) => {
     const data = {
       transaction: order,
-      commande: reservation
+      reservation_data: reservation
     }
+
     return getClientAccess()
       .then((accessToken) => {
-        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/transactions/create/`, {
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/transactions/create/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -32,7 +33,7 @@ export default function CraftPaypal(props) {
             toast.current.show({
               severity: "success",
               summary: "Success",
-              detail: "Commande effectué",
+              detail: "Reservation effectué",
               life: 3000
             });
             return data;
@@ -56,7 +57,7 @@ export default function CraftPaypal(props) {
         nb_voyageur: props.nb_voyageur
       };
 
-      return fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/product/check/`, {
+      return fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyage/check/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,24 +65,21 @@ export default function CraftPaypal(props) {
         body: JSON.stringify(booking_info)
       })
         .then((response) => {
-          if (!response.ok) {
-            if (response.status === 400) {
-              toast.current.show({ severity: 'error', summary: 'Erreur', detail: 'Produit disponible insuffisant', life: 3000 });
-            } else {
-              toast.current.show({ severity: 'error', summary: 'Erreur', detail: 'Erreur interne', life: 3000 });
+          return response.json().then((data) => {
+
+            if (!response.ok) {
+              toast.current.show({ severity: 'error', summary: 'Erreur', detail: data.error, life: 3000 });
+              return false;
             }
-            return false;
-          }
-          return response.json();
-        })
-        .then((data) => {
-          return data;
+            return data;
+          });
         })
         .catch((error) => {
           console.error('Error during user fetch operation:', error);
+          toast.current.show({ severity: 'error', summary: 'Erreur', detail: 'Erreur de réseau', life: 3000 });
           return null;
         });
-    };
+    }
     handleFetch().then((infoProduct) => {
       if (infoProduct) {
 
@@ -112,7 +110,7 @@ export default function CraftPaypal(props) {
               const order = await actions.order.capture();
 
               if (order.status === "COMPLETED") {
-                createTransaction(order, infoProduct)
+                createTransaction(order, infoProduct);
               }
             },
             onError: (err) => {
