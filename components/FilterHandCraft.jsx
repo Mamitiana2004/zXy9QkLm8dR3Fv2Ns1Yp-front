@@ -33,7 +33,7 @@ export default function FilterHandcraft(props) {
             .then(res => res.json())
             .then(data => setType(data.map(item => ({
                 id: item.id,
-                nom: item.type_specification // Assurez-vous que `type_specification` est la clé correcte
+                nom: item.type_specification
             }))))
             .catch(error => console.log(error));
     };
