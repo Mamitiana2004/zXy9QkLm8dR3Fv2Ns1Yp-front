@@ -64,7 +64,7 @@ export default function AppFooter() {
                             <Link style={{ textDecoration: "none" }} href={"/users"}>
                                 <div className={style.about_info_item}>
                                     <Image src={"/images/footer/phone.svg"} alt='location_icon' width={17} height={17} />
-                                    <span>+261 34 56 789 90</span>
+                                    <span>(415) 555-1234</span>
                                 </div>
                             </Link>
                             <Link style={{ textDecoration: "none" }} href={"/users"}>
