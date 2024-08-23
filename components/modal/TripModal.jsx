@@ -14,9 +14,11 @@ import Cookies from 'js-cookie';
 import { customLogin, getClientAccess, getNewAccess } from '@/util/Cookies';
 import UrlConfig from '@/util/config';
 import CraftPaypal from '../payment/CraftPayPal';
+import TourPaypal from '../payment/TourPayPal';
+import { InputText } from 'primereact/inputtext';
 
 export default function TripModal(props) {
-
+    console.log("Props: ", props);
     const [paystep, setPaystep] = useState(0);
     const [isFirstOutlined, setIsFirstOutlined] = useState(true);
     const [noCurrentAccounts, setNoCurrentAccounts] = useState(false);
@@ -28,6 +30,7 @@ export default function TripModal(props) {
     const [adresse, setAdresse] = useState("");
 
     const [email, setEmail] = useState("");
+    const [nbVoyageur, setNbVoyageur] = useState(1);
     const [numero, setNumero] = useState("");
     const [pass, setPass] = useState("");
     const [confPass, setConfPass] = useState("");
@@ -345,7 +348,17 @@ export default function TripModal(props) {
     }
 
     const handleStep = () => {
-        paystep == 0 ? !isFirstOutlined ? handleSubmit() : setPaystep(1) : setPaystep(0);
+        if (nbVoyageur) {
+            paystep == 0 ? !isFirstOutlined ? handleSubmit() : setPaystep(1) : setPaystep(0);
+        } else {
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: 'Please set the number of travelers',
+                life: 5000
+            });
+        }
+
     }
 
 
@@ -372,6 +385,22 @@ export default function TripModal(props) {
                                         icon="pi pi-user"
                                         disabled={noCurrentAccounts}
                                         onClick={() => toggleOutlined(true)}
+                                    />
+                                    <hr />
+
+                                    <InputText
+                                        type="number"
+                                        placeholder="Enter number of travelers"
+                                        title="Number of travelers"
+                                        required={true}
+                                        value={nbVoyageur}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === '' || (/^\d+$/.test(value) && parseInt(value) > 0)) {
+                                                setNbVoyageur(parseInt(value));
+                                            }
+                                        }}
+                                        className={style.inputField}
                                     />
                                     <hr />
                                     <Button
@@ -407,7 +436,7 @@ export default function TripModal(props) {
                                                 <div className={style.detail}>
                                                     <span className={style.label}>Email</span>
                                                     <input
-                                                        type="text"
+                                                        type="email"
                                                         value={email || ''}
                                                         onChange={(e) => setEmail(e.target.value)}
                                                         className={style.inputField} />
@@ -528,10 +557,10 @@ export default function TripModal(props) {
                                 </div>
                                 <div className={style.centered_div}>
                                     <div className={style.button_container}>
-                                        <CraftPaypal
+                                        <TourPaypal
                                             description={props.description}
-                                            id_produit={props.id}
-                                            quantite={props.quantity}
+                                            id_voyage={props.id}
+                                            nb_voyageur={nbVoyageur}
                                         />
                                     </div>
                                 </div>
