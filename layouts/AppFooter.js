@@ -18,7 +18,7 @@ export default function AppFooter() {
                             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Temporibus corporis sed expedita
                         </span>
                     </div>
-                    <div className={style.about_menu}>
+                    <div className={style.about_menu1}>
                         <span className={style.about_menu_title}>Links</span>
                         <div className={style.about_menu_item_container}>
                             <Link style={{ textDecoration: "none" }} href={"/users"}>
@@ -75,7 +75,7 @@ export default function AppFooter() {
                             </Link>
                         </div>
                     </div>
-                    <div className={style.about_info}>
+                    <div className={style.about_info2}>
                         <span className={style.about_info_title}>{t("social_media")}</span>
                         <div className={style.about_info_item_container}>
                             <Link style={{ textDecoration: "none" }} href={"/users"}>

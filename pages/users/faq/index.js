@@ -41,10 +41,10 @@ export default function Faqs() {
             </Head>
 
             <article className={style.header_faq}>
-                <div>
+                <div className={style.faq_intro}>
                     <h1 style={{ fontSize: "2em", fontStyle: "italic" }}>{t('titleFAQ')}</h1>
-                    <p style={{ width: "70%", marginTop: "3rem" }}>{t('FAQIntro')}</p>
-                    <p style={{ width: "70%", marginTop: "2rem" }}>{t('FAQIntro2')}</p>
+                    <p className={style.faqIntrotitle}>{t('FAQIntro')}</p>
+                    <p className={style.faqIntroTxt}>{t('FAQIntro2')} </p>
                 </div>
 
                 <div>
