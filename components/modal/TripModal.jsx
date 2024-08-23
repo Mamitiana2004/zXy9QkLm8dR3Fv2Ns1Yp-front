@@ -1,8 +1,6 @@
 import { Dialog } from 'primereact/dialog';
 import style from './../../style/components/modal/BookingModal.module.css';
-import BookingHotelCard from '../card/BookingHotelCard';
 import { Button } from 'primereact/button';
-import Paypal from '../payment/PayPal';
 import { useContext, useEffect, useRef, useState } from 'react';
 import LayoutContext from "@/layouts/context/layoutContext";
 import { Toast } from 'primereact/toast';
@@ -13,13 +11,13 @@ import { Password } from 'primereact/password';
 import Cookies from 'js-cookie';
 import { customLogin, getClientAccess, getNewAccess } from '@/util/Cookies';
 import UrlConfig from '@/util/config';
+import TourPaypal from '../payment/TourPayPal';
+import { InputText } from 'primereact/inputtext';
 
-export default function BookingModal(props) {
-
+export default function TripModal(props) {
     const [paystep, setPaystep] = useState(0);
     const [isFirstOutlined, setIsFirstOutlined] = useState(true);
     const [noCurrentAccounts, setNoCurrentAccounts] = useState(false);
-    const [userInfo, setUserInfo] = useState(null);
     const [accId, setId] = useState("");
     const [editOrCreate, setEditOrCreate] = useState("Create & Continue");
     const [firstname, setFirstname] = useState("");
@@ -27,6 +25,7 @@ export default function BookingModal(props) {
     const [adresse, setAdresse] = useState("");
 
     const [email, setEmail] = useState("");
+    const [nbVoyageur, setNbVoyageur] = useState(1);
     const [numero, setNumero] = useState("");
     const [pass, setPass] = useState("");
     const [confPass, setConfPass] = useState("");
@@ -265,7 +264,7 @@ export default function BookingModal(props) {
         if (user) {
             FetchUser()
                 .then((data) => {
-                    setUserInfo(data);
+
                     setId(data.id)
                     setFirstname(data.first_name);
                     setLastname(data.last_name);
@@ -279,7 +278,7 @@ export default function BookingModal(props) {
                 });
         }
     }, [user]);
-    const roomIds = props.rooms.map(room => room.id);
+
 
     const headerTemplate = () => {
         return (
@@ -344,7 +343,17 @@ export default function BookingModal(props) {
     }
 
     const handleStep = () => {
-        paystep == 0 ? !isFirstOutlined ? handleSubmit() : setPaystep(1) : setPaystep(0);
+        if (nbVoyageur) {
+            paystep == 0 ? !isFirstOutlined ? handleSubmit() : setPaystep(1) : setPaystep(0);
+        } else {
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: 'Please set the number of travelers',
+                life: 5000
+            });
+        }
+
     }
 
 
@@ -371,6 +380,22 @@ export default function BookingModal(props) {
                                         icon="pi pi-user"
                                         disabled={noCurrentAccounts}
                                         onClick={() => toggleOutlined(true)}
+                                    />
+                                    <hr />
+
+                                    <InputText
+                                        type="number"
+                                        placeholder="Enter number of travelers"
+                                        title="Number of travelers"
+                                        required={true}
+                                        value={nbVoyageur}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === '' || (/^\d+$/.test(value) && parseInt(value) > 0)) {
+                                                setNbVoyageur(parseInt(value));
+                                            }
+                                        }}
+                                        className={style.inputField}
                                     />
                                     <hr />
                                     <Button
@@ -406,7 +431,7 @@ export default function BookingModal(props) {
                                                 <div className={style.detail}>
                                                     <span className={style.label}>Email</span>
                                                     <input
-                                                        type="text"
+                                                        type="email"
                                                         value={email || ''}
                                                         onChange={(e) => setEmail(e.target.value)}
                                                         className={style.inputField} />
@@ -527,14 +552,10 @@ export default function BookingModal(props) {
                                 </div>
                                 <div className={style.centered_div}>
                                     <div className={style.button_container}>
-                                        <Paypal
+                                        <TourPaypal
                                             description={props.description}
-                                            nom={props.hotel_name}
-                                            id_chambres={roomIds}
-                                            days_total={total_days}
-                                            guest={props.guest}
-                                            check_in={props.check_in != null ? new Date(props.check_in) : null}
-                                            check_out={props.check_out != null ? new Date(props.check_out) : null}
+                                            id_voyage={props.id}
+                                            nb_voyageur={nbVoyageur}
                                         />
                                     </div>
                                 </div>
@@ -545,7 +566,7 @@ export default function BookingModal(props) {
                         )}
                     </div>
                     <div className={style.body_right}>
-                        <BookingHotelCard
+                        {/* <BookingHotelCard
                             hotel_name={props.hotel_name}
                             hotel_image={props.hotel_image}
                             hotel_location={props.hotel_location}
@@ -553,7 +574,7 @@ export default function BookingModal(props) {
                             check_out={props.check_out != null ? new Date(props.check_out) : null}
                             guest={props.guest}
                             rooms={props.rooms}
-                        />
+                        /> */}
                         <div className={style.ground_rule_container}>
                             <span className={style.ground_rule_title}>Ground rules</span>
                             <div className={style.ground_rule_body}>

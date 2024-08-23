@@ -10,6 +10,7 @@ import { UrlConfig } from '@/util/config';
 import { useRouter } from "next/router";
 import addToCart from '@/util/Cart';
 import { Toast } from 'primereact/toast';
+import HandcraftModal from '../modal/HandcraftModal';
 
 // Fonction pour formater les critiques en notation lisible
 const formatReviews = (count) => {
@@ -30,7 +31,10 @@ const calculateAverageRating = (reviews) => {
 };
 
 export default function DetailProduct(props) {
+
     const [product, setProduct] = useState(null);
+    const [bookingVisible, setBookingVisible] = useState(null);
+
     const router = useRouter();
     const { id } = router.query;
     const [quantity, setQuantity] = useState(1);
@@ -74,6 +78,8 @@ export default function DetailProduct(props) {
 
     return (
         <div className={style.container}>
+            <span className={style.breadcrumd2}>Handcraft / {product.artisanat.nom} / {product.nom_produit_artisanal}</span>
+
             <div className={style.left}>
                 <div className={style.image_view_container}>
                     <ViewProduct images={product.images} />
@@ -123,7 +129,9 @@ export default function DetailProduct(props) {
                             <span className={style.review_detail}>{reviewCount} reviews</span>
                         </div>
                     </div>
-                    <Button className='button-primary' label='See reviews' />
+
+                    <Button className={`${style.btn_reviews} button-primary`} label='See reviews' />
+
                 </div>
             </div>
             <div className={style.right}>
@@ -132,8 +140,8 @@ export default function DetailProduct(props) {
                         <span className={style.breadcrumd}>Handcraft / {product.artisanat.nom} / {product.nom_produit_artisanal}</span>
                         <span className={style.right_head_title}>{product.nom_produit_artisanal}</span>
                         <div className={style.right_head_detail}>
-                            <span>Store : {product.artisanat.nom}</span>
-                            <span>${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.ville : ""} - ${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.adresse : ""}</span>
+                            <span className={style.storeStyle}>Store : {product.artisanat.nom}</span>
+                            <span className={style.storeStyle}>${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.ville : ""} - ${product.artisanat.localisation_artisanat ? product.artisanat.localisation_artisanat.adresse : ""}</span>
                         </div>
                     </div>
                     <span className={style.price}>${product.prix_artisanat}</span>
@@ -183,10 +191,20 @@ export default function DetailProduct(props) {
                     </div>
                     <div className={style.button_group}>
                         <Button icon="pi pi-shopping-cart" onClick={handleAddToCart} raised label='Add to cart' className='button-secondary' />
-                        <Button icon="pi pi-shopping-bag" label='Buy now' className='button-primary' />
+                        <Button icon="pi pi-shopping-bag" onClick={() => setBookingVisible(true)} label='Buy now' className='button-primary' />
                     </div>
                 </div>
             </div>
+            <HandcraftModal
+                id={product.id}
+                description={`Achat de ${product.nom_produit_artisanal} à ${product.artisanat.nom}`}
+                artisanat={product.artisanat.nom}
+                images={product.images > 0 && product.images[0]}
+                quantity={quantity}
+                visible={bookingVisible}
+
+                onHide={() => setBookingVisible(false)}
+            />
             <Toast ref={toast} />
         </div>
 

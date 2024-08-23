@@ -63,7 +63,9 @@ export default function DetailHandcraft() {
                         )}
                     </div>
                 </div>
+
             </div>
+
         </>
     )
 }

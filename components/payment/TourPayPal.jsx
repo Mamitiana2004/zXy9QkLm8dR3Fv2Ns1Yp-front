@@ -3,19 +3,19 @@ import React, { useRef, useEffect, useState } from "react";
 import { Toast } from "primereact/toast";
 import { getClientAccess } from "@/util/Cookies";
 
-export default function Paypal(props) {
+export default function TourPaypal(props) {
   const paypal = useRef();
   const toast = useRef(null);
 
   const createTransaction = (order, reservation) => {
-
     const data = {
       transaction: order,
       reservation_data: reservation
     }
+
     return getClientAccess()
       .then((accessToken) => {
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/transactions/create/`, {
+        fetch(`${UrlConfig.apiBaseUrl}/api/tour/transactions/create/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export default function Paypal(props) {
             toast.current.show({
               severity: "success",
               summary: "Success",
-              detail: "Payement effectué",
+              detail: "Reservation effectué",
               life: 3000
             });
             return data;
@@ -51,19 +51,13 @@ export default function Paypal(props) {
   };
 
   useEffect(() => {
-
     const handleFetch = () => {
-      const formatted_check_in = new Date(props.check_in).toISOString().split('T')[0];
-      const formatted_check_out = new Date(props.check_out).toISOString().split('T')[0];
-
       const booking_info = {
-        "chambre_ids": props.id_chambres,
-        "check_in": formatted_check_in,
-        "check_out": formatted_check_out,
-        "guests": props.guest
+        id_voyage: props.id_voyage,
+        nb_voyageur: props.nb_voyageur
       };
 
-      return fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/check/`, {
+      return fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyage/check/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,21 +65,23 @@ export default function Paypal(props) {
         body: JSON.stringify(booking_info)
       })
         .then((response) => {
-          if (!response.ok) {
-            return false;
-          }
-          return response.json();
-        }).then((data) => {
+          return response.json().then((data) => {
 
-          return data;
+            if (!response.ok) {
+              toast.current.show({ severity: 'error', summary: 'Erreur', detail: data.error, life: 3000 });
+              return false;
+            }
+            return data;
+          });
         })
         .catch((error) => {
           console.error('Error during user fetch operation:', error);
+          toast.current.show({ severity: 'error', summary: 'Erreur', detail: 'Erreur de réseau', life: 3000 });
           return null;
         });
-    };
-    handleFetch().then((infoChambre) => {
-      if (infoChambre.total_price) {
+    }
+    handleFetch().then((infoProduct) => {
+      if (infoProduct) {
 
         window.paypal
           .Buttons({
@@ -104,7 +100,7 @@ export default function Paypal(props) {
                     description: props.description,
                     amount: {
                       currency_code: "EUR",
-                      value: infoChambre.total_price,
+                      value: infoProduct.prix_total,
                     },
                   },
                 ],
@@ -114,11 +110,7 @@ export default function Paypal(props) {
               const order = await actions.order.capture();
 
               if (order.status === "COMPLETED") {
-                createTransaction(order, infoChambre.reservation_details)
-                  .then((data) => {
-                    console.log(data);
-                  })
-
+                createTransaction(order, infoProduct);
               }
             },
             onError: (err) => {
@@ -126,15 +118,6 @@ export default function Paypal(props) {
             },
           })
           .render(paypal.current);
-      } else {
-        console.error("Formulaire incomplet");
-
-        toast.current.show({
-          severity: "info",
-          summary: "Error",
-          detail: "Information not complete",
-          life: 5000
-        });
       }
     })
   }, [props]);

@@ -11,6 +11,7 @@ import { Toast } from "primereact/toast"; // Import Toast
 import RoomAmenities from "@/components/RoomAmenities";
 import { UrlConfig } from "@/util/config";
 import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import { getResponsableAccessToken } from "@/util/Cookies";
 
 export default function AddNewRoom() {
     const [typeChambre, setTypeChambre] = useState([]);
@@ -51,10 +52,18 @@ export default function AddNewRoom() {
     };
 
     useEffect(() => {
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`)
-            .then(response => response.json())
-            .then(data => setTypeChambre(data))
-            .catch(error => console.error('Erreur lors de la récupération des données :', error));
+        getResponsableAccessToken().then((access) => {
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access}`,
+                },
+
+            })
+                .then(response => response.json())
+                .then(data => setTypeChambre(data))
+                .catch(error => console.error('Erreur lors de la récupération des données :', error));
+        })
     }, []);
 
     const handleSubmit = (e) => {
@@ -95,32 +104,39 @@ export default function AddNewRoom() {
             formData.append(`accessories[${index}]`, accessory.id);
         });
 
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Room added successfully', life: 2000 });
-
-                setTimeout(() => {
-                    setTypeChambre([]);
-                    setImageFile();
-                    setSelectedType();
-                    setSelectedStatus();
-                    setPrice();
-                    setFileImages([]);
-                    setAmenities([]);
-                    setListImage([]);
-                    setDescription("");
-
-                    window.location.reload();
-                }, 2000);
+        getResponsableAccessToken().then((access) => {
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access}`,
+                },
+                body: formData
             })
-            .catch(error => {
-                console.error('Error:', error);
-                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to add room', life: 3000 });
-            });
+                .then(response => response.json())
+                .then(data => {
+                    toast.current.show({ severity: 'success', summary: 'Success', detail: 'Room added successfully', life: 2000 });
+
+                    setTimeout(() => {
+                        setTypeChambre([]);
+                        setImageFile();
+                        setSelectedType();
+                        setSelectedStatus();
+                        setPrice();
+                        setFileImages([]);
+                        setAmenities([]);
+                        setListImage([]);
+                        setDescription("");
+
+                        window.location.reload();
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to add room', life: 3000 });
+                });
+        })
+
     };
 
 

@@ -13,6 +13,7 @@ import PopularTripCard from "@/components/card/PopularTripCard";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { UrlConfig } from "@/util/config";
+import TripModal from "@/components/modal/TripModal";
 
 const Map = dynamic(() => import('@/components/Map'), { ssr: false });
 
@@ -24,6 +25,7 @@ export default function InfoTour() {
     const [voyage, setVoyage] = useState(null);
     const [popularVoyages, setPopularVoyages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [bookingVisible, setBookingVisible] = useState(false);
     const [location, setLocalisation] = useState()
 
     // Fetch voyage details when ID changes
@@ -33,6 +35,7 @@ export default function InfoTour() {
                 .then(res => res.json())
                 .then(data => {
                     setVoyage(data);
+                    console.log(data);
                     data.tour_operateur.localisation ? setLocalisation(data.tour_operateur.localisation) : setLocalisation({
                         "latitude": 1,
                         "longitude": 1,
@@ -186,6 +189,7 @@ export default function InfoTour() {
                             date_fin={voyage.date_fin}
                             places_disponibles={voyage.places_disponibles}
                             prix_voyage={voyage.prix_voyage}
+                            setBookingVisible={setBookingVisible}
                         />
                         <div className={style.tour_card}>
                             <Map
@@ -222,6 +226,15 @@ export default function InfoTour() {
                     </div>
                 </div>
             </div>
+            <TripModal
+                id={voyage.id}
+                description={`Résérvation de voyage ${voyage.nom_voyage} à ${voyage.tour_operateur.nom_operateur}`}
+                tour={voyage.tour_operateur.nom_operateur}
+                nom_voyage={voyage.nom_voyage}
+                images={voyage.images_voyage}
+                visible={bookingVisible}
+                onHide={() => setBookingVisible(false)}
+            />
         </>
     );
 }

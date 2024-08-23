@@ -3,7 +3,7 @@ import style from './../../style/components/card/DetailTravel.module.css';
 export default function DetailTravel(props) {
 
 
-    return(
+    return (
         <div className={style.container}>
             <div className={style.head_container}>
                 <span className={style.head_title}>Travel Details</span>
@@ -33,7 +33,7 @@ export default function DetailTravel(props) {
             <div className={style.description}>
                 On vous souhaite bon voyage
             </div>
-            <Button className={style.bouton} label='Book trip'/>
+            <Button className={style.bouton} onClick={() => props.setBookingVisible(true)} label='Book trip' />
         </div>
     )
 }

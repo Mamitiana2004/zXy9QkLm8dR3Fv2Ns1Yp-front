@@ -13,6 +13,7 @@ import { Password } from 'primereact/password';
 import Cookies from 'js-cookie';
 import { customLogin, getClientAccess, getNewAccess } from '@/util/Cookies';
 import UrlConfig from '@/util/config';
+import CraftPaypal from '../payment/CraftPayPal';
 
 export default function BookingModal(props) {
 
@@ -279,7 +280,7 @@ export default function BookingModal(props) {
                 });
         }
     }, [user]);
-    const roomIds = props.rooms.map(room => room.id);
+
 
     const headerTemplate = () => {
         return (
@@ -527,14 +528,10 @@ export default function BookingModal(props) {
                                 </div>
                                 <div className={style.centered_div}>
                                     <div className={style.button_container}>
-                                        <Paypal
+                                        <CraftPaypal
                                             description={props.description}
-                                            nom={props.hotel_name}
-                                            id_chambres={roomIds}
-                                            days_total={total_days}
-                                            guest={props.guest}
-                                            check_in={props.check_in != null ? new Date(props.check_in) : null}
-                                            check_out={props.check_out != null ? new Date(props.check_out) : null}
+                                            id_produit={props.id}
+                                            quantite={props.quantity}
                                         />
                                     </div>
                                 </div>
@@ -545,7 +542,7 @@ export default function BookingModal(props) {
                         )}
                     </div>
                     <div className={style.body_right}>
-                        <BookingHotelCard
+                        {/* <BookingHotelCard
                             hotel_name={props.hotel_name}
                             hotel_image={props.hotel_image}
                             hotel_location={props.hotel_location}
@@ -553,7 +550,7 @@ export default function BookingModal(props) {
                             check_out={props.check_out != null ? new Date(props.check_out) : null}
                             guest={props.guest}
                             rooms={props.rooms}
-                        />
+                        /> */}
                         <div className={style.ground_rule_container}>
                             <span className={style.ground_rule_title}>Ground rules</span>
                             <div className={style.ground_rule_body}>

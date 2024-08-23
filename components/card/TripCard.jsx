@@ -10,9 +10,8 @@ export default function TripCard({ href, voyage }) {
 
     // Extract the URL of the first image in the couverture_images array
     const imageUrl = voyage.couverture_images && voyage.couverture_images.length > 0
-        ? UrlConfig.apiBaseUrl+voyage.couverture_images[0].image
-        : '/images/default-image.jpg'; // Fallback image if no images are provided
-
+        ? UrlConfig.apiBaseUrl + voyage.couverture_images[0].image
+        : '/images/artisanat/aucun_image.jpeg';
     return (
         <div className={style.container}>
             <Image alt='Image_Voyages' src={imageUrl} imageClassName={style.image_container} />

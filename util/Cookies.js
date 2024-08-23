@@ -18,6 +18,11 @@ const setTokensInCookies = (refreshToken, accessToken) => {
         secure: true,
         sameSite: 'Strict'
     });
+    Cookies.set('accessToken', accessToken, {
+        expires: 5 / 1440,
+        secure: true,
+        sameSite: 'Strict'
+    });
     return true
 };
 
@@ -144,6 +149,47 @@ const getNewAccess = () => {
 };
 
 
+
+const customLogin = async (email, password) => {
+    try {
+        const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/login/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+            let message;
+            if (response.status === 404) {
+                message = "Email unknown";
+            } else if (response.status === 401) {
+                message = "Wrong password";
+            } else {
+                message = "An error occurred";
+            }
+            throw new Error(message);
+        }
+
+        const data = await response.json();
+
+        if (data.refresh && data.access) {
+            const cook = setTokensInCookies(data.refresh, data.access);
+            if (cook) {
+                return data; // Retourner les données si tout va bien
+            } else {
+                throw new Error("Failed to set cookies");
+            }
+        } else {
+            throw new Error("Missing authentication tokens");
+        }
+    } catch (error) {
+        console.error(error);
+        throw error; // Relancer l'erreur pour la gérer en dehors de cette fonction
+    }
+};
+
 const getNewResponsabeAccess = () => {
     const refreshToken = Cookies.get('responsable_refresh_token');
 
@@ -205,4 +251,4 @@ function getResponsableAccessToken() {
 }
 
 
-export { setTokensInCookies, getClientAccess, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
+export { setTokensInCookies, getClientAccess, customLogin, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
