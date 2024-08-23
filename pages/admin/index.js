@@ -11,10 +11,9 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Calendar } from "primereact/calendar";
 import { useRouter } from "next/router";
-import { TabView } from "primereact/tabview";
-import { TabPanel } from "@mui/lab";
 import { SelectButton } from "primereact/selectbutton";
 import { Tag } from "primereact/tag";
+
 export default function DashBoard() {
     const [staticData, setStaticData] = useState(false);
 
@@ -49,8 +48,12 @@ export default function DashBoard() {
 
     // États pour les récentes réservations
     const [recentTourBooking, setRecentTourBooking] = useState([]);
+    const [currentMonth, setCurrentMonth] = useState(['January', 'February', 'March', 'April', 'May', 'June', 'July']);
     const [recentAccomodationBooking, setRecentAccomodationBooking] = useState([]);
     const [recentHandcraftBooking, setRecentHandcraftBooking] = useState([]);
+    const [nbAccomodations, setNbAccomodation] = useState();
+    const [nbHandcrafts, setNbHandcraft] = useState();
+    const [nbTour, setNbTour] = useState();
 
     const [recentBooking, setRecentBooking] = useState([]);
     const switchDataShowed = () => {
@@ -103,6 +106,10 @@ export default function DashBoard() {
             { id: "#54", name: "Diana Evans", tour: "Beach Holiday", email: "diana@example.com", guests: "5", start_date: "25-08-2024", end_date: "04-09-2024" },
             { id: "#55", name: "Evan White", tour: "Cruise", email: "evan@example.com", guests: "2", start_date: "01-09-2024", end_date: "11-09-2024" }
         ]);
+
+        setNbAccomodation(854);
+        setNbHandcraft(52);
+        setNbTour(8);
     }
     const loadDynamicData = () => {
         setStaticData(false)
@@ -120,11 +127,15 @@ export default function DashBoard() {
         // reservationRecent
         setRecentBooking([])
 
-        setRecentTourBooking([]
-        );
+        setRecentTourBooking([]);
         setRecentAccomodationBooking([]);
 
         setRecentHandcraftBooking([]);
+
+
+        setNbAccomodation(0);
+        setNbHandcraft(0);
+        setNbTour(0);
     }
 
     useEffect(() => {
@@ -231,7 +242,7 @@ export default function DashBoard() {
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
         const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
         const data = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            labels: currentMonth,
             datasets: [
                 {
                     label: 'Accommodation State',
@@ -290,7 +301,7 @@ export default function DashBoard() {
 
         setChartData(data);
         setChartOptions(options);
-    }, [monthlyAccomodationData, monthlyHandcraftData, monthlyTourData]);
+    }, [currentMonth, monthlyAccomodationData, monthlyHandcraftData, monthlyTourData]);
 
     const bodyTag = (item) => {
         return !item.ban ? <Tag severity="success" value="900$"></Tag> : <Tag severity="warning" value="600$"></Tag>
@@ -335,24 +346,24 @@ export default function DashBoard() {
                     <div className={style.card_detail}>
                         <i className="pi pi-calendar" style={{ fontSize: "32px" }} />
                         <div className={style.card_detail_text}>
-                            <span className={style.card_detail_title}>Total booking</span>
-                            <span className={style.card_detail_value}>32</span>
+                            <span className={style.card_detail_title}>Accommodations</span>
+                            <span className={style.card_detail_value}>{nbAccomodations}</span>
                         </div>
                     </div>
 
                     <div className={style.card_detail}>
                         <i className="pi pi-calendar" style={{ fontSize: "32px" }} />
                         <div className={style.card_detail_text}>
-                            <span className={style.card_detail_title}>Total booking</span>
-                            <span className={style.card_detail_value}>32</span>
+                            <span className={style.card_detail_title}>Handcrafts</span>
+                            <span className={style.card_detail_value}>{nbHandcrafts}</span>
                         </div>
                     </div>
 
                     <div className={style.card_detail}>
                         <i className="pi pi-calendar" style={{ fontSize: "32px" }} />
                         <div className={style.card_detail_text}>
-                            <span className={style.card_detail_title}>Total booking</span>
-                            <span className={style.card_detail_value}>32</span>
+                            <span className={style.card_detail_title}>Tour Operator</span>
+                            <span className={style.card_detail_value}>{nbTour}</span>
                         </div>
                     </div>
 
