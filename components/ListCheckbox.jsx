@@ -1,18 +1,17 @@
+// ListCheckbox.js
 import React, { useEffect, useState } from 'react';
 import { MultiSelect } from 'primereact/multiselect';
 import style from './../style/components/ListCheckbox.module.css';
 import UrlConfig from '@/util/config';
 
-export default function ListCheckbox(props) {
+export default function ListCheckbox({ onSpecChange }) {  // Ajoutez onSpecChange ici
     const [specifications, setSpecifications] = useState([]);
     const [selectedValues, setSelectedValues] = useState([]);
 
     useEffect(() => {
-        // Fetch specifications from the API
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/specifications/`)
             .then(response => response.json())
             .then(data => {
-                // Transform the data to match the MultiSelect format
                 const formattedOptions = data.map(spec => ({
                     label: spec.type_specification,
                     value: spec.id
@@ -22,10 +21,11 @@ export default function ListCheckbox(props) {
             .catch(error => {
                 console.error('Error fetching specifications:', error);
             });
-    }, []); // Empty dependency array means this effect runs once on mount
+    }, []);
 
     const handleChange = (e) => {
         setSelectedValues(e.value);
+        onSpecChange(e.value);  // Appelle la fonction du parent pour mettre à jour les filtres
     };
 
     return (

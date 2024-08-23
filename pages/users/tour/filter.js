@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { DataView } from 'primereact/dataview';
 import FilterTour from "@/components/FilterTour";
 import TripCard from "@/components/card/TripCard";
-        
+
 
 const FilterMap = dynamic(() => import('@/components/FilterMap'), { ssr: false });
 
@@ -24,13 +24,13 @@ export default function Accommodation() {
 
     // Recupere tous les listes des voyages
     const [all_voyages, setAll_voyages] = useState([]);
-    useEffect(()=>{
+    useEffect(() => {
         fetch(`${UrlConfig.apiBaseUrl}/api/tour/voyages/`)
-        .then(res=>res.json())
-        .then(data=>setAll_voyages(data))
-        .catch(error=>console.log(error));
+            .then(res => res.json())
+            .then(data => setAll_voyages(data))
+            .catch(error => console.log(error));
     }, [])
-    
+
     if (!all_voyages) {
         return <div>Loading...</div>
     }
@@ -55,12 +55,12 @@ export default function Accommodation() {
                         <span className={style.filter_header_top_subtitle}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat explicabo cupiditate </span>
                     </div>
                     <div className={style.filter_parent}>
-                    <FilterTour/>
+                        <FilterTour />
                     </div>
                 </div>
                 <div className={style.filter_header_container}>
                     <span className={style.filter_header_left}>
-                        Properties in Antananarivo :    
+                        Properties in Antananarivo :
                         <span className={style.filter_header_left_bold}> {all_voyages.length} properties found</span>
                     </span>
                     <div></div>
@@ -75,7 +75,7 @@ export default function Accommodation() {
                         <ListCheckbox />
                     </div>
                     <div className={style.filter_right}>
-                        <DataView 
+                        <DataView
                             emptyMessage="No hotel found"
                             itemTemplate={itemTemplate}
                             value={all_voyages}
