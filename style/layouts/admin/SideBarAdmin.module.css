@@ -119,3 +119,9 @@
         }
     }
 }
+
+@media (max-width : 1480px) {
+   .container {
+        width : 250px;
+   }
+}

@@ -138,7 +138,7 @@ export default function DashBoard() {
         setNbTour(0);
     }
 
-    useEffect(() => {
+    /*useEffect(() => {
 
         if (user == null) {
             router.push("/admin/login");
@@ -150,7 +150,7 @@ export default function DashBoard() {
                     setUser(null)
                 }
             })
-    }, [router, setUser, user])
+    }, [router, setUser, user])*/
 
     useEffect(() => {
         const dataAccomodationLine = {
@@ -374,18 +374,23 @@ export default function DashBoard() {
             <div className={style.container}>
                 <div className={style.left_container}>
                     <div className={style.detail_dashboard}>
+                        <h2>Entities chart</h2>
                         {/* <span className={style.detail_dashboard_title}>Booking state</span> */}
-                        <div className={style.card}>
+                        <div className={style.card1}>
+
                             <Chart type="line" data={chartData} options={chartOptions} />
                         </div>
                     </div>
 
+                    <h2 className={style.stateDetailsTitle}>State details</h2>
                     <div className={style.card}>
                         <Chart type="line" data={lineAccomodationData} options={lineOptions} />
                         <Chart type="line" data={lineHandcraftData} options={lineOptions} />
                         <Chart type="line" data={lineTourData} options={lineOptions} />
                     </div>
-                    <div className={style.detail_dashboard}>
+
+                    <h2 className={style.transactionTitle}>Latest transaction</h2>
+                    <div className={style.detail_transaction}>
                         {/* <span className={style.detail_dashboard_title}>Latest Transactions</span> */}
                         <div className={style.card}>
                             <DataTable value={recentBooking}>
@@ -401,8 +406,14 @@ export default function DashBoard() {
 
                 </div>
                 <div className={style.right_container}>
+                    <h2>Calendar</h2>
 
-                    <div className={style.card}>
+                    <div className={style.calendar_container}>
+                        <Calendar inline showWeek className={style.custom_calendar} />
+                    </div>
+
+                    <h2>Recent bookings</h2>
+                    <div className={style.card2}>
                         <span className={style.centered_title}>
                             <SelectButton
                                 value={value}
@@ -419,10 +430,11 @@ export default function DashBoard() {
                             <Column field="id" body={bodyTag} header="$" />
                         </DataTable>
                     </div>
-                    <Calendar inline showWeek />
-                    <div className={style.detail_dashboard}>
+
+                    <h2 className={style.attribution}>Attributions</h2>
+                    <div className={style.detail_transaction}>
                         {/* <span className={style.detail_dashboard_title}>Latest Transactions</span> */}
-                        <div className={style.card}>
+                        <div className={style.card3}>
                             <DataTable value={recentBooking}>
                                 <Column field="id" header="No" />
                                 <Column field="name" header="Name" />
