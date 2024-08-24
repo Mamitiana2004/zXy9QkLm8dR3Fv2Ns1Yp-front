@@ -1,14 +1,17 @@
 import { Dialog } from "primereact/dialog";
 import style from './../style/components/ChatBot.module.css';
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UrlConfig } from "@/util/config";
+import LayoutContext from "@/layouts/context/layoutContext";
+import Link from "next/link";
 
 export default function ChatBot(props) {
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([]);
     const [currentResponse, setCurrentResponse] = useState("");
     const [isTyping, setIsTyping] = useState(false);
+    const { user, setUser } = useContext(LayoutContext);
 
     const headerTemplate = () => {
         return (
@@ -76,12 +79,27 @@ export default function ChatBot(props) {
     };
     const footerTemplate = () => {
         return (
-            <form onSubmit={sendMessage} className={style.send_message_container}>
-                <input value={messageInput} onChange={(e) => setMessageInput(e.target.value)} type="text" placeholder="Your prompt" className={style.input_message} />
-                <span onClick={sendMessage} className={style.send_icon}>
-                    <i className="pi pi-send" />
-                </span>
-            </form>
+            <div>
+                {user ? (
+                    <form onSubmit={sendMessage} className={style.send_message_container}>
+                        <input
+                            value={messageInput}
+                            onChange={(e) => setMessageInput(e.target.value)}
+                            type="text"
+                            placeholder="Your prompt"
+                            className={style.input_message}
+                        />
+                        <span onClick={sendMessage} className={style.send_icon}>
+                            <i className="pi pi-send" />
+                        </span>
+                    </form>
+                ) :
+                    (
+                        <p>
+                            Please <Link href="/users/login">login</Link> or <Link href="/users/register">register</Link> before using the ChatBot.
+                        </p>
+                    )}
+            </div>
         );
     };
 
@@ -119,21 +137,19 @@ export default function ChatBot(props) {
             onHide={props.onHide}>
 
             <div className={style.message_container}>
-                {messages.map((message, index) => {
-                    if (message.type == 0) {
-                        return (
-                            <div key={index} className={style.your_message}>
-                                {message.message}
-                            </div>
-                        );
-                    } else {
-                        return (
-                            <div key={index} className={style.chat_message}>
-                                {isTyping && index === messages.length - 1 ? currentResponse : renderMessageWithLinks(message.message)}
-                            </div>
-                        );
-                    }
-                })}
+                {user && (
+                    messages.map((message, index) => {
+                        const isLastMessage = index === messages.length - 1;
+                        const messageContent = message.type === 0
+                            ? <div key={index} className={style.your_message}>{message.message}</div>
+                            : <div key={index} className={style.chat_message}>
+                                {isTyping && isLastMessage ? currentResponse : renderMessageWithLinks(message.message)}
+                            </div>;
+
+                        return messageContent;
+                    })
+                )}
+
             </div>
         </Dialog>
     );

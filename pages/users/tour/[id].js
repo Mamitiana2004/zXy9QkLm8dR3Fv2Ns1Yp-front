@@ -228,12 +228,11 @@ export default function InfoTour() {
             </div>
             <TripModal
                 id={voyage.id}
-                description={`Résérvation de voyage ${voyage.nom} à ${voyage.artisanat}`}
-                artisanat={voyage.artisanat}
-                images={voyage.images > 0 && voyage.images[0]}
-
+                description={`Résérvation de voyage ${voyage.nom_voyage} à ${voyage.tour_operateur.nom_operateur}`}
+                tour={voyage.tour_operateur.nom_operateur}
+                nom_voyage={voyage.nom_voyage}
+                images={voyage.images_voyage}
                 visible={bookingVisible}
-
                 onHide={() => setBookingVisible(false)}
             />
         </>

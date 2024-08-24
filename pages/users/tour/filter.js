@@ -29,14 +29,52 @@ export default function Trip() {
             .then(res => res.json())
             .then(data => {
                 setAll_voyages(data);
-                setFilteredVoyages(data); // Par défaut, on montre tous les voyages
+                setFilteredVoyages(data);
             })
             .catch(error => console.log(error));
     }, []);
 
     useEffect(() => {
+        const filterVoyages = () => {
+            let filtered = all_voyages;
+
+            if (budgetFilters.length > 0) {
+                filtered = filtered.filter(voyage => {
+                    const price = parseFloat(voyage.prix_voyage);
+                    return budgetFilters.some(filter => {
+                        switch (filter) {
+                            case 'less_than_50': return price < 50;
+                            case '50_to_100': return price >= 50 && price <= 100;
+                            case '100_to_150': return price >= 100 && price <= 150;
+                            case '150_to_200': return price >= 150 && price <= 200;
+                            case '200_to_250': return price >= 200 && price <= 250;
+                            case '250_to_300': return price >= 250 && price <= 300;
+                            case 'more_than_300': return price > 300;
+                            default: return true;
+                        }
+                    });
+                });
+            }
+
+            if (durationFilters.length > 0) {
+                filtered = filtered.filter(voyage => {
+                    const days = (new Date(voyage.date_fin) - new Date(voyage.date_debut)) / (1000 * 60 * 60 * 24);
+                    return durationFilters.some(filter => {
+                        switch (filter) {
+                            case 'less_than_3': return days < 3;
+                            case 'less_than_7': return days < 7;
+                            case 'more_than_7': return days > 7;
+                            case 'more_than_14': return days > 14;
+                            default: return true;
+                        }
+                    });
+                });
+            }
+
+            setFilteredVoyages(filtered);
+        };
         filterVoyages();
-    }, [budgetFilters, durationFilters]);
+    }, [all_voyages, budgetFilters, durationFilters]);
 
     const handleBudgetChange = (budgetRange) => {
         setBudgetFilters(prevFilters => {
@@ -58,44 +96,7 @@ export default function Trip() {
         });
     };
 
-    const filterVoyages = () => {
-        let filtered = all_voyages;
 
-        if (budgetFilters.length > 0) {
-            filtered = filtered.filter(voyage => {
-                const price = parseFloat(voyage.prix_voyage);
-                return budgetFilters.some(filter => {
-                    switch (filter) {
-                        case 'less_than_50': return price < 50;
-                        case '50_to_100': return price >= 50 && price <= 100;
-                        case '100_to_150': return price >= 100 && price <= 150;
-                        case '150_to_200': return price >= 150 && price <= 200;
-                        case '200_to_250': return price >= 200 && price <= 250;
-                        case '250_to_300': return price >= 250 && price <= 300;
-                        case 'more_than_300': return price > 300;
-                        default: return true;
-                    }
-                });
-            });
-        }
-
-        if (durationFilters.length > 0) {
-            filtered = filtered.filter(voyage => {
-                const days = (new Date(voyage.date_fin) - new Date(voyage.date_debut)) / (1000 * 60 * 60 * 24);
-                return durationFilters.some(filter => {
-                    switch (filter) {
-                        case 'less_than_3': return days < 3;
-                        case 'less_than_7': return days < 7;
-                        case 'more_than_7': return days > 7;
-                        case 'more_than_14': return days > 14;
-                        default: return true;
-                    }
-                });
-            });
-        }
-
-        setFilteredVoyages(filtered);
-    };
 
     const itemTemplate = (voyage) => (
         <TripCard
@@ -138,32 +139,81 @@ export default function Trip() {
                             <span className={styleDropdown.title}>Budget</span>
                             <div className={styleDropdown.listCheck}>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleBudgetChange('less_than_50')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>Less than 50$</span>
+                                    <input
+                                        type='checkbox'
+                                        id='less_than_50'
+                                        onChange={() => handleBudgetChange('less_than_50')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='less_than_50' className={styleDropdown.checkbox_label}>
+                                        Less than 50$
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleBudgetChange('50_to_100')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>50 to 100$</span>
+                                    <input
+                                        type='checkbox'
+                                        id='50_to_100'
+                                        onChange={() => handleBudgetChange('50_to_100')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='50_to_100' className={styleDropdown.checkbox_label}>
+                                        50 to 100$
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleBudgetChange('100_to_150')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>100 to 150$</span>
+                                    <input
+                                        type='checkbox'
+                                        id='100_to_150'
+                                        onChange={() => handleBudgetChange('100_to_150')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='100_to_150' className={styleDropdown.checkbox_label}>
+                                        100 to 150$
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleBudgetChange('150_to_200')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>150 to 200$</span>
+                                    <input
+                                        type='checkbox'
+                                        id='150_to_200'
+                                        onChange={() => handleBudgetChange('150_to_200')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='150_to_200' className={styleDropdown.checkbox_label}>
+                                        150 to 200$
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleBudgetChange('200_to_250')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>200 to 250$</span>
+                                    <input
+                                        type='checkbox'
+                                        id='200_to_250'
+                                        onChange={() => handleBudgetChange('200_to_250')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='200_to_250' className={styleDropdown.checkbox_label}>
+                                        200 to 250$
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleBudgetChange('250_to_300')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>250 to 300$</span>
+                                    <input
+                                        type='checkbox'
+                                        id='250_to_300'
+                                        onChange={() => handleBudgetChange('250_to_300')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='250_to_300' className={styleDropdown.checkbox_label}>
+                                        250 to 300$
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleBudgetChange('more_than_300')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>More than 300$</span>
+                                    <input
+                                        type='checkbox'
+                                        id='more_than_300'
+                                        onChange={() => handleBudgetChange('more_than_300')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='more_than_300' className={styleDropdown.checkbox_label}>
+                                        More than 300$
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -171,23 +221,52 @@ export default function Trip() {
                             <span className={styleDropdown.title}>Trip duration</span>
                             <div className={styleDropdown.listCheck}>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleDurationChange('less_than_3')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>Less than 3 days</span>
+                                    <input
+                                        type='checkbox'
+                                        id='less_than_3'
+                                        onChange={() => handleDurationChange('less_than_3')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='less_than_3' className={styleDropdown.checkbox_label}>
+                                        Less than 3 days
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleDurationChange('less_than_7')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>Less than 7 days</span>
+                                    <input
+                                        type='checkbox'
+                                        id='less_than_7'
+                                        onChange={() => handleDurationChange('less_than_7')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='less_than_7' className={styleDropdown.checkbox_label}>
+                                        Less than 7 days
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleDurationChange('more_than_7')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>More than 1 week</span>
+                                    <input
+                                        type='checkbox'
+                                        id='more_than_7'
+                                        onChange={() => handleDurationChange('more_than_7')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='more_than_7' className={styleDropdown.checkbox_label}>
+                                        More than 1 week
+                                    </label>
                                 </div>
                                 <div className={styleDropdown.checkbox_container}>
-                                    <input type='checkbox' onChange={() => handleDurationChange('more_than_14')} className={styleDropdown.checkbox} />
-                                    <span className={styleDropdown.checkbox_label}>More than 2 weeks</span>
+                                    <input
+                                        type='checkbox'
+                                        id='more_than_14'
+                                        onChange={() => handleDurationChange('more_than_14')}
+                                        className={styleDropdown.checkbox}
+                                    />
+                                    <label htmlFor='more_than_14' className={styleDropdown.checkbox_label}>
+                                        More than 2 weeks
+                                    </label>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     <div className={style.filter_right}>
                         <DataView
