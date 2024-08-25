@@ -21,7 +21,7 @@ export default function Verify() {
     const toast = useRef(null);
     const [timer, setTimer] = useState(0);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [isSubmitDisabled, setSubmitDisabled] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
     const [locate, setLocate] = useState();
 
@@ -218,10 +218,9 @@ export default function Verify() {
 
     const handleSubmit = async () => {
         setSubmitDisabled(true);
-
+        setIsInputDisabled(true);
         const email = localStorage.getItem("email_etablissement");
 
-        console.log(code, email);
         try {
             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/verify-code/`, {
                 method: 'POST',
@@ -232,7 +231,7 @@ export default function Verify() {
             });
 
             const data = await response.json();
-            console.log(data);
+
             if (response.ok) {
                 toast.current.show({
                     severity: 'success',
@@ -251,6 +250,8 @@ export default function Verify() {
                     life: 3000
                 });
                 setTimeout(() => {
+                    setIsInputDisabled(false);
+
                     setSubmitDisabled(false);
                 }, 3000);
             }
@@ -261,6 +262,8 @@ export default function Verify() {
                 detail: 'An error occurred: ' + error.message,
                 life: 3000
             }); setTimeout(() => {
+                setIsInputDisabled(false);
+
                 setSubmitDisabled(false);
             }, 3000);
         }
@@ -306,21 +309,15 @@ export default function Verify() {
         setTimer(30);
     }
 
-
-
     const tapeCode = (e) => {
         setCode(e.value);
-        if (code) {
-            if (code.length >= 6) {
-                const verify_code = handleSubmit();
-                if (verify_code) {
-                    setIsInputDisabled(true);
-                    // router.push("/users/register/create-account")
-                } else (console.error(verify_code))
-            }
+        if (e.value.length >= 6) {
+            setSubmitDisabled(false);
+        }
+        if (e.value.length < 6) {
+            setSubmitDisabled(true);
         }
     }
-
 
 
 
