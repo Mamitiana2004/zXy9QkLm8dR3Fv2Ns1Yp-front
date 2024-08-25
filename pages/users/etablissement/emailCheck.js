@@ -13,6 +13,7 @@ import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import WaitSpinner from '@/components/WaitSpinner';
 
 
 export default function Verify() {
@@ -301,7 +302,7 @@ export default function Verify() {
                     </div>
 
                     <span className={style.timer}>{timer == 0 ? "" : `Please wait ${timer} seconds before resending.`}</span>
-
+                    <WaitSpinner visible={true} />
                     <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
             </div>
