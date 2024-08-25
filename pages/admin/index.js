@@ -267,7 +267,7 @@ export default function DashBoard() {
     }
 
 
-    /*useEffect(() => {
+    useEffect(() => {
 
         if (user == null) {
             router.push("/admin/login");
@@ -279,7 +279,7 @@ export default function DashBoard() {
                     setUser(null)
                 }
             })
-    }, [router, setUser, user])*/
+    }, [router, setUser, user])
 
     useEffect(() => {
         const dataAccomodationLine = {
