@@ -10,11 +10,13 @@ import { useRouter } from "next/router";
 import UrlConfig from "@/util/config";
 import { Toast } from "primereact/toast";
 import { getCsrfTokenDirect } from "@/util/csrf";
+import WaitSpinner from "@/components/WaitSpinner";
 
 export default function AddEmail() {
 
     const router = useRouter();
     const [email, setEmail] = useState("");
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
     const toast = useRef(null);
 
     const checkEmail = (email) => {
@@ -46,6 +48,7 @@ export default function AddEmail() {
     };
     const registerEmail = (e) => {
         e.preventDefault();
+        setIsSpinnerVisible(true);
         checkEmail(email).then((verification) => {
             if (verification) {
                 toast.current.show({
@@ -61,6 +64,8 @@ export default function AddEmail() {
                 }, 4000);
 
             } else {
+                setIsSpinnerVisible(false);
+
                 toast.current.show({
                     severity: "error",
                     summary: "Error",
@@ -84,7 +89,7 @@ export default function AddEmail() {
 
 
     return (
-        <>
+        <>  <WaitSpinner visible={isSpinnerVisible} />
             <div className={style.container}>
                 <div className={style.left_container}>
                     <Image alt="logo" src="/images/logo-aftrip.png" />
@@ -122,6 +127,8 @@ export default function AddEmail() {
                     </form>
                 </div>
             </div>
+
+
             <Toast ref={toast} />
         </>
     )

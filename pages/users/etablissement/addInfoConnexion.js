@@ -15,9 +15,11 @@ import stylePassword from '@/style/components/PasswordInput.module.css';
 import { Password } from "primereact/password";
 import { Toast } from 'primereact/toast';
 import { getCsrfTokenDirect } from "@/util/csrf";
+import WaitSpinner from "@/components/WaitSpinner";
 
 export default function AddInfoConnexion() {
     const toast = useRef(null);
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
 
     const [password, setPassword] = useState();
     const passwordInput = useRef(null);
@@ -52,8 +54,11 @@ export default function AddInfoConnexion() {
                 life: 3000,
             });
             canSendData = false;
+            return;
         }
         if (password.length < 8 || password.trim() == "") {
+            setIsSpinnerVisible(true);
+
             passwordInput.current.className = style.form_input_erreur;
             setPasswordErreur("Password required");
             toast.current.show({
@@ -83,6 +88,12 @@ export default function AddInfoConnexion() {
                 life: 3000,
             });
             LoadData();
+        } else {
+            setTimeout(() => {
+                setIsSpinnerVisible(false);
+            }, 1000);
+
+
         }
 
     }
@@ -186,7 +197,7 @@ export default function AddInfoConnexion() {
     )
     return (
         <div className={style.container}>
-
+            <WaitSpinner visible={isSpinnerVisible} />
             <div className={style.left_container}>
                 <Image alt="logo" src="/images/logo-aftrip.png" />
                 <Stepper activeStep={3} linear className={style.stepper}>
