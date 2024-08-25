@@ -276,7 +276,7 @@ export default function Verify() {
         <>
             <div className={style.container}>
                 <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png" width={100} height={50} />
+                    <Image alt="logo" src="/images/logo-aftrip.png" width={100} />
                     <Stepper activeStep={3} linear className={style.stepper}>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
@@ -302,7 +302,7 @@ export default function Verify() {
                     </div>
 
                     <span className={style.timer}>{timer == 0 ? "" : `Please wait ${timer} seconds before resending.`}</span>
-                    <WaitSpinner visible={true} />
+                    <WaitSpinner visible={false} />
                     <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
             </div>
