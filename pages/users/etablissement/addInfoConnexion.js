@@ -44,17 +44,44 @@ export default function AddInfoConnexion() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let canSendData = true;
+        if (!password) {
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Password required',
+                life: 3000,
+            });
+            canSendData = false;
+        }
         if (password.length < 8 || password.trim() == "") {
             passwordInput.current.className = style.form_input_erreur;
             setPasswordErreur("Password required");
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Strong password required',
+                life: 3000,
+            });
             canSendData = false;
         }
         if (confPassword != password) {
             confPasswordInput.current.className = style.form_input_erreur;
             setConfPasswordErreur("Password does not match");
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Password does not match',
+                life: 3000,
+            });
             canSendData = false;
         }
         if (canSendData) {
+            toast.current.show({
+                severity: 'info',
+                summary: 'Info',
+                detail: 'Please wait',
+                life: 3000,
+            });
             LoadData();
         }
 
