@@ -78,7 +78,7 @@ export default function Accommodation() {
         if (!accessToken) {
             accessToken = getNewAdminAccess();
         }
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/deleted/`, {
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/list/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -195,6 +195,9 @@ export default function Accommodation() {
 
     const typeBodyTemplate = (item) => {
         return <span>{getTypeAccommodation(item.type_hebergement).type_name}</span>
+    }
+    const commissionTemplate = (item) => {
+        return <span>{item.taux_commission} %</span>
     }
 
     const starBodyTemplate = (item) => {
@@ -401,12 +404,13 @@ export default function Accommodation() {
                     onSelectionChange={(e) => setAccommodationSelected(e.value)}
                 >
                     <Column selectionMode="multiple" exportable={false} />
-                    <Column sortable field="id" header="ID" exportable={false} />
+                    {/* <Column sortable field="id" header="ID" exportable={false} /> */}
                     <Column sortable filter filterPlaceholder="Search by name" field="nom_hebergement" header="Name" />
                     <Column body={imageBodyTemplate} header="Image" />
                     <Column body={typeBodyTemplate} header="Type" />
-                    <Column sortable filter filterField="nombre_etoile_hebergement" dataType="numeric" field="nombre_etoile_hebergement" body={starBodyTemplate} header="Stars" />
+                    <Column filter filterField="nombre_etoile_hebergement" dataType="numeric" field="nombre_etoile_hebergement" body={starBodyTemplate} header="Stars" />
                     <Column dataType="numeric" filter filterField="prix_min_chambre" sortable field="prix_min_chambre" header="Price Min" />
+                    <Column dataType="numeric" filter filterField="taux_commission" sortable body={commissionTemplate} header="Commission" />
                     <Column body={actionBodyTemplate} exportable={false} />
                 </DataTable>
             </div>

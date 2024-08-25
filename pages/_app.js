@@ -76,8 +76,8 @@ function MyApp({ Component, pageProps }) {
                     <ResponsableLayoutProvider>
                         <ResponsableLayout>
                             {loading && <Loader />}
-                            <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
-                            <ChatBot visible={visible} onHide={() => setVisible(false)} />
+                            {/* <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
+                            <ChatBot visible={visible} onHide={() => setVisible(false)} /> */}
                             <Component {...pageProps} />
                         </ResponsableLayout>
                     </ResponsableLayoutProvider>

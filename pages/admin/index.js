@@ -13,6 +13,7 @@ import { Calendar } from "primereact/calendar";
 import { useRouter } from "next/router";
 import { SelectButton } from "primereact/selectbutton";
 import { Tag } from "primereact/tag";
+import UrlConfig from "@/util/config";
 
 export default function DashBoard() {
     const [staticData, setStaticData] = useState(false);
@@ -35,6 +36,10 @@ export default function DashBoard() {
     const [lineAccomodationData, setLineAccomodationData] = useState({});
     const [lineHandcraftData, setLineHandcraftData] = useState({});
 
+    const [lastWeekStats, setLastWeekStats] = useState({});
+    const [lastMonthStats, setLastMonthStats] = useState({});
+    const [currentSiteStats, setCurrentSiteStats] = useState({});
+
     // Weekly data
     const [TourData, setTourData] = useState([]);
     const [AccomodationData, setAccomodationData] = useState([]);
@@ -49,6 +54,7 @@ export default function DashBoard() {
     // États pour les récentes réservations
     const [recentTourBooking, setRecentTourBooking] = useState([]);
     const [currentMonth, setCurrentMonth] = useState(['January', 'February', 'March', 'April', 'May', 'June', 'July']);
+    const [currentWeek, setCurrentWeek] = useState(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
     const [recentAccomodationBooking, setRecentAccomodationBooking] = useState([]);
     const [recentHandcraftBooking, setRecentHandcraftBooking] = useState([]);
     const [nbAccomodations, setNbAccomodation] = useState();
@@ -56,20 +62,137 @@ export default function DashBoard() {
     const [nbTour, setNbTour] = useState();
 
     const [recentBooking, setRecentBooking] = useState([]);
+
+    useEffect(() => {
+
+        const getStatsData = async () => {
+            let accessToken = await getAccessAdmin();
+
+            if (!accessToken) {
+                accessToken = getNewAdminAccess();
+            }
+            fetch(`${UrlConfig.apiBaseUrl}/api/stats-counts/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    setCurrentSiteStats(data);
+
+                    setNbAccomodation(data.nombre_hebergement);
+                    setNbHandcraft(data.nombre_artisanat);
+                    setNbTour(data.nombre_tour_operateur);
+
+
+                })
+                .catch(error => {
+                    toast.current.show({
+                        severity: 'error',
+                        summary: 'Erreur',
+                        detail: 'Data error: ' + error.message,
+                        life: 3000
+                    });
+                })
+        };
+        const getWeeklyData = async () => {
+            let accessToken = await getAccessAdmin();
+
+            if (!accessToken) {
+                accessToken = getNewAdminAccess();
+            }
+            fetch(`${UrlConfig.apiBaseUrl}/api/week-stats/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    setLastWeekStats(data);
+                    setTourData(data.reservations_voyages);
+                    setAccomodationData(data.reservations_hebergement);
+                    setHandcraftData(data.achats_produits_artisanaux);
+                    setCurrentWeek(data.derniers_jours);
+
+                })
+                .catch(error => {
+                    toast.current.show({
+                        severity: 'error',
+                        summary: 'Erreur',
+                        detail: 'Data error: ' + error.message,
+                        life: 3000
+                    });
+                })
+        };
+        const getMonthlyData = async () => {
+            let accessToken = await getAccessAdmin();
+
+            if (!accessToken) {
+                accessToken = getNewAdminAccess();
+            }
+            fetch(`${UrlConfig.apiBaseUrl}/api/monthly-stats/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    setLastMonthStats(data);
+
+                    setMonthlyTourData(data.reservations_voyages);
+                    setMonthlyAccomodationData(data.reservations_hebergement);
+                    setMonthlyHandcraftData(data.achats_produits_artisanaux);
+                    setCurrentMonth(data.derniers_mois);
+
+
+                })
+                .catch(error => {
+                    toast.current.show({
+                        severity: 'error',
+                        summary: 'Erreur',
+                        detail: 'Data error: ' + error.message,
+                        life: 3000
+                    });
+                })
+        };
+        getMonthlyData();
+        getWeeklyData();
+        getStatsData();
+    }, []);
     const switchDataShowed = () => {
         if (!staticData) {
             loadStaticData();
         } else {
             loadDynamicData();
         }
-
     }
     const loadStaticData = () => {
         setStaticData(true)
         setTourData([45, 72, 53, 91, 62, 80, 39]);
         setAccomodationData([35, 67, 59, 82, 48, 93, 50]);
         setHandcraftData([52, 78, 61, 90, 40, 84, 46]);
-
+        setCurrentWeek(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
         // Données mensuelles statiques
         setMonthlyTourData([120, 50, 80, 100, 90, 110, 130]);
         setMonthlyAccomodationData([110, 140, 190, 150, 170, 160, 140]);
@@ -115,14 +238,17 @@ export default function DashBoard() {
         setStaticData(false)
 
         // Données hebdomadaire dynamique
-        setTourData([]);
-        setAccomodationData([]);
-        setHandcraftData([]);
+        setTourData(lastWeekStats.reservations_voyages);
+        setAccomodationData(lastWeekStats.reservations_hebergement);
+        setHandcraftData(lastWeekStats.achats_produits_artisanaux);
+        setCurrentWeek(lastWeekStats.derniers_jours);
 
         // Données mensuelles dynamique
-        setMonthlyTourData([]);
-        setMonthlyAccomodationData([]);
-        setMonthlyHandcraftData([]);
+
+        setMonthlyTourData(lastMonthStats.reservations_voyages);
+        setMonthlyAccomodationData(lastMonthStats.reservations_hebergement);
+        setMonthlyHandcraftData(lastMonthStats.achats_produits_artisanaux);
+        setCurrentMonth(lastMonthStats.derniers_mois);
 
         // reservationRecent
         setRecentBooking([])
@@ -133,12 +259,13 @@ export default function DashBoard() {
         setRecentHandcraftBooking([]);
 
 
-        setNbAccomodation(0);
-        setNbHandcraft(0);
-        setNbTour(0);
+        setNbAccomodation(currentSiteStats.nombre_hebergement);
+        setNbHandcraft(currentSiteStats.nombre_artisanat);
+        setNbTour(currentSiteStats.nombre_tour_operateur);
     }
 
-    useEffect(() => {
+
+    /*useEffect(() => {
 
         if (user == null) {
             router.push("/admin/login");
@@ -150,11 +277,11 @@ export default function DashBoard() {
                     setUser(null)
                 }
             })
-    }, [router, setUser, user])
+    }, [router, setUser, user])*/
 
     useEffect(() => {
         const dataAccomodationLine = {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: currentWeek,
             datasets: [
                 {
                     label: "Reservation Hebergement",
@@ -168,7 +295,7 @@ export default function DashBoard() {
         };
 
         const dataTourLine = {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: currentWeek,
             datasets: [
                 {
                     label: "Reservation Tour",
@@ -182,7 +309,7 @@ export default function DashBoard() {
         };
 
         const dataHandCraftLine = {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: currentWeek,
             datasets: [
                 {
                     label: "Achat Handcraft",
@@ -233,7 +360,7 @@ export default function DashBoard() {
         setLineAccomodationData(dataAccomodationLine);
         setLineHandcraftData(dataHandCraftLine);
         setLineOptions(optionsLine);
-    }, [AccomodationData, HandcraftData, TourData])
+    }, [AccomodationData, HandcraftData, TourData, currentWeek])
 
 
     useEffect(() => {
@@ -374,18 +501,23 @@ export default function DashBoard() {
             <div className={style.container}>
                 <div className={style.left_container}>
                     <div className={style.detail_dashboard}>
+                        <h2>Entities chart</h2>
                         {/* <span className={style.detail_dashboard_title}>Booking state</span> */}
-                        <div className={style.card}>
+                        <div className={style.card1}>
+
                             <Chart type="line" data={chartData} options={chartOptions} />
                         </div>
                     </div>
 
+                    <h2 className={style.stateDetailsTitle}>State details</h2>
                     <div className={style.card}>
                         <Chart type="line" data={lineAccomodationData} options={lineOptions} />
                         <Chart type="line" data={lineHandcraftData} options={lineOptions} />
                         <Chart type="line" data={lineTourData} options={lineOptions} />
                     </div>
-                    <div className={style.detail_dashboard}>
+
+                    <h2 className={style.transactionTitle}>Latest transaction</h2>
+                    <div className={style.detail_transaction}>
                         {/* <span className={style.detail_dashboard_title}>Latest Transactions</span> */}
                         <div className={style.card}>
                             <DataTable value={recentBooking}>
@@ -401,8 +533,14 @@ export default function DashBoard() {
 
                 </div>
                 <div className={style.right_container}>
+                    <h2>Calendar</h2>
 
-                    <div className={style.card}>
+                    <div className={style.calendar_container}>
+                        <Calendar inline showWeek className={style.custom_calendar} />
+                    </div>
+
+                    <h2>Recent bookings</h2>
+                    <div className={style.card2}>
                         <span className={style.centered_title}>
                             <SelectButton
                                 value={value}
@@ -419,10 +557,11 @@ export default function DashBoard() {
                             <Column field="id" body={bodyTag} header="$" />
                         </DataTable>
                     </div>
-                    <Calendar inline showWeek />
-                    <div className={style.detail_dashboard}>
+
+                    <h2 className={style.attribution}>Attributions</h2>
+                    <div className={style.detail_transaction}>
                         {/* <span className={style.detail_dashboard_title}>Latest Transactions</span> */}
-                        <div className={style.card}>
+                        <div className={style.card3}>
                             <DataTable value={recentBooking}>
                                 <Column field="id" header="No" />
                                 <Column field="name" header="Name" />
