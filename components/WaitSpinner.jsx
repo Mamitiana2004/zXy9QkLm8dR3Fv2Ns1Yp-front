@@ -9,9 +9,9 @@ export default function WaitSpinner(props) {
             <div className={style.container}>
                 <div className={style.couverture}></div>
                 <ProgressSpinner
-                    style={{ width: '50px', height: '50px' }}
+                    style={{ width: '150px', height: '150px' }}
                     className={style.spinner}
-                    strokeWidth="8"
+                    // strokeWidth="8"
                     fill="var(--surface-ground)"
                     animationDuration="1s"
                 />
