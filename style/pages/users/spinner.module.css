@@ -1,0 +1,26 @@
+.container {
+    position: fixed;
+    z-index: 1000;
+    width: 20rem;
+    height: 20rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.couverture {
+    position: fixed;
+    z-index: 400;
+    width: 70rem;
+    height: 30rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3055556e;
+    border-radius: 6px;
+}
+
+.spinner {
+    z-index: 1000;
+}
