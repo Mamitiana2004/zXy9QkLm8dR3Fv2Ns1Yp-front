@@ -46,6 +46,7 @@ export default function AddInfoConnexion() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let canSendData = true;
+       
         if (!password) {
             toast.current.show({
                 severity: 'error',
@@ -56,8 +57,9 @@ export default function AddInfoConnexion() {
             canSendData = false;
             return;
         }
+        setIsSpinnerVisible(true);
         if (password.length < 8 || password.trim() == "") {
-            setIsSpinnerVisible(true);
+          
 
             passwordInput.current.className = style.form_input_erreur;
             setPasswordErreur("Password required");
