@@ -1,6 +1,6 @@
 import AdminLayoutContext from "@/layouts/context/adminLayoutContext"
 import { getAccessAdmin, getNewAdminAccess } from "@/util/Cookies";
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 
 import Head from "next/head";
 import style from '@/style/pages/admin/dahsboard.module.css'
@@ -14,9 +14,11 @@ import { useRouter } from "next/router";
 import { SelectButton } from "primereact/selectbutton";
 import { Tag } from "primereact/tag";
 import UrlConfig from "@/util/config";
+import { Toast } from "primereact/toast";
 
 export default function DashBoard() {
     const [staticData, setStaticData] = useState(false);
+    const toast = useRef(null);
 
     const { user, setUser } = useContext(AdminLayoutContext);
     const [chartData, setChartData] = useState({});
@@ -575,7 +577,7 @@ export default function DashBoard() {
                 </div>
             </div>
 
-
+            <Toast ref={toast} />
         </>
     )
 }
