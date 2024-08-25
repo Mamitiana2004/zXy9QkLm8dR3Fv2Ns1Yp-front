@@ -13,6 +13,7 @@ import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import WaitSpinner from '@/components/WaitSpinner';
 
 
 export default function Verify() {
@@ -21,9 +22,10 @@ export default function Verify() {
     const toast = useRef(null);
     const [timer, setTimer] = useState(0);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [isSubmitDisabled, setSubmitDisabled] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
     const [locate, setLocate] = useState();
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
 
     const [email, setEmail] = useState("");
     const [code, setCode] = useState();
@@ -81,6 +83,8 @@ export default function Verify() {
             })
             .catch(error => {
                 console.error('Error:', error);
+                setIsSpinnerVisible(false);
+
                 return false;
 
             });
@@ -110,6 +114,7 @@ export default function Verify() {
             return data_1;
         } catch (error) {
             console.error("Erreur de requête:", error);
+            setIsSpinnerVisible(false);
             return false;
         }
     }
@@ -125,6 +130,7 @@ export default function Verify() {
         localStorage.removeItem("email_etablissement");
 
         setTimeout(() => {
+            setIsSpinnerVisible(false);
             router.push('/users/etablissement/tour/addImage');
         }, 3000);
 
@@ -168,6 +174,8 @@ export default function Verify() {
                                     CreateLocation(locate_data);
 
                                 } else {
+                                    setIsSpinnerVisible(false);
+
                                     toast.current.show({
                                         severity: "error",
                                         summary: "Error",
@@ -216,6 +224,8 @@ export default function Verify() {
 
     const handleSubmit = async () => {
         setSubmitDisabled(true);
+        setIsInputDisabled(true);
+        setIsSpinnerVisible(true);
 
         const email = localStorage.getItem("email_etablissement");
 
@@ -246,11 +256,13 @@ export default function Verify() {
                     severity: 'error',
                     summary: 'Error',
                     detail: data.error || 'Verification code is incorrect',
-                    life: 3000
+                    life: 5000
                 });
                 setTimeout(() => {
+                    setIsInputDisabled(false);
+                    setIsSpinnerVisible(false);
                     setSubmitDisabled(false);
-                }, 3000);
+                }, 5000);
             }
         } catch (error) {
             toast.current.show({
@@ -260,6 +272,7 @@ export default function Verify() {
                 life: 3000
             }); setTimeout(() => {
                 setSubmitDisabled(false);
+                setIsInputDisabled(false);
             }, 3000);
         }
     };
@@ -305,20 +318,15 @@ export default function Verify() {
     }
 
 
-
     const tapeCode = (e) => {
         setCode(e.value);
-        if (code) {
-            if (code.length >= 6) {
-                const verify_code = handleSubmit();
-                if (verify_code) {
-                    setIsInputDisabled(true);
-                    // router.push("/users/register/create-account")
-                } else (console.error(verify_code))
-            }
+        if (e.value.length >= 6) {
+            setSubmitDisabled(false);
+        }
+        if (e.value.length < 6) {
+            setSubmitDisabled(true);
         }
     }
-
 
 
 
@@ -356,6 +364,8 @@ export default function Verify() {
                     <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
             </div>
+            <WaitSpinner visible={isSpinnerVisible} />
+
             <Toast ref={toast} />
         </>
 

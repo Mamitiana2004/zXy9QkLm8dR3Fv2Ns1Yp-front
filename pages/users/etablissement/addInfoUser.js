@@ -10,13 +10,14 @@ import { useRouter } from "next/router";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
+import { Toast } from "primereact/toast";
 export default function AddInfoUser() {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [address, setAddress] = useState('');
     const [city, setCity] = useState('');
     const [contact, setContact] = useState('');
-
+    const toast = useRef(null);
     const [countryCode, setCountryCode] = useState('+261');
     const [countryOptions, setCountryOptions] = useState();
     const router = useRouter();
@@ -38,30 +39,43 @@ export default function AddInfoUser() {
         fetchCountryCodes();
     }, []);
 
+
     const saveInfoToLocalStorage = () => {
         const userInfo = {
             first_name: firstName,
             last_name: lastName,
-            username: firstName + " " + lastName,
+            username: `${firstName} ${lastName}`,
             adresse: address,
             ville: city,
-            numero_responsable: countryCode + contact
+            numero_responsable: `${countryCode}${contact}`
         };
 
-        const userInfoJson = JSON.stringify(userInfo);
+        // Validation des champs requis
+        if (!userInfo.first_name ||
+            !userInfo.last_name ||
+            !userInfo.adresse ||
+            !userInfo.ville ||
+            !contact) {
 
-        localStorage.setItem('userInfo', userInfoJson);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Veuillez remplir tous les champs',
+                life: 3000
+            });
+            return false;
+        }
 
-        console.log("Informations enregistrées dans localStorage:", userInfoJson);
-        return true
+        localStorage.setItem('userInfo', JSON.stringify(userInfo));
+        return true;
     };
+
     const addInfoUserFini = () => {
         const status = saveInfoToLocalStorage();
         if (status) {
             router.push("/users/etablissement/addLocalisation");
         }
-
-    }
+    };
 
     return (
         <div className={style.container}>
@@ -161,6 +175,7 @@ export default function AddInfoUser() {
 
 
             </div>
+            <Toast ref={toast} />
         </div>
     )
 }

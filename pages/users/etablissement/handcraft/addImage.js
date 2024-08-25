@@ -4,76 +4,168 @@ import style from './../../../../style/pages/users/etablissement/etablissement.m
 import { Stepper } from "primereact/stepper";
 import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import { Galleria } from "primereact/galleria";
 export default function AddImage() {
 
     const inputFileRef = useRef();
     const imageRef = useRef();
-    const router= useRouter();
+    const router = useRouter();
+    const inputRef = useRef(null);
+    const [fileImages, setFileImages] = useState([]);
+    const [listImage, setListImage] = useState([]);
 
-    const [imageFile,setImageFile] = useState();
-    const [imageLink,setImageLink] = useState(null);
+    const [imageFile, setImageFile] = useState();
+    const [imageLink, setImageLink] = useState(null);
+    const [images, setImages] = useState(null);
+    const responsiveOptions = [
+        {
+            breakpoint: '991px',
+            numVisible: 4
+        },
+        {
+            breakpoint: '767px',
+            numVisible: 3
+        },
+        {
+            breakpoint: '575px',
+            numVisible: 1
+        }
+    ];
 
-    const addImage = () =>{
+
+    useEffect(() => {
+        const updatedImages = fileImages.map(file => {
+            const imageUrl = URL.createObjectURL(file);
+            return {
+                itemImageSrc: imageUrl,
+                thumbnailImageSrc: imageUrl,
+                alt: file.name
+            };
+        });
+
+        setImages(updatedImages);
+    }, [fileImages]);
+
+    const itemTemplate = (item) => {
+        // return <Image src={item.itemImageSrc} alt={item.alt} style={{ width: '100%' }} />
+        return <Image src={item.itemImageSrc} className={style.selectedItem} alt={item.alt} />
+    }
+
+    const thumbnailTemplate = (item) => {
+        return <Image src={item.thumbnailImageSrc} alt={item.alt} style={{ width: '10px' }} className={style.listItems} />
+    }
+    const addImage = () => {
         inputFileRef.current.click();
     }
+    const handleClick = () => {
+        inputRef.current.click();
+    };
 
-    const handleFileUpload = () =>{
-        const files = inputFileRef.current.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-            const fileUrl=URL.createObjectURL(files[0]);
-            imageRef.current.src=fileUrl;
-            setImageFile(files[0]);
-            setImageLink(fileUrl);
-        }
-    }
 
+    const handleFileUpload = () => {
+        const files = Array.from(inputRef.current.files);
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+
+        const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
+        setListImage(prevList => [...prevList, ...newImageUrls]);
+        setFileImages(prevFiles => [...prevFiles, ...validFiles]);
+    };
     const addImageFini = () => {
         router.push("/users/etablissement/handcraft/addInfoUser")
     }
 
-    return(
+    const handleSubmitImages = async () => {
+        if (fileImages.length === 0) {
+            console.log("No images to upload");
+            return;
+        }
+        const info = JSON.parse(localStorage.getItem("responsable_info"));
+        const formData = new FormData();
+
+
+        formData.append('hebergement', info.id_etablissement);
+
+        fileImages.forEach((file, index) => {
+            formData.append(`image_${index}`, file);
+        });
+
+        try {
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api//add-hebergement-image/`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Images uploaded successfully:", data);
+                setTimeout(() => {
+                    router.push("/users/etablissement/we");
+                }, 3000);
+                setFileImages([]);
+            } else {
+                console.error("Failed to upload images:", response.statusText);
+            }
+        } catch (error) {
+            console.error("Error uploading images:", error);
+        }
+    };
+
+    return (
         <div className={style.container}>
-            
-                <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png"/>
-                    <Stepper activeStep={3}  linear className={style.stepper}>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                        <StepperPanel></StepperPanel>
-                    </Stepper>
+
+            <div className={style.left_container}>
+                <Image alt="logo" src="/images/logo-aftrip.png" />
+                <Stepper activeStep={3} linear className={style.stepper}>
+                    <StepperPanel></StepperPanel>
+                    <StepperPanel></StepperPanel>
+                    <StepperPanel></StepperPanel>
+                    <StepperPanel></StepperPanel>
+                </Stepper>
+            </div>
+            <div className={style.right_container}>
+                <div className={style.top_container}>
+                    <span className={style.top_title}>Create your etablissement account</span>
+                    <span className={style.top_subtitle}>Please some image to your accommodation</span>
                 </div>
-                <div className={style.right_container}>
-                    <div className={style.top_container}>
-                        <span className={style.top_title}>Create your etablissement account</span>
-                        <span className={style.top_subtitle}>Please some image to your accommodation</span>
-                    </div>
-                    <div className={style.image_parent}>
-                        <div onClick={addImage} className={style.image_container}>
-                            <i className="pi pi-plus"/>
-                            <span>Add image</span>
-                            <input onChange={handleFileUpload} ref={inputFileRef} type="file" style={{display:"none"}} accept="image/*" />
-                            <Image style={{display:imageLink!=null ? "block" : "none"}} src={imageLink!=null ? imageLink : "/images/logo-aftrip.png"} alt="" ref={imageRef} imageClassName={style.image}/>
-                        </div>
-                    </div>
-                    <Button onClick={addImageFini}  className="button-primary" label="Continue"/>
 
 
+                <div className={style.card}>
+
+                    <div onClick={handleClick} className={style.button_image}>
+                        <i className="pi pi-plus" />
+                        <span>Add image</span>
+                        <input
+                            ref={inputRef}
+                            onChange={handleFileUpload}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            multiple
+                        />
+                    </div> <Galleria value={images} className={style.imageContainerPrime} responsiveOptions={responsiveOptions} numVisible={5} style={{}}
+                        item={itemTemplate} thumbnail={thumbnailTemplate} />
+
                 </div>
+
+
+                <Button onClick={addImageFini} className="button-primary" label="Continue" />
+
+
+            </div>
         </div>
     )
 }
 
 AddImage.getLayout = function getLayout(page) {
-    return(
+    return (
         <>
             <Head>
                 <title>Add Image</title>
             </Head>
-            <AppTopbar/>
+            <AppTopbar />
             {page}
         </>
     )

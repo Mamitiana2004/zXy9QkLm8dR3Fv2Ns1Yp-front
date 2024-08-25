@@ -4,10 +4,11 @@ import style from './../../../../style/pages/users/etablissement/etablissement.m
 import { Stepper } from "primereact/stepper";
 import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import UrlConfig from "@/util/config";
+import { Galleria } from "primereact/galleria";
 export default function AddImage() {
     const inputFileRef = useRef();
     const router = useRouter();
@@ -17,12 +18,44 @@ export default function AddImage() {
 
     const [fileImages, setFileImages] = useState([]);
     const [listImage, setListImage] = useState([]);
+    const [images, setImages] = useState(null);
+    const responsiveOptions = [
+        {
+            breakpoint: '991px',
+            numVisible: 4
+        },
+        {
+            breakpoint: '767px',
+            numVisible: 3
+        },
+        {
+            breakpoint: '575px',
+            numVisible: 1
+        }
+    ];
 
 
-    const handleClick = () => {
-        inputRef.current.click();
-    };
+    useEffect(() => {
+        const updatedImages = fileImages.map(file => {
+            const imageUrl = URL.createObjectURL(file);
+            return {
+                itemImageSrc: imageUrl,
+                thumbnailImageSrc: imageUrl,
+                alt: file.name
+            };
+        });
 
+        setImages(updatedImages);
+    }, [fileImages]);
+
+    const itemTemplate = (item) => {
+        // return <Image src={item.itemImageSrc} alt={item.alt} style={{ width: '100%' }} />
+        return <Image src={item.itemImageSrc} className={style.selectedItem} alt={item.alt} />
+    }
+
+    const thumbnailTemplate = (item) => {
+        return <Image src={item.thumbnailImageSrc} alt={item.alt} style={{ width: '10px' }} className={style.listItems} />
+    }
 
     const handleFileUpload = () => {
         const files = Array.from(inputRef.current.files);
@@ -31,6 +64,9 @@ export default function AddImage() {
         const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
         setListImage(prevList => [...prevList, ...newImageUrls]);
         setFileImages(prevFiles => [...prevFiles, ...validFiles]);
+    };
+    const handleClick = () => {
+        inputRef.current.click();
     };
 
 
@@ -92,29 +128,26 @@ export default function AddImage() {
                     <span className={style.top_subtitle}>Please add some images to your accommodation</span>
                 </div>
 
-                <div onClick={handleClick} className={style.button_image}>
-                    <i className="pi pi-plus" />
-                    <span>Add image</span>
-                    <input
-                        ref={inputRef}
-                        onChange={handleFileUpload}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: "none" }}
-                        multiple
-                    />
+
+
+                <div className={style.card}>
+
+                    <div onClick={handleClick} className={style.button_image}>
+                        <i className="pi pi-plus" />
+                        <span>Add image</span>
+                        <input
+                            ref={inputRef}
+                            onChange={handleFileUpload}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            multiple
+                        />
+                    </div> <Galleria value={images} className={style.imageContainerPrime} responsiveOptions={responsiveOptions} numVisible={5} style={{}}
+                        item={itemTemplate} thumbnail={thumbnailTemplate} />
+
                 </div>
-                <div className={style.image_container}>
-                    {listImage.map((image, index) => (
-                        <div key={index} className={style.image_add_container}>
-                            <Image
-                                className={style.image_added}
-                                src={image}
-                                alt={`Image ${index + 1}`}
-                            />
-                        </div>
-                    ))}
-                </div>
+
 
 
                 <Button onClick={addImageFini} className="button-primary" label="Continue" />

@@ -15,9 +15,11 @@ import stylePassword from '@/style/components/PasswordInput.module.css';
 import { Password } from "primereact/password";
 import { Toast } from 'primereact/toast';
 import { getCsrfTokenDirect } from "@/util/csrf";
+import WaitSpinner from "@/components/WaitSpinner";
 
 export default function AddInfoConnexion() {
     const toast = useRef(null);
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
 
     const [password, setPassword] = useState();
     const passwordInput = useRef(null);
@@ -44,18 +46,56 @@ export default function AddInfoConnexion() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let canSendData = true;
+       
+        if (!password) {
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Password required',
+                life: 3000,
+            });
+            canSendData = false;
+            return;
+        }
+        setIsSpinnerVisible(true);
         if (password.length < 8 || password.trim() == "") {
+          
+
             passwordInput.current.className = style.form_input_erreur;
             setPasswordErreur("Password required");
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Strong password required',
+                life: 3000,
+            });
             canSendData = false;
         }
         if (confPassword != password) {
             confPasswordInput.current.className = style.form_input_erreur;
             setConfPasswordErreur("Password does not match");
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Password does not match',
+                life: 3000,
+            });
             canSendData = false;
         }
         if (canSendData) {
+            toast.current.show({
+                severity: 'info',
+                summary: 'Info',
+                detail: 'Please wait',
+                life: 3000,
+            });
             LoadData();
+        } else {
+            setTimeout(() => {
+                setIsSpinnerVisible(false);
+            }, 1000);
+
+
         }
 
     }
@@ -159,7 +199,7 @@ export default function AddInfoConnexion() {
     )
     return (
         <div className={style.container}>
-
+            <WaitSpinner visible={isSpinnerVisible} />
             <div className={style.left_container}>
                 <Image alt="logo" src="/images/logo-aftrip.png" />
                 <Stepper activeStep={3} linear className={style.stepper}>
