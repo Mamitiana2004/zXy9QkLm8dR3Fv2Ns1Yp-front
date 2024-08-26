@@ -9,10 +9,12 @@ import { Button } from "primereact/button";
 import { useRouter } from "next/router";
 import UrlConfig from "@/util/config";
 import { Galleria } from "primereact/galleria";
+import WaitSpinner from "@/components/WaitSpinner";
+import { Toast } from "primereact/toast";
 export default function AddImage() {
-    const inputFileRef = useRef();
     const router = useRouter();
-    const imageRef = useRef();
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
+    const toast = useRef(null);
 
     const inputRef = useRef(null);
 
@@ -72,8 +74,11 @@ export default function AddImage() {
 
 
     const handleSubmitImages = async () => {
+
         if (fileImages.length === 0) {
             console.log("No images to upload");
+            setIsSpinnerVisible(false);
+
             return;
         }
         const info = JSON.parse(localStorage.getItem("responsable_info"));
@@ -96,19 +101,41 @@ export default function AddImage() {
                 const data = await response.json();
                 console.log("Images uploaded successfully:", data);
                 setTimeout(() => {
+                    setIsSpinnerVisible(false);
+
                     router.push("/users/etablissement/we");
                 }, 3000);
                 setFileImages([]);
             } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: (
+                        <>
+                            {response.statusText}
+                        </>
+                    ),
+                    life: 5000
+                })
                 console.error("Failed to upload images:", response.statusText);
             }
         } catch (error) {
+            toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: (
+                    <>
+                        Error on upload images: {response.statusText}
+                    </>
+                ),
+                life: 5000
+            });
             console.error("Error uploading images:", error);
         }
     };
     const addImageFini = async () => {
+        setIsSpinnerVisible(true);
         handleSubmitImages();
-
     };
 
     return (
@@ -129,7 +156,6 @@ export default function AddImage() {
                 </div>
 
 
-
                 <div className={style.card}>
 
                     <div onClick={handleClick} className={style.button_image}>
@@ -143,15 +169,30 @@ export default function AddImage() {
                             style={{ display: "none" }}
                             multiple
                         />
-                    </div> <Galleria value={images} className={style.imageContainerPrime} responsiveOptions={responsiveOptions} numVisible={5} style={{}}
+                    </div>
+                    <Galleria value={images} className={style.imageContainerPrime} responsiveOptions={responsiveOptions} numVisible={5} style={{}}
                         item={itemTemplate} thumbnail={thumbnailTemplate} />
+
+                    <Button
+                        onClick={() => {
+                            setListImage([]);
+                            setFileImages([]);
+                            setImages([]);
+                        }}
+                        className="button-secondary"
+                        label="Reset"
+                    />
 
                 </div>
 
 
 
+
                 <Button onClick={addImageFini} className="button-primary" label="Continue" />
+                <WaitSpinner visible={isSpinnerVisible} />
+
             </div>
+            <Toast ref={toast} />
         </div>
     );
 }
