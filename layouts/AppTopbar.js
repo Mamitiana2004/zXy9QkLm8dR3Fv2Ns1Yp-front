@@ -11,7 +11,7 @@ import { Button } from 'primereact/button';
 import { Image } from 'primereact/image';
 import { Sidebar } from 'primereact/sidebar';
 import { Divider } from 'primereact/divider';
-import { removeAllAdminAccess } from '@/util/Cookies';
+import { removeAccessClient, removeAllAdminAccess } from '@/util/Cookies';
 
 export default function AppTopbar(props) {
     const { t } = useTranslation();
@@ -33,15 +33,17 @@ export default function AppTopbar(props) {
     };
 
     const logOut = () => {
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
+
         Cookies.remove("aofdimnnfiodfsnlmaiaftripacciop__");
         Cookies.remove("profile_user");
         Cookies.remove("username");
         Cookies.remove("fdsqomnnkoegnlfnoznflzaftripkfdsmorefi_");
         localStorage.removeItem('adminUser');
+
         removeAllAdminAccess();
-        router.push("/users/login");
+        removeAccessClient();
+
+        router.push("/users");
 
         setUser(null);
     };
@@ -154,15 +156,18 @@ export default function AppTopbar(props) {
                         </>
                     )}
                     {user != null && (
-                        <Link href={"/users/profil"} className={style.sidebar_profil}>
+                        <><Link href={"/users/profil"} className={style.sidebar_profil}>
                             <Avatar
                                 label={getLabelAvatar(user.username)}
                                 shape='circle'
                                 className={style.username_image}
-                                image={user.userImage}
-                            />
+                                image={user.userImage} />
                             <span>{user.username}</span>
                         </Link>
+                            <Button className={style.sidebar_link} onClick={logOut}>
+                                <span className={style.navbar_menu_item}>{t("log_out")}</span>
+                            </Button>
+                        </>
                     )}
 
 
