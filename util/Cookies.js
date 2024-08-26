@@ -100,14 +100,14 @@ const getClientAccess = async () => {
     let token = Cookies.get("accessToken");
 
     if (!token) {
-        console.log("No access token found, trying to refresh...");
+        // console.log("No access token found, trying to refresh...");
         await getNewAccess();
         token = Cookies.get("accessToken");
     }
 
     if (!token) {
-        console.error("Failed to obtain access token");
-        return;
+        // console.error("Failed to obtain access token");
+        return false;
     }
 
 
@@ -117,7 +117,7 @@ const getNewAccess = () => {
     const refreshToken = Cookies.get('refreshToken');
 
     if (!refreshToken) {
-        console.error('No refresh token found in cookies');
+        // console.error('No refresh token found in cookies');
         return Promise.reject('No refresh token found in cookies');
     }
 
@@ -144,7 +144,7 @@ const getNewAccess = () => {
             });
         })
         .catch(error => {
-            console.error('Error while refreshing access token:', error);
+            // console.error('Error while refreshing access token:', error);
         });
 };
 
@@ -249,6 +249,27 @@ function getResponsableAccessToken() {
         return null;
     });
 }
+// function getResponsableAccessToken() {
+//     const accessToken = Cookies.get('responsable_access_token');
+
+//     if (accessToken) {
+//         console.log(accessToken);
+//         return Promise.resolve(accessToken);  // Retourner une promesse résolue
+//     }
+
+//     return getNewResponsabeAccess().then(() => {
+//         const newAccessToken = Cookies.get('responsable_access_token');
+//         if (newAccessToken) {
+//             return newAccessToken;
+//         } else {
+//             console.error('Failed to retrieve new access token.');
+//             return null;
+//         }
+//     }).catch(error => {
+//         console.error(error);
+//         return null;
+//     });
+// }
 
 
 export { setTokensInCookies, getClientAccess, customLogin, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
