@@ -189,7 +189,7 @@ export default function Accommodation() {
     };
 
     const imageBodyTemplate = (item) => {
-        return <Image imageClassName={style.image_data} src={item.images[0].image} alt={item.name} />
+        return <Image imageClassName={style.image_data} src={item.images[0] ? item.images[0].image : null} alt={item.name} />
     }
 
     const typeBodyTemplate = (item) => {
