@@ -41,6 +41,22 @@ function removeAllAdminAccess() {
 
     localStorage.removeItem('adminUser');
 }
+function removeAccessClient() {
+    const accessToken = Cookies.get('accessToken');
+
+    if (accessToken) {
+        Cookies.remove('accessToken', { secure: true, sameSite: 'strict' });
+    }
+
+    const refreshToken = Cookies.get('refreshToken');
+
+    if (refreshToken) {
+        Cookies.remove('refreshToken', { secure: true, sameSite: 'strict' });
+    }
+
+    localStorage.removeItem('clientUser');
+}
+
 function getAccessAdmin() {
     const accessToken = Cookies.get('isthisanotherpaimon');
 
@@ -272,4 +288,4 @@ function getResponsableAccessToken() {
 // }
 
 
-export { setTokensInCookies, getClientAccess, customLogin, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
+export { setTokensInCookies, getClientAccess, removeAccessClient, customLogin, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
