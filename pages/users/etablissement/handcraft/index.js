@@ -258,19 +258,18 @@ export default function Handcraft() {
                                 <FloatLabel>
                                     <div className="phone-input-container" style={{ display: "flex", alignItems: "center" }}>
                                         <Dropdown
+                                        className={style.labelContact}
                                             pt={{
                                                 trigger: { style: { display: "none", width: "100%" } }
                                             }}
                                             value={countryCode}
                                             options={countryOptions}
                                             onChange={(e) => { setCountryCode(e.value); }}
-                                            style={{ width: "100px", marginRight: "15px" }}
-
                                             optionLabel="label"
                                             optionValue="value"
                                         />
                                         <FloatLabel>
-                                            <InputText
+                                            <InputText className={style.inputContact}
                                                 id="input_phone"
                                                 value={phone}
                                                 onChange={(e) => setPhone(e.target.value)}

@@ -292,19 +292,19 @@ export default function Accommodation() {
                                 <FloatLabel>
                                     <div className="phone-input-container" style={{ display: "flex", alignItems: "center" }}>
                                         <Dropdown
+                                        className={style.labelContact}
                                             pt={{
                                                 trigger: { style: { display: "none", width: "100%" } }
                                             }}
                                             value={countryCode}
                                             options={countryOptions}
                                             onChange={(e) => { setCountryCode(e.value); }}
-                                            style={{ width: "100px", marginRight: "15px" }}
 
                                             optionLabel="label"
                                             optionValue="value"
                                         />
                                         <FloatLabel>
-                                            <InputText
+                                            <InputText className={style.inputContact}
                                                 id="input_phone"
                                                 value={phone}
                                                 onChange={(e) => setPhone(e.target.value)}
@@ -331,19 +331,20 @@ export default function Accommodation() {
                             <div className={style.right_accommodation_1}>
                                 <FloatLabel>
                                     <Dropdown
+                                     className={style.labelTypeAccommondation}
                                         pt={{
-                                            trigger: { style: { display: "none" } }
+                                            trigger: { style: { display: "none"} }
                                         }}
-                                        style={{ width: "100%" }}
                                         value={accommodationType}
                                         options={options}
                                         onChange={(e) => setAccommodationType(e.value)} // Mettez à jour l'état lorsque la sélection change
                                         optionLabel="label" // Assurez-vous que l'étiquette de l'option est correctement définie
                                         optionValue="value" // Assurez-vous que la valeur de l'option est correctement définie
                                     />
-                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }} htmlFor="input_accommodation_type">
-                                        <i className="pi pi-warehouse" />
-                                        Accommodation type
+                                    <label className={style.inputTypeAcommondation}
+                                        htmlFor="input_accommodation_type">
+                                        <i className="pi pi-warehouse"/>
+                                        Type
                                     </label>
                                 </FloatLabel>
                                 <FloatLabel>
