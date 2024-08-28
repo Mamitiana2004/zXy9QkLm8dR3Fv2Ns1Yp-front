@@ -148,19 +148,18 @@ export default function AddInfoUser() {
                     </FloatLabel>
 
                     <FloatLabel>
-                        <Dropdown
+                        <Dropdown className={style.labelContactUser}
                             pt={{
                                 trigger: { style: { display: "none", width: "100%" } }
                             }}
                             value={countryCode}
                             options={countryOptions}
                             onChange={(e) => setCountryCode(e.value)}
-                            style={{ width: "100px", marginRight: "15px" }}
                             optionLabel="label"
                             optionValue="value"
                         />
                         <InputText
-                            className={style.input}
+                            className={style.inputContactUser}
                             id="input_contact"
                             value={contact}
                             onChange={(e) => setContact(e.target.value)}
