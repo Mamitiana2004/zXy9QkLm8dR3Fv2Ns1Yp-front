@@ -267,19 +267,19 @@ export default function DashBoard() {
     }
 
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (user == null) {
-            router.push("/admin/login");
-        }
-        getAccessAdmin()
-            .then((data) => {
-                if (!data) {
-                    router.push("/admin/login");
-                    setUser(null)
-                }
-            })
-    }, [router, setUser, user])
+    //     if (user == null) {
+    //         router.push("/admin/login");
+    //     }
+    //     getAccessAdmin()
+    //         .then((data) => {
+    //             if (!data) {
+    //                 router.push("/admin/login");
+    //                 setUser(null)
+    //             }
+    //         })
+    // }, [router, setUser, user])
 
     useEffect(() => {
         const dataAccomodationLine = {

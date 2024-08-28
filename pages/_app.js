@@ -38,7 +38,7 @@ function MyApp({ Component, pageProps }) {
                 }
             });
         }
-        console.log(process.env.NODE_ENV);
+
         Router.events.on("routeChangeStart", handleStart);
         Router.events.on("routeChangeComplete", handleEnd);
         Router.events.on("routeChangeError", handleEnd);
