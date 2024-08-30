@@ -11,6 +11,8 @@ import { Image } from "primereact/image";
 import { Carousel } from "primereact/carousel";
 import { Rating } from "primereact/rating";
 import { UrlConfig } from "@/util/config";
+import CarouselContinu from "@/components/CarouselContinu";
+import SwiperCarousel from "@/components/Swiper";
 export default function Home() {
 
     const { t } = useTranslation();
@@ -135,7 +137,7 @@ export default function Home() {
 
                 <div className={style.image_carousel}>
                     <div className={style.carousel}>
-                        <Carousel
+                        {/* <Carousel
                             pt={{
                                 previousButton: {
                                     style: { display: "none" }
@@ -152,7 +154,8 @@ export default function Home() {
                             numVisible={1}
                             numScroll={1}
                             autoplayInterval={3000}
-                        />
+                        /> */}
+                        <SwiperCarousel />
 
                     </div>
                     <div className={style.image_filter}>
@@ -167,6 +170,7 @@ export default function Home() {
                     <div className={style.suggestion_item_container}>
                         {
                             suggestions.hebergements && suggestions.hebergements.map((suggestion, index) => {
+                                console.log(suggestions.hebergements);
                                 return (
                                     <CardSuggestion
                                         key={index}

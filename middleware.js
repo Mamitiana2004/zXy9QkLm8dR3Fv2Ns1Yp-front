@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 
 
 export function middleware(req) {
-    console.log('Middleware is running for:', req.nextUrl.pathname);
 
     const token = req.cookies.get('yesthisisanotherpaimon');
 

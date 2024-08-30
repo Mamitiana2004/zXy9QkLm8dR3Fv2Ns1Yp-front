@@ -17,6 +17,7 @@ import ChatBot from "@/components/ChatBot";
 import { NavigationProvider } from "@/layouts/context/navigation";
 import AdminLayout from "@/layouts/admin/AdminLayout";
 import AdminLayoutContext, { AdminLayoutProvider } from "@/layouts/context/adminLayoutContext";
+import { LocationProvider } from "@/layouts/context/locationContext";
 const Loader = dynamic(() => import('@/layouts/Loader'), { ssr: false });
 
 
@@ -92,12 +93,14 @@ function MyApp({ Component, pageProps }) {
             <PrimeReactProvider>
                 <NavigationProvider>
                     <ResponsableLayoutProvider>
-                        <LayoutProvider>
-                            {loading && <Loader />}
-                            <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
-                            <ChatBot visible={visible} onHide={() => setVisible(false)} />
-                            {Component.getLayout(<Component {...pageProps} />)}
-                        </LayoutProvider>
+                        <LocationProvider>
+                            <LayoutProvider>
+                                {loading && <Loader />}
+                                <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
+                                <ChatBot visible={visible} onHide={() => setVisible(false)} />
+                                {Component.getLayout(<Component {...pageProps} />)}
+                            </LayoutProvider>
+                        </LocationProvider>
                     </ResponsableLayoutProvider>
                 </NavigationProvider>
             </PrimeReactProvider>
@@ -107,12 +110,15 @@ function MyApp({ Component, pageProps }) {
         return (
             <PrimeReactProvider>
                 <LayoutProvider>
-                    {loading && <Loader />}
-                    <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
-                    <ChatBot visible={visible} onHide={() => setVisible(false)} />
-                    <Layout>
-                        <Component {...pageProps} />
-                    </Layout>
+                    <LocationProvider>
+                        {loading && <Loader />}
+                        <Button onClick={() => setVisible(true)} className="chat_bot_btn" icon="pi pi-comment" />
+                        <ChatBot visible={visible} onHide={() => setVisible(false)} />
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
+                    </LocationProvider>
+
                 </LayoutProvider>
             </PrimeReactProvider>
         );

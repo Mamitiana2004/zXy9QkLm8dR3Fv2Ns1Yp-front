@@ -2,6 +2,14 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/dashboard/:path*',
+  //       destination: '/admin/:path*',
+  //     },
+  //   ];
+  // },
   images: {
     remotePatterns: [
       {
