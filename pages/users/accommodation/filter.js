@@ -81,19 +81,34 @@ export default function Accommodation() {
 
 
             // Formater les dates
-            const formattedCheckIn = new Date(check_in.split('/').reverse().join('-')).toLocaleDateString('fr-FR');
-            const formattedCheckOut = new Date(check_out.split('/').reverse().join('-')).toLocaleDateString('fr-FR');
+            if (check_in && check_out) {
+                const formattedCheckIn = new Date(check_in.split('/').reverse().join('-')).toLocaleDateString('fr-FR');
+                const formattedCheckOut = new Date(check_out.split('/').reverse().join('-')).toLocaleDateString('fr-FR');
 
-            // Créer l'objet JSON
-            const formattedInfo = {
-                type: type,
-                location: location,
-                checkIn: formattedCheckIn,
-                checkOut: formattedCheckOut,
-                guests: guest
-            };
-            console.log(formattedInfo);
-            return formattedInfo;
+                // Créer l'objet JSON
+                const formattedInfo = {
+                    type: type,
+                    location: location,
+                    checkIn: formattedCheckIn,
+                    checkOut: formattedCheckOut,
+                    guests: guest
+                };
+                console.log(formattedInfo);
+                return formattedInfo;
+            } else if (type && location && guest) {
+                const formattedInfo = {
+                    type: type,
+                    location: location,
+                    guests: guest
+                };
+                console.log(formattedInfo);
+
+                return formattedInfo;
+            } else {
+                return false;
+
+            }
+
         }
 
 

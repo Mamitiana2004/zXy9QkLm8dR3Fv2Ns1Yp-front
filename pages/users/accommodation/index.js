@@ -170,7 +170,6 @@ export default function Home() {
                     <div className={style.suggestion_item_container}>
                         {
                             suggestions.hebergements && suggestions.hebergements.map((suggestion, index) => {
-                                console.log(suggestions.hebergements);
                                 return (
                                     <CardSuggestion
                                         key={index}
