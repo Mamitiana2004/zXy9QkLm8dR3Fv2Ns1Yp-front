@@ -24,16 +24,19 @@ export default function Profil() {
 
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [isEditingHotel, setIsEditingHotel] = useState(false);
+    const [etahandleSaveilProfil, setDetahandleSaveilProfil] = useState({});
+    useEffect(() => {
+        console.log(etahandleSaveilProfil);
 
-
+    }, [etahandleSaveilProfil]);
     useEffect(() => {
         if (user) {
             const id_hebergement = user.id_etablissement;
-            FetchProfil(id_hebergement, id);
+            FetchProfil(id_hebergement, user.id);
         }
     }, [id, user]);
 
-    function FetchProfil(id_hebergement) {
+    function FetchProfil(id_hebergement, id_responsable) {
         getCsrfFromToken()
             .then(csrfToken => {
                 // Fetch hotel details
@@ -51,7 +54,7 @@ export default function Profil() {
                     .catch(err => console.error('Erreur lors de la récupération du nom de l\'hôtel:', err));
 
                 //Fetch Detail Responsable
-                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${id_hebergement}/`, {
+                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${id_responsable}/`, {
                     method: "GET",
                     headers: {
                         'Content-Type': 'application/json',
@@ -102,7 +105,7 @@ export default function Profil() {
         // Envoyer les informations mises à jour au backend
         getCsrfFromToken()
             .then(csrfToken => {
-                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${user.id_etablissement}/`, {
+                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${user.id}/`, {
                     method: "PATCH",
                     headers: {
                         'Content-Type': 'application/json',
@@ -247,7 +250,7 @@ export default function Profil() {
                                         <input
                                             type="text"
                                             value={detailProfil?.last_name || ''}
-                                            onChange={(e) => setDetahandleSaveilProfil({ ...detailProfil, last_name: e.target.value })}
+                                            onChange={(e) => setDetailProfil({ ...detailProfil, last_name: e.target.value })}
                                         />
                                     ) : (
                                         <span>{detailProfil?.last_name || 'No Last name'}</span>
