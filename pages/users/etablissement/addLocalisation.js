@@ -7,14 +7,10 @@ import { Image } from "primereact/image";
 import { useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
-import UrlConfig from "@/util/config";
 import { Toast } from "primereact/toast";
-import { getCsrfTokenDirect } from "@/util/csrf";
 import SelectLocationMap from "@/components/SelectLocationMap";
 
 export default function AddLocalisation() {
-
-
     const router = useRouter();
     const toast = useRef(null);
 
@@ -23,12 +19,10 @@ export default function AddLocalisation() {
 
     const handleLocationSelect = (location) => {
         setLocation(location);
-        console.log("Localisation sélectionnée :", location);
     };
 
     const handleAddressChange = (adress) => {
         setAdress(adress);
-        console.log("Localisation sélectionnée :", adress);
     };
     const handleSubmit = () => {
 
