@@ -11,6 +11,8 @@ import UrlConfig from "@/util/config";
 import { Galleria } from "primereact/galleria";
 import WaitSpinner from "@/components/WaitSpinner";
 import { Toast } from "primereact/toast";
+import imageCompression from 'browser-image-compression';
+
 export default function AddImage() {
     const router = useRouter();
     const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
@@ -59,13 +61,42 @@ export default function AddImage() {
         return <Image src={item.thumbnailImageSrc} alt={item.alt} style={{ width: '10px' }} className={style.listItems} />
     }
 
-    const handleFileUpload = () => {
+    // const handleFileUpload = () => {
+    //     const files = Array.from(inputRef.current.files);
+    //     const validFiles = files.filter(file => file.type.startsWith('image/'));
+
+    //     const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
+    //     setListImage(prevList => [...prevList, ...newImageUrls]);
+    //     setFileImages(prevFiles => [...prevFiles, ...validFiles]);
+    // };
+
+    const handleFileUpload = async () => {
         const files = Array.from(inputRef.current.files);
+
+        // Filtrer les fichiers pour ne garder que les images
         const validFiles = files.filter(file => file.type.startsWith('image/'));
 
-        const newImageUrls = validFiles.map(file => URL.createObjectURL(file));
+        // Fonction pour compresser les images
+        const compressImage = async (file) => {
+            try {
+                const compressedFile = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920 });
+                return compressedFile;
+            } catch (error) {
+                console.error('Error compressing file:', file.name, error);
+                return null;
+            }
+        };
+
+        // Compresser toutes les images et filtrer les erreurs
+        const compressedFiles = await Promise.all(validFiles.map(file => compressImage(file)));
+        const validCompressedFiles = compressedFiles.filter(file => file !== null);
+
+        // Créer les URL d'images uniquement pour les fichiers valides et compressés
+        const newImageUrls = validCompressedFiles.map(file => URL.createObjectURL(file));
+
+        // Mettre à jour les états avec les nouvelles images
         setListImage(prevList => [...prevList, ...newImageUrls]);
-        setFileImages(prevFiles => [...prevFiles, ...validFiles]);
+        setFileImages(prevFiles => [...prevFiles, ...validCompressedFiles]);
     };
     const handleClick = () => {
         inputRef.current.click();
