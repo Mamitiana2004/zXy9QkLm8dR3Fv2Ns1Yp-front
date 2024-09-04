@@ -56,6 +56,21 @@ function removeAccessClient() {
 
     localStorage.removeItem('clientUser');
 }
+function removeAccessResponsable() {
+    const accessToken = Cookies.get('responsable_access_token');
+
+    if (accessToken) {
+        Cookies.remove('responsable_access_token', { secure: true, sameSite: 'strict' });
+    }
+
+    const refreshToken = Cookies.get('responsable_refresh_token');
+
+    if (refreshToken) {
+        Cookies.remove('responsable_refresh_token', { secure: true, sameSite: 'strict' });
+    }
+
+    localStorage.removeItem('responsable_user');
+}
 
 function getAccessAdmin() {
     const accessToken = Cookies.get('isthisanotherpaimon');
@@ -247,7 +262,6 @@ function getResponsableAccessToken() {
 
 
     if (accessToken) {
-        console.log(accessToken);
         return accessToken;
     }
 
@@ -288,4 +302,4 @@ function getResponsableAccessToken() {
 // }
 
 
-export { setTokensInCookies, getClientAccess, removeAccessClient, customLogin, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
+export { setTokensInCookies, getClientAccess, removeAccessResponsable, removeAccessClient, customLogin, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
