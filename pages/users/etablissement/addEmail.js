@@ -58,6 +58,7 @@ export default function AddEmail() {
                     life: 4000
                 });
                 localStorage.setItem("email_etablissement", email);
+                setIsSpinnerVisible(false);
 
                 setTimeout(() => {
                     router.push("/users/etablissement/choixType");
