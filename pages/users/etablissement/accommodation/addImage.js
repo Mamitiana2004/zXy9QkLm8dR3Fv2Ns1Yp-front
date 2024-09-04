@@ -161,6 +161,7 @@ export default function AddImage() {
                 ),
                 life: 5000
             });
+            setIsSpinnerVisible(true);
             console.error("Error uploading images:", error);
         }
     };
