@@ -39,19 +39,6 @@ export const LayoutProvider = ({ children }) => {
 
     useEffect(() => {
         const checkAccessToken = async () => {
-            const token = await getClientAccess();
-            console.log(token);
-            if (!token) {
-                localStorage.removeItem('user');
-                localStorage.removeItem('lang');
-                setUser(null);
-            }
-        };
-
-        checkAccessToken();
-    }, []);
-    useEffect(() => {
-        const checkAccessToken = async () => {
             try {
                 const token = await getClientAccess();
                 if (!token) {
@@ -59,7 +46,7 @@ export const LayoutProvider = ({ children }) => {
                     setUser(null);
                 }
             } catch (error) {
-                console.error("Erreur lors de la récupération du jeton d'accès:", error);
+
                 localStorage.removeItem('user');
                 setUser(null);
             }

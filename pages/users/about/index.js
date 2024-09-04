@@ -65,7 +65,7 @@ export default function About() {
     ]
 
     return (
-        <body className={style.body_about}>
+        <div className={style.body_about}>
             <Head>
                 <title>About us</title>
             </Head>
@@ -202,6 +202,6 @@ export default function About() {
 
                 <Link href="/users/faq"><Button label={t('seeFAQs')} className={style.custom_btn_faq} /></Link>
             </article>
-        </body >
+        </div >
     )
 }

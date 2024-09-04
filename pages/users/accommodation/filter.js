@@ -75,6 +75,43 @@ export default function Accommodation() {
                 }
             );
         }
+        const getInfoFilter = () => {
+
+            const { type, location, check_in, check_out, guest } = router.query;
+
+
+            // Formater les dates
+            if (check_in && check_out) {
+                const formattedCheckIn = new Date(check_in.split('/').reverse().join('-')).toLocaleDateString('fr-FR');
+                const formattedCheckOut = new Date(check_out.split('/').reverse().join('-')).toLocaleDateString('fr-FR');
+
+                // Créer l'objet JSON
+                const formattedInfo = {
+                    type: type,
+                    location: location,
+                    checkIn: formattedCheckIn,
+                    checkOut: formattedCheckOut,
+                    guests: guest
+                };
+                console.log(formattedInfo);
+                return formattedInfo;
+            } else if (type && location && guest) {
+                const formattedInfo = {
+                    type: type,
+                    location: location,
+                    guests: guest
+                };
+                console.log(formattedInfo);
+
+                return formattedInfo;
+            } else {
+                return false;
+
+            }
+
+        }
+
+
         const fetchHotels = async () => {
             try {
                 const csrfToken = await getCsrfTokenDirect();
@@ -100,6 +137,33 @@ export default function Accommodation() {
                 setLoading(false);
             }
         };
+
+        const fetchFilteredData = async () => {
+            try {
+                const formattedInfo = getInfoFilter();
+
+                const response = await fetch(`${UrlConfig.apiBaseUrl}/api/your-endpoint/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formattedInfo)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch filtered data');
+                }
+
+                const data = await response.json();
+                setHotels(data.hebergements);
+                setAllHotels(data.hebergements);
+                setLoading(false);
+                return data;
+            } catch (error) {
+                console.error('Error fetching filtered data:', error);
+            }
+        };
+
         const fetchAmmenities = async () => {
             try {
                 const csrfToken = await getCsrfTokenDirect();
@@ -127,7 +191,8 @@ export default function Accommodation() {
         };
         fetchAmmenities();
         fetchHotels();
-    }, []);
+        getInfoFilter();
+    }, [router.query]);
 
 
     useEffect(() => {
