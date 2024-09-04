@@ -102,73 +102,132 @@ export default function AddImage() {
         inputRef.current.click();
     };
 
+    const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const response = await fetch(url, options);
+                if (response.ok) {
+                    return response;
+                }
+                if (attempt === retries) {
+                    throw new Error(`Failed after ${retries} attempts`);
+                }
+            } catch (error) {
+                if (attempt === retries) {
+                    throw error;
+                }
+                await new Promise(res => setTimeout(res, delay));
+            }
+        }
+    };
 
 
+
+    //     if (fileImages.length === 0) {
+    //         console.log("No images to upload");
+    //         setIsSpinnerVisible(false);
+
+    //         return;
+    //     }
+    //     const info = JSON.parse(localStorage.getItem("responsable_info"));
+    //     const formData = new FormData();
+
+
+    //     formData.append('hebergement', info.id_etablissement);
+
+    //     fileImages.forEach((file, index) => {
+    //         formData.append(`image_${index}`, file);
+    //     });
+
+    //     try {
+    //         const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-image/`, {
+    //             method: 'POST',
+    //             body: formData,
+    //         });
+
+    //         if (response.ok) {
+    //             const data = await response.json();
+    //             console.log("Images uploaded successfully:", data);
+    //             setTimeout(() => {
+    //                 setIsSpinnerVisible(false);
+
+    //                 router.push("/users/etablissement/we");
+    //             }, 3000);
+    //             setFileImages([]);
+    //         } else {
+    //             toast.current.show({
+    //                 severity: "error",
+    //                 summary: "Error",
+    //                 detail: (
+    //                     <>
+    //                         {response.statusText}
+    //                     </>
+    //                 ),
+    //                 life: 5000
+    //             })
+    //             console.error("Failed to upload images:", response.statusText);
+    //         }
+    //     } catch (error) {
+    //         toast.current.show({
+    //             severity: "error",
+    //             summary: "Error",
+    //             detail: (
+    //                 <>
+    //                     Error on upload images: {response.statusText}
+    //                 </>
+    //             ),
+    //             life: 5000
+    //         });
+    //         setIsSpinnerVisible(true);
+    //         console.error("Error uploading images:", error);
+    //     }
+    // };
+    const addImageFini = async () => {
+        setIsSpinnerVisible(true);
+        await handleSubmitImages();
+    };
     const handleSubmitImages = async () => {
-
         if (fileImages.length === 0) {
             console.log("No images to upload");
             setIsSpinnerVisible(false);
-
             return;
         }
+
         const info = JSON.parse(localStorage.getItem("responsable_info"));
         const formData = new FormData();
 
-
         formData.append('hebergement', info.id_etablissement);
-
         fileImages.forEach((file, index) => {
             formData.append(`image_${index}`, file);
         });
 
         try {
-            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-image/`, {
-                method: 'POST',
-                body: formData,
-            });
+            const response = await fetchWithRetry(
+                `${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-image/`,
+                {
+                    method: 'POST',
+                    body: formData,
+                }
+            );
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Images uploaded successfully:", data);
-                setTimeout(() => {
-                    setIsSpinnerVisible(false);
-
-                    router.push("/users/etablissement/we");
-                }, 3000);
-                setFileImages([]);
-            } else {
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: (
-                        <>
-                            {response.statusText}
-                        </>
-                    ),
-                    life: 5000
-                })
-                console.error("Failed to upload images:", response.statusText);
-            }
+            const data = await response.json();
+            // console.log("Images uploaded successfully:", data);
+            setFileImages([]); // Clear file images after successful upload
+            setTimeout(() => {
+                setIsSpinnerVisible(false);
+                router.push("/users/etablissement/we");
+            }, 1000);
         } catch (error) {
             toast.current.show({
                 severity: "error",
                 summary: "Error",
-                detail: (
-                    <>
-                        Error on upload images: {response.statusText}
-                    </>
-                ),
-                life: 5000
+                detail: `Error uploading images: ${error.message}`,
+                life: 5000,
             });
-            setIsSpinnerVisible(true);
             console.error("Error uploading images:", error);
         }
     };
-    const addImageFini = async () => {
-        setIsSpinnerVisible(true);
-        handleSubmitImages();
-    };
+
 
     return (
         <div className={style.container}>
