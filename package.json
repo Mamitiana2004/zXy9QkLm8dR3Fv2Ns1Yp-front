@@ -25,6 +25,7 @@
     "@stripe/stripe-js": "^4.2.0",
     "aftrip": "file:",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "browser-image-compression": "^2.0.2",
     "chart.js": "^4.4.3",
     "data-fns": "^1.1.0",
     "firebase": "^10.12.3",
