@@ -98,7 +98,7 @@
     display: flex;
     gap: 20px;
     width: 100%;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: space-between;
 }
 
@@ -171,3 +171,17 @@
 .input_missing {
     border-color: red !important;
 }
+@media screen and (max-width: 1000px) {
+    .room_detail{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .container{
+        width: 100%;
+        margin-right: 5px;
+
+        margin-left: -3px;
+    }
+}
+
