@@ -242,6 +242,11 @@ export default function Login() {
                             <div className={style.button_group}>
                                 <button type='submit' className={style.login_button}>Sign in</button>
                             </div>
+                            <div className={style.button_group}>
+                                <Link href={"/users/login"} className={style.etablissment_button}>
+                                    <span> Log in as an user? </span><i className='pi pi-arrow-right' />
+                                </Link>
+                            </div>
                         </form>
                         <div className={style.register_component}>
                             <span className={style.register_label}>Don&apos;t have an account ?</span>

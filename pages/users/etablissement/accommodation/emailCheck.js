@@ -180,66 +180,6 @@ export default function Verify() {
 
     }
 
-    const LoadData = async () => {
-        if (locate) {
-            const type_etablissement = localStorage.getItem("type_etablissement");
-            const accommodation_info = JSON.parse(localStorage.getItem("accommodationInfo"));
-
-            const addressParts = locate.adress.split(',');
-            const city = addressParts[addressParts.length - 2].trim();
-            let userInfo = localStorage.getItem("_dfqaccess404");
-            userInfo = JSON.parse(userInfo);
-
-            CreateResponsableUser(userInfo).then((data) => {
-                if (data.id) {
-                    accommodation_info.responsable_id = data.id;
-                    const created = CreateHebergemet(accommodation_info).then((created) => {
-
-
-                        if (created) {
-                            toast.current.show({
-                                severity: "success",
-                                summary: "Success",
-                                detail: "Accomodation created successfully",
-                                life: 5000
-                            });
-                            localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
-
-                            console.log("hebergement :", created);
-                            const responsable_info = {
-                                username: data.username,
-                                job_post: "Manager",
-                                id_etablissement: created.id_hebergement,
-                                type_etablissement: type_etablissement
-                            }
-                            localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
-                            const locate_data = {
-                                "adresse": locate.adress,
-                                "ville": city,
-                                "latitude": locate.location.lat,
-                                "longitude": locate.location.lng,
-                                "hebergement_id": created.id_hebergement
-                            }
-
-                            CreateLocation(locate_data);
-                        } else {
-                            setIsSpinnerVisible(false);
-                            toast.current.show({
-                                severity: "error",
-                                summary: "Error",
-                                detail: "Please try again later",
-                                life: 5000
-                            });
-
-                        }
-                    })
-
-                }
-            })
-        }
-
-    };
-
     useEffect(() => {
         if (typeof window !== "undefined") {
             if (localStorage.getItem("timer")) {
@@ -356,6 +296,7 @@ export default function Verify() {
                 const success = await createAllEntities();
                 if (success) {
                     setIsSpinnerVisible(false);
+                    CleanStorage();
                     setTimeout(() => {
                         router.push('/users/etablissement/accommodation/addImage');
                     }, 2000);

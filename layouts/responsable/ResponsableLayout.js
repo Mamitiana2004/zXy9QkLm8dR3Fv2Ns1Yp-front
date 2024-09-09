@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
 import ResponsableLayoutContext from "../context/responsableLayoutContext";
+
 export default function ResponsableLayout(props) {
 
     const router = useRouter();
     const [link, setLink] = useState([]);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const { setUser, setTypeResponsable } = useContext(ResponsableLayoutContext);
 
@@ -55,7 +57,10 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    command: () => logOut()
+                    command: () => {
+                        logOut();
+                        closeSidebar();
+                    }
                 },
 
             ]
@@ -96,7 +101,10 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    command: () => logOut()
+                    command: () => {
+                        logOut();
+                        closeSidebar();
+                    }
                 },
 
             ]
@@ -137,7 +145,10 @@ export default function ResponsableLayout(props) {
                 {
                     icon: "pi pi-sign-out",
                     label: "Log out",
-                    command: () => logOut()
+                    command: () => {
+                        logOut();
+                        closeSidebar();
+                    }
                 },
 
             ]
@@ -145,8 +156,13 @@ export default function ResponsableLayout(props) {
         }
     }, [router.asPath, setUser, setTypeResponsable, router])
 
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
-
+    const closeSidebar = () => {
+        setIsSidebarOpen(false);
+    };
 
     return (
         <>
@@ -155,11 +171,14 @@ export default function ResponsableLayout(props) {
             </Head>
             <AppTopBarResponsable />
             <div className={style.container}>
-                <div className={style.sidebar}>
+                <div className="hamburger-menu" onClick={toggleSidebar}>
+                    ☰
+                </div>
+                <div className={`${style.sidebar} ${isSidebarOpen ? style.sidebar_open : style.sidebar_closed}`}>
                     {link.map((l, index) => {
                         if (l.command) {
                             return (
-                                <div className={style.sidebar_link} key={index} onClick={l.command}>
+                                <div className={style.sidebar_link} key={index} onClick={() => { l.command(); closeSidebar(); }}>
                                     <i className={l.icon} />
                                     <span>{l.label}</span>
                                 </div>
@@ -167,15 +186,13 @@ export default function ResponsableLayout(props) {
                         }
                         else {
                             return (
-                                <Link key={index} className={style.sidebar_link} href={l.link}>
+                                <Link key={index} className={style.sidebar_link} href={l.link} onClick={closeSidebar}>
                                     <i className={l.icon} />
                                     <span>{l.label}</span>
                                 </Link>
                             )
                         }
                     })}
-
-
                 </div>
                 <div className={style.body_container}>
                     {props.children}
