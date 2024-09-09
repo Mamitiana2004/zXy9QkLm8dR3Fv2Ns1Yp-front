@@ -109,7 +109,7 @@ export default function Login() {
                 </div>
                 <div className={style.login_right}>
                     <Link className={style.back_link} href={"/users"}>
-                        <i className='pi pi-arrow-left'/>
+                        <i className='pi pi-arrow-left' />
                         <span>Back</span>
                     </Link>
                     <div className={style.login_title_container}>
@@ -176,13 +176,18 @@ export default function Login() {
                             <div className={style.button_group}>
                                 <button type='submit' className={style.login_button}>Sign in</button>
                             </div>
+                            <div className={style.button_group}>
+                                <Link href={"/users/etablissement/login"} className={style.etablissment_button}>
+                                    <span> Log in to an establishment? </span><i className='pi pi-arrow-right' />
+                                </Link>
+                            </div>
                         </form>
                         <div className={style.register_component}>
                             <span className={style.register_label}>Don&apos;t have an account ?</span>
                             <Link className={style.register_link} href={"/users/register"}>Sign up</Link>
                         </div>
                     </div>
-                </div>
+                </div >
 
 
 
@@ -192,7 +197,7 @@ export default function Login() {
                     <Link style={{ color: "#000" }} href={"/users/privatePolicy"}>Pivate policy</Link>
                 </div>
 
-            </div>
+            </div >
             <Toast ref={toast} />
         </>
     )
