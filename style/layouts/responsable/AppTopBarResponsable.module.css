@@ -25,16 +25,13 @@
         justify-content: center;
     }
 
-    .search_contaner{
-        padding: 0 40px;
-
-    }
+    
 
     .input_search{
         padding: 16px;
         background-color: #D4E4E2;
         border: none;
-        width: 600px;
+        width: 100%;
         border-radius: 100px;
     }
 
@@ -74,5 +71,19 @@
     .job{
         font-size: 14px;
         color: #000;
+    }
+}
+
+
+@media screen and (max-width: 1000px) {
+    .input_search{
+        padding: 16px;
+        background-color: #D4E4E2;
+        border: none;
+        width: 100%;
+        border-radius: 100px;
+    }
+    .search_contaner{
+        padding: 0px;
     }
 }
