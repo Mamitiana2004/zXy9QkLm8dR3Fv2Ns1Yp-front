@@ -112,7 +112,6 @@ export default function Verify() {
             return false;
         }
     };
-
     const CreateTour = async (data) => {
         try {
             const response = await fetchWithRetry(`${UrlConfig.apiBaseUrl}/api/tour/create/`, {
@@ -277,9 +276,6 @@ export default function Verify() {
         }
         return () => clearInterval(interval);
     }, [isButtonDisabled])
-
-
-
 
     const sendNewCode = async (email) => {
         try {
