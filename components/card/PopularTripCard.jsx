@@ -6,7 +6,6 @@ import { UrlConfig } from "@/util/config"; // Assurez-vous que le chemin est cor
 
 export default function PopularTripCard({ voyage }) {
     const router = useRouter();
-    console.log(voyage);
     const imageUrl = voyage && voyage.couverture_images && voyage.couverture_images.length > 0
         ? `${UrlConfig.apiBaseUrl}${voyage.couverture_images[0].image}`
         : '/images/default-image.jpg';
