@@ -221,7 +221,7 @@ const customLogin = async (email, password) => {
     }
 };
 
-const getNewResponsabeAccess = () => {
+const getNewResponsabeAccess = async () => {
     const refreshToken = Cookies.get('responsable_refresh_token');
 
     if (!refreshToken) {
@@ -257,37 +257,16 @@ const getNewResponsabeAccess = () => {
         });
 };
 
-function getResponsableAccessToken() {
-    const accessToken = Cookies.get('responsable_access_token');
-
-
-    if (accessToken) {
-        return accessToken;
-    }
-
-
-    getNewResponsabeAccess().then(() => {
-        const newAccessToken = Cookies.get('responsable_access_token');
-        if (newAccessToken) {
-            return newAccessToken;
-        } else {
-            console.error('Failed to retrieve new access token.');
-            return null;
-        }
-    }).catch(error => {
-        console.error(error);
-        return null;
-    });
-}
-// function getResponsableAccessToken() {
+// function getResponsableAccessTokeno() {
 //     const accessToken = Cookies.get('responsable_access_token');
 
+
 //     if (accessToken) {
-//         console.log(accessToken);
-//         return Promise.resolve(accessToken);  // Retourner une promesse résolue
+//         return accessToken;
 //     }
 
-//     return getNewResponsabeAccess().then(() => {
+
+//     getNewResponsabeAccess().then(() => {
 //         const newAccessToken = Cookies.get('responsable_access_token');
 //         if (newAccessToken) {
 //             return newAccessToken;
@@ -301,5 +280,23 @@ function getResponsableAccessToken() {
 //     });
 // }
 
+
+const getResponsableAccessToken = async () => {
+    let token = Cookies.get("responsable_access_token");
+
+    if (!token) {
+        // console.log("No access token found, trying to refresh...");
+        await getNewResponsabeAccess();
+        token = Cookies.get("responsable_access_token");
+    }
+
+    if (!token) {
+        // console.error("Failed to obtain access token");
+        return false;
+    }
+
+
+    return token;
+}
 
 export { setTokensInCookies, getClientAccess, removeAccessResponsable, removeAccessClient, customLogin, getNewAccess, getResponsableAccessToken, removeAllAdminAccess, getNewResponsabeAccess, getAccessAdmin, getNewAdminAccess };
