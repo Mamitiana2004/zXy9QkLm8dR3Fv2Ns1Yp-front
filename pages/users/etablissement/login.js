@@ -120,6 +120,7 @@ export default function Login() {
                         type_etablissement: type_etablissement,
                         job_post: "Manager",
                         id_etablissement: data.etablissement_info.id,
+                        nom_hebergement: data.etablissement_info.nom_hebergement,
                     })
 
                     toast.current.show({
