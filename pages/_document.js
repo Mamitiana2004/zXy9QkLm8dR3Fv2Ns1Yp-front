@@ -16,27 +16,6 @@ function Document() {
                     src={`https://www.paypal.com/sdk/js?client-id=${process.env.NEXT_PUBLIC_PAYPAL_CLIENT}&currency=EUR`}
                     strategy="beforeInteractive"
                 />
-                {/* <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                        (function() {
-                        const noop = () => {};
-                        console.log = noop;
-                        console.info = noop;
-                        console.warn = noop;
-                        console.error = noop;
-                        console.debug = noop;
-                        console.dir = noop;
-                        console.dirxml = noop;
-                        console.trace = noop;
-                        console.assert = noop;
-                        console.group = noop;
-                        console.groupCollapsed = noop;
-                        console.groupEnd = noop;
-                        })();
-                    `,
-                    }}
-                /> */}
                 {process.env.NODE_ENV === 'production' && (
                     <script
                         dangerouslySetInnerHTML={{
