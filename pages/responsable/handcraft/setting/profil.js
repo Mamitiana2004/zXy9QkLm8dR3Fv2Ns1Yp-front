@@ -182,7 +182,7 @@ export default function Profil() {
                 <div className={style.left_container}>
                     <div className={style.left_top_container}>
                         <span className={style.left_top_subtitle}>{menuSidebar[menu].label}</span>
-                        <span className={style.left_top_title}>{user.handcraft_name || 'No Hotel Name'}</span>
+                        <span className={style.left_top_title}>{user ? user.handcraft_name : 'No Hotel Name'}</span>
                     </div>
                     <div className={style.left_body_container}>
                         {menuSidebar.map((item, index) => {
