@@ -32,6 +32,11 @@ export default function AddNewRoom() {
     const handleClick = () => {
         inputRef.current.click();
     };
+
+    const handleImageClick = (index) => {
+        setListImage(prevList => prevList.filter((_, i) => i !== index));
+        setFileImages(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
     const handleFileUpload = async () => {
         const files = Array.from(inputRef.current.files);
 
@@ -137,7 +142,7 @@ export default function AddNewRoom() {
         try {
             // Attendre l'access token
             const access = await getResponsableAccessToken();
-            console.log(access);
+
             // Faire l'appel à l'API pour ajouter la chambre
             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
                 method: 'POST',
@@ -210,6 +215,12 @@ export default function AddNewRoom() {
                     {listImage.map((image, index) => (
                         <div key={index} className={style.image_add_container}>
                             <Image imageClassName={style.image} src={image} alt="image" />
+                            <Button
+                                icon="pi pi-trash"
+                                className={style.delete_icon}
+                                onClick={() => handleImageClick(index)}
+                                aria-label="Delete"
+                            />
                         </div>
                     ))}
                 </div>
@@ -258,7 +269,7 @@ export default function AddNewRoom() {
                 </div>
                 <div className={style.room_ammenties_container}>
                     <span className={style.room_ammenties_title}>Room amenities</span>
-                    <RoomAmenities setAmenities={setAmenities} />
+                    <RoomAmenities setAmenities={setAmenities} selectedAmenities={amenities} />
                 </div>
                 <div className={style.room_description_container}>
                     <span className={style.room_description_title}>Room description</span>
@@ -271,7 +282,7 @@ export default function AddNewRoom() {
                 <div className={style.button_submit}>
                     <Button className={style.button_add} label="Add Room" onClick={handleSubmit} />
                     <Button className={style.button_reset} label="Reset" onClick={() => {
-                        setTypeChambre([]);
+
                         setSelectedType(null);
                         setSelectedStatus(null);
                         setPrice(null);
@@ -281,7 +292,6 @@ export default function AddNewRoom() {
                         setDescription("");
 
                         // Recharger la page
-                        window.location.reload();
 
                     }} />
                 </div>
