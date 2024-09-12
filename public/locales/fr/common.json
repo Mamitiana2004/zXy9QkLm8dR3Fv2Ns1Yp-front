@@ -371,5 +371,71 @@
             "title": "6. Mises à Jour de la Politique",
             "text": "Cette politique peut être mise à jour de temps à autre. Les fournisseurs d'hébergement seront informés de toute modification importante. L'utilisation continue de la plateforme constitue une acceptation de la politique mise à jour."
         }
+    },
+    "help": {
+        "getting_started": {
+            "title": "Commencer",
+            "text": "En tant que responsable d'hébergement, vous pouvez ajouter, modifier ou supprimer des hébergements, gérer les réservations et visualiser les avis. Suivez les étapes ci-dessous pour démarrer.",
+            "steps": [
+                {
+                    "title": "1. Créer un compte",
+                    "text": "Si vous n'avez pas encore de compte, inscrivez-vous en fournissant les informations de votre établissement et vos coordonnées."
+                },
+                {
+                    "title": "2. Ajouter un hébergement",
+                    "text": "Accédez à la section 'Mes Hébergements' pour ajouter un nouvel hébergement. Fournissez des détails comme le nom, l'adresse, les types de chambres disponibles, etc."
+                },
+                {
+                    "title": "3. Gérer les réservations",
+                    "text": "Consultez et gérez les réservations en accédant à la section 'Réservations'. Vous pouvez confirmer, annuler ou modifier les réservations en fonction de la disponibilité."
+                }
+            ]
+        },
+        "managing_accommodations": {
+            "title": "Gestion des Hébergements",
+            "text": "Vous avez la possibilité de gérer tous vos hébergements listés sur la plateforme. Cette section vous aide à comprendre comment mettre à jour les informations de vos hébergements.",
+            "sections": [
+                {
+                    "title": "Modifier un Hébergement",
+                    "text": "Pour modifier les détails d'un hébergement, accédez à la section 'Mes Hébergements', sélectionnez l'hébergement à modifier, et mettez à jour les informations nécessaires, telles que le tarif, les équipements et la disponibilité."
+                },
+                {
+                    "title": "Supprimer un Hébergement",
+                    "text": "Si vous souhaitez retirer un hébergement de la liste, vous pouvez le désactiver ou le supprimer. Cette action peut être réversible ou définitive."
+                }
+            ]
+        },
+        "reservations_and_commissions": {
+            "title": "Réservations et Commissions",
+            "text": "Gérez vos réservations et assurez-vous de comprendre comment vos commissions sont calculées.",
+            "sections": [
+                {
+                    "title": "Visualiser les Réservations",
+                    "text": "Toutes les réservations effectuées via la plateforme sont visibles dans la section 'Réservations'. Vous pouvez filtrer les réservations par statut (confirmées, en attente, annulées)."
+                },
+                {
+                    "title": "Comprendre les Commissions",
+                    "text": "La plateforme prélève une commission sur chaque réservation confirmée. Pour plus de détails sur le taux de commission et les modalités de calcul, référez-vous à la politique de commission."
+                }
+            ]
+        },
+        "support_and_contact": {
+            "title": "Support et Contact",
+            "text": "Si vous rencontrez des difficultés ou avez des questions, notre équipe de support est disponible pour vous aider.",
+            "contact_methods": [
+                {
+                    "method": "Email",
+                    "details": "Envoyez-nous un email à support@votreplateforme.com et nous vous répondrons sous 24 heures."
+                },
+                {
+                    "method": "Chat en Direct",
+                    "details": "Utilisez notre chat en direct pour obtenir une assistance immédiate pendant les heures de bureau."
+                },
+                {
+                    "method": "FAQ",
+                    "details": "Consultez notre page FAQ pour obtenir des réponses aux questions fréquentes."
+                }
+            ]
+        }
     }
 }
