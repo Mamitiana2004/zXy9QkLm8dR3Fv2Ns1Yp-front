@@ -15,7 +15,7 @@ export default function Room() {
     const { user } = useContext(ResponsableLayoutContext);
 
     const [booking, setBooking] = useState()
-    const [nameHotel, setNameHotel] = useState(null); 
+    const [nameHotel, setNameHotel] = useState(null);
     const [id, setId] = useState();
 
     useEffect(() => {
@@ -32,9 +32,9 @@ export default function Room() {
                     // console.log(data)
                 })
                 .catch(error => console.error("Error fetching data:", error));
-            
+
             fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/get-id-hebergement/${id}/`)
-            .then(res => res.json())
+                .then(res => res.json())
                 .then(data => {
                     setNameHotel(data)
                 })
@@ -55,7 +55,6 @@ export default function Room() {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                // 'Authorization': `Bearer ${user.token}`
                 // 'Authorization': `Bearer ${user.token}`
             }
         })
@@ -78,7 +77,8 @@ export default function Room() {
     };
 
     const availableTemplate = (item) => {
-        if (item.disponible_chambre) {
+        // console.log(item);
+        if (item.disponible_chambre >= 1) {
             return (
                 <>
                     <span><i className="pi pi-check" /> available</span>
@@ -116,15 +116,12 @@ export default function Room() {
                 <span className={style.container_title}>All room</span>
                 <div className={style.table_container}>
                     <DataTable paginator rows={10} value={booking}>
-
-
-
                         <Column sortable field="id" header="No" />
-                        {/* <Column sortable field="room" header="Room" /> */}
                         <Column sortable field="nom_chambre" header="Name" />
+                        <Column sortable field="capacite" header="Max Guests" />
                         <Column sortable field="chambre.type_chambre" header="Type" />
-                        <Column sortable field="chambre.nombre_max_personnes" header="Guests" />
-                        <Column sortable body={availableTemplate} header="Status" />
+                        {/* <Column sortable body={availableTemplate} header="Status" /> */}
+                        <Column sortable field="disponible_chambre" header="Nb Rooms" />
                         <Column sortable field="prix_nuit_chambre" header="Price" />
                         <Column header="Action" body={buttonTemplate} />
                     </DataTable>

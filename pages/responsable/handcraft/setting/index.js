@@ -8,7 +8,7 @@ export default function Setting() {
 
     useEffect(() => {
         if (typeof window != "undefined") {
-            router.replace("/responsable/handcraft/setting/profil")
+            router.replace("/responsable/accommodation/setting/profil")
         }
     }, [router])
 

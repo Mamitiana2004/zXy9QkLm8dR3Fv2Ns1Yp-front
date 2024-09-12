@@ -500,8 +500,8 @@ export default function HotelInfos() {
                             <div className={style.separateur}></div>
                             <ScrollPanel className={style.card_availability_parent}>
                                 <div className={style.chambre_list}>
-                                    {chambre.map((roomData, index) => (
-                                        <div key={index}>
+                                    {chambre.map((roomData, index) => roomData.disponible_chambre >= 1 ? (
+                                        < div key={index} >
                                             <div className={style.chambre_container}>
                                                 <div className={style.chambre_top}>
                                                     <div className={style.checkbox_container}>
@@ -534,7 +534,7 @@ export default function HotelInfos() {
                                             </div>
                                             <div className={style.separateur}></div>
                                         </div>
-                                    ))}
+                                    ) : null)}
                                 </div>
                             </ScrollPanel>
                         </div>

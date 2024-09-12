@@ -11,6 +11,7 @@ export default function ResponsableLayout(props) {
     const router = useRouter();
     const [link, setLink] = useState([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [activeLink, setActiveLink] = useState(null);
 
     const { setUser, setTypeResponsable } = useContext(ResponsableLayoutContext);
 
@@ -26,134 +27,137 @@ export default function ResponsableLayout(props) {
             let links = [
                 {
                     icon: "pi pi-home",
+                    iconFill: "pi pi-warehouse",
                     label: "Dashboard",
                     link: "/responsable/accommodation/dashboard"
                 },
                 {
-                    icon: "pi pi-bookmark-fill",
+                    icon: "pi pi-bookmark",
+                    iconFill: "pi pi-bookmark-fill",
                     label: "Booking",
                     link: "/responsable/accommodation/booking"
                 },
                 {
                     icon: "pi pi-objects-column",
+                    iconFill: "pi pi-microsoft",
                     label: "Room",
                     link: "/responsable/accommodation/room"
                 },
                 {
                     icon: "pi pi-users",
+                    iconFill: "pi pi-user-edit",
                     label: "Guest",
                     link: "/responsable/accommodation/guest"
                 },
                 {
-                    icon: "pi pi-envelope",
-                    label: "Message",
-                    link: "/responsable/accommodation/message"
-                },
-                {
                     icon: "pi pi-cog",
+                    iconFill: "pi pi-circle-on",
                     label: "Setting",
                     link: "/responsable/accommodation/setting"
                 },
                 {
                     icon: "pi pi-sign-out",
+                    iconFill: "pi pi-sign-out",
                     label: "Log out",
                     command: () => {
                         logOut();
                         closeSidebar();
                     }
                 },
-
             ]
             setLink(links);
         }
+
         if (router.asPath.includes("/responsable/handcraft")) {
             let links = [
                 {
                     icon: "pi pi-home",
+                    iconFill: "pi pi-warehouse",
                     label: "Dashboard",
                     link: "/responsable/handcraft/dashboard"
                 },
                 {
                     icon: "pi pi-shopping-bag",
+                    iconFill: "pi pi-shopping-bag-fill",
                     label: "Order",
                     link: "/responsable/handcraft/order"
                 },
                 {
                     icon: "pi pi-shop",
+                    iconFill: "pi pi-shop-fill",
                     label: "Product",
                     link: "/responsable/handcraft/product"
                 },
                 {
                     icon: "pi pi-users",
+                    iconFill: "pi pi-user-edit",
                     label: "Customers",
                     link: "/responsable/handcraft/customer"
                 },
                 {
-                    icon: "pi pi-envelope",
-                    label: "Message",
-                    link: "/responsable/handcraft/message"
-                },
-                {
                     icon: "pi pi-cog",
+                    iconFill: "pi pi-circle-on",
                     label: "Setting",
                     link: "/responsable/handcraft/setting"
                 },
                 {
                     icon: "pi pi-sign-out",
+                    iconFill: "pi pi-sign-out",
                     label: "Log out",
                     command: () => {
                         logOut();
                         closeSidebar();
                     }
                 },
-
             ]
             setLink(links);
         }
+
         if (router.asPath.includes("/responsable/tour")) {
             let links = [
                 {
                     icon: "pi pi-home",
+                    iconFill: "pi pi-warehouse",
                     label: "Dashboard",
                     link: "/responsable/tour/dashboard"
                 },
                 {
-                    icon: "pi pi-bookmark-fill",
+                    icon: "pi pi-bookmark",
+                    iconFill: "pi pi-bookmark-fill",
                     label: "Booking",
                     link: "/responsable/tour/booking"
                 },
                 {
                     icon: "pi pi-objects-column",
+                    iconFill: "pi pi-microsoft",
                     label: "Trip",
                     link: "/responsable/tour/trip"
                 },
                 {
                     icon: "pi pi-users",
+                    iconFill: "pi pi-user-edit",
                     label: "Travelers",
                     link: "/responsable/tour/travelers"
                 },
                 {
-                    icon: "pi pi-envelope",
-                    label: "Message",
-                    link: "/responsable/tour/message"
-                },
-                {
                     icon: "pi pi-cog",
+                    iconFill: "pi pi-circle-on",
                     label: "Setting",
                     link: "/responsable/tour/setting"
                 },
                 {
                     icon: "pi pi-sign-out",
+                    iconFill: "pi pi-sign-out",
                     label: "Log out",
                     command: () => {
                         logOut();
                         closeSidebar();
                     }
                 },
-
             ]
             setLink(links);
         }
+
     }, [router.asPath, setUser, setTypeResponsable, router])
 
     const toggleSidebar = () => {
@@ -162,6 +166,11 @@ export default function ResponsableLayout(props) {
 
     const closeSidebar = () => {
         setIsSidebarOpen(false);
+    };
+
+    const handleLinkClick = (index) => {
+        setActiveLink(index); // Set active link on click
+        closeSidebar();
     };
 
     return (
@@ -176,21 +185,22 @@ export default function ResponsableLayout(props) {
                 </div>
                 <div className={`${style.sidebar} ${isSidebarOpen ? style.sidebar_open : style.sidebar_closed}`}>
                     {link.map((l, index) => {
+                        const iconClass = activeLink === index ? l.iconFill : l.icon; // Use filled icon for active link
+
                         if (l.command) {
                             return (
-                                <div className={style.sidebar_link} key={index} onClick={() => { l.command(); closeSidebar(); }}>
-                                    <i className={l.icon} />
+                                <div className={style.sidebar_link} key={index} onClick={() => { l.command(); handleLinkClick(index); }}>
+                                    <i className={iconClass} />
                                     <span>{l.label}</span>
                                 </div>
-                            )
-                        }
-                        else {
+                            );
+                        } else {
                             return (
-                                <Link key={index} className={style.sidebar_link} href={l.link} onClick={closeSidebar}>
-                                    <i className={l.icon} />
+                                <Link key={index} className={style.sidebar_link} href={l.link} onClick={() => handleLinkClick(index)}>
+                                    <i className={iconClass} />
                                     <span>{l.label}</span>
                                 </Link>
-                            )
+                            );
                         }
                     })}
                 </div>

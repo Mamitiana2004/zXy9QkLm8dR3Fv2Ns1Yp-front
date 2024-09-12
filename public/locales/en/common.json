@@ -317,5 +317,125 @@
     "modifPrivacyTitle": "Privacy Policy Changes",
     "modifPrivacyText": "We reserve the right to modify this privacy policy at any time. Any changes will be posted on this page with an updated date. We encourage you to periodically review this page to stay informed of any changes.",
     "contactUs": "Contact",
-    "contactUsText": "If you have any questions or concerns about this privacy policy or how we treat your personal information, you can contact us at the customer service email or via live chat"
+    "contactUsText": "If you have any questions or concerns about this privacy policy or how we treat your personal information, you can contact us at the customer service email or via live chat",
+    "policy": {
+        "overview": {
+            "title": "Overview",
+            "text": "This Commission Policy outlines the terms and conditions under which commissions are earned by our partners for accommodations listed on our platform. The policy aims to provide clarity on how commissions are calculated, processed, and paid."
+        },
+        "commission_structure": {
+            "title": "Commission Structure",
+            "standard_commission_rate": {
+                "title": "2.1 Standard Commission Rate",
+                "text": "The standard commission rate for bookings made through our platform is [X%]. This rate applies to the total booking amount excluding taxes and fees."
+            },
+            "commission_variations": {
+                "title": "2.2 Commission Variations",
+                "text": "Commission rates may vary based on agreements with individual accommodation providers or special promotions. Any such variations will be clearly communicated and documented in the agreement."
+            }
+        },
+        "commission_calculation": {
+            "title": "Commission Calculation",
+            "booking_confirmation": {
+                "title": "3.1 Booking Confirmation",
+                "text": "Commissions are calculated based on confirmed bookings. A booking is considered confirmed once the guest has completed the payment and received a confirmation from the accommodation provider."
+            },
+            "commissionable_amount": {
+                "title": "3.2 Commissionable Amount",
+                "text": "The commission is based on the total booking amount, which includes room rates, extra charges, and any additional fees paid by the guest, but excludes taxes."
+            }
+        },
+        "payment_terms": {
+            "title": "Payment Terms",
+            "payment_schedule": {
+                "title": "4.1 Payment Schedule",
+                "text": "Commissions are processed on a [monthly/quarterly] basis. Payments are made within [X] days after the end of the payment period, provided there are no outstanding disputes or issues."
+            },
+            "payment_method": {
+                "title": "4.2 Payment Method",
+                "text": "Payments are made via [bank transfer/paypal/other payment method]. It is the responsibility of the accommodation provider to ensure their payment details are up-to-date."
+            }
+        },
+        "dispute_resolution": {
+            "title": "Dispute Resolution",
+            "dispute_submission": {
+                "title": "5.1 Dispute Submission",
+                "text": "If there are any disputes regarding commission payments or calculations, accommodation providers must submit a written dispute within [X] days of receiving the payment."
+            },
+            "dispute_resolution_process": {
+                "title": "5.2 Dispute Resolution Process",
+                "text": "All disputes will be reviewed by our team. We will investigate and resolve any issues in a fair and timely manner. The decision on the dispute will be final and binding."
+            }
+        },
+        "policy_updates": {
+            "title": "Policy Updates",
+            "text": "This policy may be updated from time to time. Accommodation providers will be notified of any significant changes. Continued use of the platform constitutes acceptance of the updated policy."
+        }
+    },
+    "help": {
+        "getting_started": {
+            "title": "Getting Started",
+            "text": "As an accommodation manager, you can add, modify, or delete accommodations, manage reservations, and view reviews. Follow the steps below to get started.",
+            "steps": [
+                {
+                    "title": "1. Create an Account",
+                    "text": "If you don't have an account yet, sign up by providing your establishment's details and your contact information."
+                },
+                {
+                    "title": "2. Add an Accommodation",
+                    "text": "Go to the 'My Accommodations' section to add a new accommodation. Provide details such as the name, address, available room types, and more."
+                },
+                {
+                    "title": "3. Manage Reservations",
+                    "text": "View and manage your reservations by accessing the 'Reservations' section. You can confirm, cancel, or modify bookings based on availability."
+                }
+            ]
+        },
+        "managing_accommodations": {
+            "title": "Managing Accommodations",
+            "text": "You can manage all your listed accommodations on the platform. This section helps you understand how to update your accommodation details.",
+            "sections": [
+                {
+                    "title": "Edit an Accommodation",
+                    "text": "To modify accommodation details, go to the 'My Accommodations' section, select the accommodation to edit, and update the necessary information such as pricing, amenities, and availability."
+                },
+                {
+                    "title": "Delete an Accommodation",
+                    "text": "If you wish to remove an accommodation from the listing, you can either deactivate or delete it. This action can be reversible or permanent."
+                }
+            ]
+        },
+        "reservations_and_commissions": {
+            "title": "Reservations and Commissions",
+            "text": "Manage your reservations and make sure you understand how your commissions are calculated.",
+            "sections": [
+                {
+                    "title": "View Reservations",
+                    "text": "All reservations made through the platform are visible in the 'Reservations' section. You can filter reservations by status (confirmed, pending, canceled)."
+                },
+                {
+                    "title": "Understanding Commissions",
+                    "text": "The platform charges a commission on each confirmed booking. For more details on the commission rate and calculation methods, refer to the commission policy."
+                }
+            ]
+        },
+        "support_and_contact": {
+            "title": "Support and Contact",
+            "text": "If you encounter any issues or have questions, our support team is available to assist you.",
+            "contact_methods": [
+                {
+                    "method": "Email",
+                    "details": "Email us at support@yourplatform.com and we will respond within 24 hours."
+                },
+                {
+                    "method": "Live Chat",
+                    "details": "Use our live chat for immediate assistance during business hours."
+                },
+                {
+                    "method": "FAQ",
+                    "details": "Check our FAQ page for answers to common questions."
+                }
+            ]
+        }
+    }
 }

@@ -12,6 +12,7 @@ import RoomAmenities from "@/components/RoomAmenities";
 import { UrlConfig } from "@/util/config";
 import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
 import { getResponsableAccessToken } from "@/util/Cookies";
+import imageCompression from 'browser-image-compression';
 
 export default function AddNewRoom() {
     const [typeChambre, setTypeChambre] = useState([]);
@@ -32,19 +33,51 @@ export default function AddNewRoom() {
         inputRef.current.click();
     };
 
-    const statusOptions = [
-        { id: 1, name: 'Available' },
-        { id: 2, name: 'Not Available' }
-    ];
-
-    const handleFileUpload = () => {
-        const files = inputRef.current.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-            const fileUrl = URL.createObjectURL(files[0]);
-            setListImage((prevListImage) => [...prevListImage, fileUrl]);
-            setFileImages((prevFileImages) => [...prevFileImages, files[0]]);
-        }
+    const handleImageClick = (index) => {
+        setListImage(prevList => prevList.filter((_, i) => i !== index));
+        setFileImages(prevFiles => prevFiles.filter((_, i) => i !== index));
     };
+    const handleFileUpload = async () => {
+        const files = Array.from(inputRef.current.files);
+
+        // Filtrer les fichiers pour ne garder que les images
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+
+        // Fonction pour compresser les images
+        const compressImage = async (file) => {
+            try {
+                const compressedFile = await imageCompression(file, {
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: 1920
+                });
+
+                // Ajouter l'extension du fichier d'origine au fichier compressé
+                const extension = file.name.split('.').pop();
+                const newFile = new File([compressedFile], `${file.name}.${extension}`, {
+                    type: file.type,
+                });
+
+                return newFile;
+            } catch (error) {
+                console.error('Error compressing file:', file.name, error);
+                return null;
+            }
+        };
+
+        // Compresser toutes les images et filtrer les erreurs
+        const compressedFiles = await Promise.all(validFiles.map(file => compressImage(file)));
+        const validCompressedFiles = compressedFiles.filter(file => file !== null);
+
+        // Créer les URL d'images uniquement pour les fichiers valides et compressés
+        const newImageUrls = validCompressedFiles.map(file => URL.createObjectURL(file));
+
+        // Mettre à jour les états avec les nouvelles images
+        setListImage(prevList => [...prevList, ...newImageUrls]);
+        setFileImages(prevFiles => [...prevFiles, ...validCompressedFiles]);
+    };
+
+
+
     useEffect(() => {
         // getResponsableAccessToken().then((access) => {
         fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`, {
@@ -65,7 +98,7 @@ export default function AddNewRoom() {
         // });
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Collecting missing fields
@@ -74,7 +107,7 @@ export default function AddNewRoom() {
             type: !selectedType,
             capacity: !document.getElementById('capacity_input').value,
             price: !price,
-            status: !selectedStatus,
+            avalaible: !selectedStatus,
             description: !description,
         };
 
@@ -92,7 +125,7 @@ export default function AddNewRoom() {
         formData.append('chambre', selectedType.id);
         formData.append('capacite', document.getElementById('capacity_input').value);
         formData.append('prix_nuit_chambre', price);
-        formData.append('status', selectedStatus.id);
+        formData.append('disponible_chambre', selectedStatus);
         formData.append('description', description);
 
         fileImages.forEach((file, index) => {
@@ -102,38 +135,59 @@ export default function AddNewRoom() {
         amenities.forEach((accessory, index) => {
             formData.append(`accessories[${index}]`, accessory.id);
         });
+        await handleAddRoom(formData);
 
-        getResponsableAccessToken().then((access) => {
-            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
+    };
+    const handleAddRoom = async (formData) => {
+        try {
+            // Attendre l'access token
+            const access = await getResponsableAccessToken();
+
+            // Faire l'appel à l'API pour ajouter la chambre
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${access}`,
+                    // 'Authorization': `Bearer ${access}`,
                 },
                 body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    toast.current.show({ severity: 'success', summary: 'Success', detail: 'Room added successfully', life: 2000 });
+            });
+            console.log(formData);
+            const data = await response.json();
 
-                    setTimeout(() => {
-                        // Clear all inputs
-                        setTypeChambre([]);
-                        setSelectedType(null);
-                        setSelectedStatus(null);
-                        setPrice(null);
-                        setFileImages([]);
-                        setAmenities([]);
-                        setListImage([]);
-                        setDescription("");
-
-                        window.location.reload();
-                    }, 2000);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to add room', life: 3000 });
+            if (response.ok) {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Room added successfully',
+                    life: 2000
                 });
-        });
+
+                // Réinitialiser les champs après un délai
+                setTimeout(() => {
+                    setTypeChambre([]);
+                    setSelectedType(null);
+                    setSelectedStatus(null);
+                    setPrice(null);
+                    setFileImages([]);
+                    setAmenities([]);
+                    setListImage([]);
+                    setDescription("");
+
+                    // Recharger la page
+                    window.location.reload();
+                }, 2000);
+            } else {
+                throw new Error(data.message || 'Failed to add room');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to add room',
+                life: 3000
+            });
+        }
     };
 
     return (
@@ -147,7 +201,7 @@ export default function AddNewRoom() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Room</span>
-                    <span className={style.top_container_subtitle}>Brajas Hotel</span>
+                    <span className={style.top_container_subtitle}>{user ? user.nom_hebergement : null}</span>
                 </div>
             </div>
 
@@ -161,6 +215,12 @@ export default function AddNewRoom() {
                     {listImage.map((image, index) => (
                         <div key={index} className={style.image_add_container}>
                             <Image imageClassName={style.image} src={image} alt="image" />
+                            <Button
+                                icon="pi pi-trash"
+                                className={style.delete_icon}
+                                onClick={() => handleImageClick(index)}
+                                aria-label="Delete"
+                            />
                         </div>
                     ))}
                 </div>
@@ -191,20 +251,25 @@ export default function AddNewRoom() {
                             <label htmlFor="price_input">Price per night</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <Dropdown
+                            <InputNumber className={`${style.input_text} ${missingFields.avalaible ? style.input_missing : ''}`}
+                                id="status_select" value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.value)} />
+                            {/* <Dropdown
                                 value={selectedStatus}
                                 onChange={(e) => setSelectedStatus(e.value)}
                                 options={statusOptions}
                                 optionLabel="name"
                                 className={`${style.dropdown} ${missingFields.status ? style.input_missing : ''}`}
-                            />
-                            <label htmlFor="status_select">Add status</label>
+                            /> */}
+                            <label htmlFor="status_select">Avalaible rooms
+
+                            </label>
                         </FloatLabel>
                     </div>
                 </div>
                 <div className={style.room_ammenties_container}>
                     <span className={style.room_ammenties_title}>Room amenities</span>
-                    <RoomAmenities setAmenities={setAmenities} />
+                    <RoomAmenities setAmenities={setAmenities} selectedAmenities={amenities} />
                 </div>
                 <div className={style.room_description_container}>
                     <span className={style.room_description_title}>Room description</span>
@@ -217,6 +282,7 @@ export default function AddNewRoom() {
                 <div className={style.button_submit}>
                     <Button className={style.button_add} label="Add Room" onClick={handleSubmit} />
                     <Button className={style.button_reset} label="Reset" onClick={() => {
+
                         setSelectedType(null);
                         setSelectedStatus(null);
                         setPrice(null);
@@ -224,7 +290,9 @@ export default function AddNewRoom() {
                         setAmenities([]);
                         setListImage([]);
                         setDescription("");
-                        setMissingFields({});
+
+                        // Recharger la page
+
                     }} />
                 </div>
             </div>

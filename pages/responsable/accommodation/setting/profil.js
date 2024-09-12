@@ -14,7 +14,7 @@ export default function Profil() {
 
     const router = useRouter();
 
-    const { user } = useContext(ResponsableLayoutContext);
+    const { user, setUser } = useContext(ResponsableLayoutContext);
     const { id } = router.query;
 
     const [nameHotel, setNameHotel] = useState(null);
@@ -102,7 +102,6 @@ export default function Profil() {
     }
 
     function handleSave() {
-        // Envoyer les informations mises à jour au backend
         getCsrfFromToken()
             .then(csrfToken => {
                 fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${user.id}/`, {
@@ -120,7 +119,10 @@ export default function Profil() {
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Données mises à jour:', data);
+                        setUser({
+                            ...user,
+                            username: detailProfil.first_name
+                        });
                         setIsEditingPersonal(false);
                     })
                     .catch(err => console.error('Erreur lors de la mise à jour des informations personnelles:', err));
@@ -130,40 +132,43 @@ export default function Profil() {
     }
 
     function handleSaveHotel() {
-        getCsrfFromToken()
-            .then(csrfToken => {
-                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/info/${user.id_etablissement}/`, {
-                    method: "PATCH",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFTOKEN': csrfToken,
-                    },
-                    body: JSON.stringify(infosHotel),
-                })
-                    .then(response => {
-                        return response.json().then(data => ({ status: response.status, body: data }));
-                    })
-                    .then(({ status, body }) => {
-                        if (status !== 200 && status !== 204) {
-                            console.error('Erreur lors de la mise à jour:', body);
-                            throw new Error(`Erreur lors de la mise à jour des informations de l'hôtel: ${body.detail || status}`);
-                        }
-                        console.log('Informations de l\'hôtel mises à jour:', body);
-                        setIsEditingHotel(false);
-                    })
-                    .catch(err => console.error('Erreur lors de la mise à jour des informations de l\'hôtel:', err));
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/info/${user.id_etablissement}/`, {
+            method: "PATCH",
+            headers: {
+                'Content-Type': 'application/json',
+                // 'X-CSRFTOKEN': csrfToken,
+            },
+            body: JSON.stringify(infosHotel),
+        })
+            .then(response => {
+                return response.json().then(data => ({ status: response.status, body: data }));
             })
-            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
+            .then(({ status, body }) => {
+                if (status !== 200 && status !== 204) {
+                    console.error('Erreur lors de la mise à jour:', body);
+                    throw new Error(`Erreur lors de la mise à jour des informations de l'hôtel: ${body.detail || status}`);
+                }
+                console.log('Informations de l\'hôtel mises à jour:', body);
+                setUser({
+                    ...user,
+                    nom_hebergement: infosHotel.nom_hebergement
+                });
+                setIsEditingHotel(false);
+            })
+            .catch(err => console.error('Erreur lors de la mise à jour des informations de l\'hôtel:', err));
     }
+
 
 
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
-        { label: "Security" },
+        { label: "Commission" },
         { label: "Notification" },
-        { label: "Log" },
+        { label: "Security" },
         { label: "Help" }
     ]);
+
 
     const menu = 0;
 
@@ -189,7 +194,7 @@ export default function Profil() {
                     <div className={style_profile.container}>
                         <div className={style_profile.user_title_container}>
                             <div className={style_profile.user_title_left}>
-                                <Avatar label="F" shape="circle" className={style_profile.user_avatar} />
+                                <Avatar label={detailProfil?.first_name[0]} shape="circle" className={style_profile.user_avatar} />
                                 <div className={style_profile.user_title}>
                                     <span className={style_profile.title}>{detailProfil?.first_name || 'No Name'}</span>
                                     <span>Manager</span>
@@ -226,7 +231,7 @@ export default function Profil() {
                                         icon="pi pi-pen-to-square"
                                         raised
                                         label="Edit"
-                                        onClick={() => setIsEditingPersonal(!isEditingPersonal)}
+                                        onClick={() => { setIsEditingPersonal(!isEditingPersonal); setIsEditingHotel(false) }}
                                     />
                                 )}
 
@@ -237,6 +242,8 @@ export default function Profil() {
                                     {isEditingPersonal ? (
                                         <input
                                             type="text"
+
+                                            className={style_profile.input_edit}
                                             value={detailProfil?.first_name || ''}
                                             onChange={(e) => setDetailProfil({ ...detailProfil, first_name: e.target.value })}
                                         />
@@ -249,6 +256,8 @@ export default function Profil() {
                                     {isEditingPersonal ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
+
                                             value={detailProfil?.last_name || ''}
                                             onChange={(e) => setDetailProfil({ ...detailProfil, last_name: e.target.value })}
                                         />
@@ -260,11 +269,12 @@ export default function Profil() {
                                 <div className={style_profile.detail_user}>
                                     <span className={style_profile.title}>Email address</span>
                                     {isEditingPersonal ? (
-                                        <input
-                                            type="text"
-                                            value={detailProfil?.email || ''}
-                                            onChange={(e) => setDetailProfil({ ...detailProfil, email: e.target.value })}
-                                        />
+                                        // <input
+                                        //     type="text"
+                                        //     value={detailProfil?.email || ''}
+                                        //     onChange={(e) => setDetailProfil({ ...detailProfil, email: e.target.value })}
+                                        // />
+                                        <span>{detailProfil?.email || 'No Email'}</span>
                                     ) : (
                                         <span>{detailProfil?.email || 'No Email'}</span>
                                     )}
@@ -274,6 +284,8 @@ export default function Profil() {
                                     {isEditingPersonal ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
+
                                             value={detailProfil?.numero_responsable || ''}
                                             onChange={(e) => setDetailProfil({ ...detailProfil, numero_responsable: e.target.value })}
                                         />
@@ -313,7 +325,7 @@ export default function Profil() {
                                         icon="pi pi-pen-to-square"
                                         raised
                                         label="Edit"
-                                        onClick={() => setIsEditingHotel(!isEditingHotel)}
+                                        onClick={() => { setIsEditingHotel(!isEditingHotel); setIsEditingPersonal(false); }}
                                     />
                                 )}
                             </div>
@@ -323,6 +335,7 @@ export default function Profil() {
                                     {isEditingHotel ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
                                             value={infosHotel?.nom_hebergement || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, nom_hebergement: e.target.value })}
                                         />
@@ -336,6 +349,7 @@ export default function Profil() {
                                     {isEditingHotel ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
                                             value={infosHotel?.localisation.adresse || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, localisation: { ...infosHotel.localisation, adresse: e.target.value } })}
                                         />
@@ -349,6 +363,7 @@ export default function Profil() {
                                     {isEditingHotel ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
                                             value={infosHotel?.localisation.ville || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, localisation: { ...infosHotel.localisation, ville: e.target.value } })}
                                         />
@@ -361,6 +376,7 @@ export default function Profil() {
                                     {isEditingHotel ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
                                             value={infosHotel?.nif || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, nif: e.target.value })}
                                         />
@@ -374,6 +390,7 @@ export default function Profil() {
                                     {isEditingHotel ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
                                             value={infosHotel?.stat || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, stat: e.target.value })}
                                         />
@@ -387,6 +404,7 @@ export default function Profil() {
                                     {isEditingHotel ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
                                             value={infosHotel?.type_hebergement || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, type_hebergement: e.target.value })}
                                         />
@@ -400,6 +418,7 @@ export default function Profil() {
                                     {isEditingHotel ? (
                                         <input
                                             type="text"
+                                            className={style_profile.input_edit}
                                             value={infosHotel?.available_room_count || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, available_room_count: e.target.value })}
                                         />
