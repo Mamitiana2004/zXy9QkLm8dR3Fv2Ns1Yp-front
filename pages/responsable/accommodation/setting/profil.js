@@ -350,11 +350,11 @@ export default function Profil() {
                                         <input
                                             type="text"
                                             className={style_profile.input_edit}
-                                            value={infosHotel?.localisation.adresse || ''}
+                                            value={infosHotel?.localisation?.adresse || ''}
                                             onChange={(e) => setInfosHotel({ ...infosHotel, localisation: { ...infosHotel.localisation, adresse: e.target.value } })}
                                         />
                                     ) : (
-                                        <span>{infosHotel?.localisation.adresse || 'No Number'}</span>
+                                        <span>{infosHotel?.localisation?.adresse || 'No Number'}</span>
 
                                     )}
                                 </div>
@@ -368,7 +368,7 @@ export default function Profil() {
                                             onChange={(e) => setInfosHotel({ ...infosHotel, localisation: { ...infosHotel.localisation, ville: e.target.value } })}
                                         />
                                     ) : (
-                                        <span>{infosHotel?.localisation.ville || 'No Number'}</span>
+                                        <span>{infosHotel?.localisation?.ville || 'No Number'}</span>
                                     )}
                                 </div>
                                 <div className={style_profile.detail_user}>
