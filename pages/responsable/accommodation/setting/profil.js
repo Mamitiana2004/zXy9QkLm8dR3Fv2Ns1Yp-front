@@ -160,13 +160,15 @@ export default function Profil() {
     }
 
 
+
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
         { label: "Commission" },
         { label: "Notification" },
-        { label: "Log" },
+        { label: "Security" },
         { label: "Help" }
     ]);
+
 
     const menu = 0;
 

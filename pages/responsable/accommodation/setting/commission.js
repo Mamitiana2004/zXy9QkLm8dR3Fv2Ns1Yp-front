@@ -20,13 +20,15 @@ export default function Commission() {
     const { user } = useContext(ResponsableLayoutContext);
     const toast = useRef(null);
 
+
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
         { label: "Commission" },
         { label: "Notification" },
-        { label: "Log" },
+        { label: "Security" },
         { label: "Help" }
     ]);
+
 
     const menu = 1;
     const [priceIntervalle, setPriceIntervalle] = useState([0, 100]);
@@ -151,7 +153,7 @@ export default function Commission() {
     return (
         <>
             <Head>
-                <title>Security</title>
+                <title>Commission</title>
             </Head>
 
             <div className={style.container}>
