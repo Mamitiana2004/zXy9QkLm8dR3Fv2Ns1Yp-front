@@ -200,7 +200,7 @@ export default function AddNewRoom() {
     return (
         <>
             <Head>
-                <title>Add new Room</title>
+                <title>Add Product</title>
             </Head>
             <div className={style.container}>
                 <div className={style.image_container}>
@@ -295,7 +295,7 @@ export default function AddNewRoom() {
 
                 <div className={style.button_list}>
                     <Button className="button-secondary" raised label="Cancel" />
-                    <Button className="button-primary" label="+ Add room" onClick={handleSubmit} />
+                    <Button className="button-primary" label="+ Add product" onClick={handleSubmit} />
                 </div>
             </div>
             <Toast ref={toast} />
