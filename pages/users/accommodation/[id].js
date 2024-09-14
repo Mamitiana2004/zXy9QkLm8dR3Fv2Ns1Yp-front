@@ -36,10 +36,9 @@ export default function HotelInfos() {
 
     const [guest, setGuest] = useState(null);
     const [check, setCheck] = useState(null);
-
     const [discount, setDiscount] = useState(0);
     const [chambreSelected, setChambreSelected] = useState([]);
-
+    const [chambreQuantities, setChambreQuantities] = useState({});
     const [bookingVisible, setBookingVisible] = useState(false);
     const [availability, setAvailability] = useState(false);
     const [data, setData] = useState(false);
@@ -62,6 +61,7 @@ export default function HotelInfos() {
     }
 
     const handleBooking = () => {
+        console.log(chambreSelected);
         const date_status = check != null ? new Date(check[0]).toISOString().split('T')[0] == new Date(check[1]).toISOString().split('T')[0] : true;
         if (check != null && check.length == 2 && check[1] != null && !date_status && guest && chambreSelected.length > 0) {
             setBookingVisible(true);
@@ -104,11 +104,24 @@ export default function HotelInfos() {
             let dateMin = date1 < date2 ? date1 : date2;
             let dateMax = date1 > date2 ? date1 : date2;
             const differenceInTime = dateMax.getTime() - dateMin.getTime();
-            return (differenceInTime / (1000 * 3600 * 24)) + 1;
+            return (differenceInTime / (1000 * 3600 * 24));
         }
         return 1;
     }
+    const handleQuantityChange = (chambreId, value) => {
+        // Met à jour les quantités de chambres
+        setChambreQuantities(prevState => ({
+            ...prevState,
+            [chambreId]: value
+        }));
 
+        // Met à jour la sélection des chambres avec la quantité
+        setChambreSelected(prevSelected => {
+            return prevSelected.map(c =>
+                c.id === chambreId ? { ...c, quantity: value } : c
+            );
+        });
+    };
 
 
     useEffect(() => {
@@ -171,9 +184,6 @@ export default function HotelInfos() {
     }
 
 
-
-
-
     const selectChambre = (room) => {
         let chambreCopy = [];
         let find = false;
@@ -188,7 +198,8 @@ export default function HotelInfos() {
             }
         })
         if (chambre.length == 0 || !find) {
-            chambreCopy.push(room);
+            // chambreCopy.push(room);
+            chambreCopy.push({ ...room, quantity: chambreQuantities[room.id] || 1 });
         }
         setChambreSelected(chambreCopy);
     }
@@ -196,10 +207,12 @@ export default function HotelInfos() {
     const getPriceChambreSelected = () => {
         let price = 0;
         chambreSelected.map((c) => {
-            price += parseFloat(c.prix_nuit_chambre);
-        })
-        return price;
+            const chambreQuantity = chambreQuantities[c.id] || 1;
+            price += parseFloat(c.prix_nuit_chambre) * chambreQuantity;
+        });
+        return price.toFixed(2);
     }
+
 
     const renderAmenities = () => {
         if (!accessoireUtil.length) return <p>No amenities available.</p>;
@@ -225,7 +238,6 @@ export default function HotelInfos() {
             </div>
         ));
     };
-
     const getPriceTotal = () => {
         let priceTotal = getPriceChambreSelected() * getNombreJour();
         if (priceTotal < 0 || discount < 0 || discount > 100) {
@@ -233,8 +245,9 @@ export default function HotelInfos() {
         }
         const discountAmount = (priceTotal * discount) / 100;
         const finalPrice = priceTotal - discountAmount;
-        return finalPrice;
+        return finalPrice.toFixed(2);  // Limiter à 2 chiffres après la virgule
     }
+
 
     return (
         <>
@@ -473,7 +486,24 @@ export default function HotelInfos() {
                                     <label htmlFor="check">Check in | Check out</label>
                                 </FloatLabel>
                                 <FloatLabel>
-                                    <InputNumber className={style.input_number} id="guest" value={guest} onChange={(e) => setGuest(e.value)} />
+                                    <InputNumber
+                                        className={style.input_number}
+                                        id="guest" value={guest}
+                                        onChange={(e) => setGuest(e.value)}
+                                        mode="decimal"
+                                        showButtons
+                                        min={1}
+                                        max={100}
+                                    />
+                                    {/* <InputNumber
+                                        inputId="minmax-buttons"
+                                        value={chambreQuantities[roomData.id] || 1}
+                                        onValueChange={(e) => handleQuantityChange(roomData.id, e.value)}
+                                        mode="decimal"
+                                        showButtons min={1}
+                                        max={roomData.disponible_chambre}
+                                        disabled={!chambreSelected.some(c => c.id === roomData.id)}
+                                    /> */}
                                     <label htmlFor="guest">Guest</label>
                                 </FloatLabel>
                             </div>
@@ -524,9 +554,23 @@ export default function HotelInfos() {
                                                     <Image imageClassName={style.chambre_image} alt="chambre" src={roomData.images_chambre[0] != null ? UrlConfig.apiBaseUrl + roomData.images_chambre[0].images : "/images/hotel/chambre.jpg"} />
                                                     <div className={style.chambre_detail}>
                                                         <span><i className="pi pi-home" /> {roomData.chambre.nombre_min_personnes} - {roomData.chambre.nombre_max_personnes} Personnes</span>
-                                                        {roomData.accessoires.slice(0, 4).map(accessoire => (
+                                                        {/* {roomData.accessoires.slice(0, 2).map(accessoire => (
                                                             <span key={accessoire.id}><i className="pi pi-tv" /> {accessoire.nom_accessoire},</span>
-                                                        ))}
+                                                        ))}... */}
+                                                        <span>
+                                                            <div className="flex-auto">
+                                                                <label htmlFor="minmax-buttons" className="font-bold block mb-2">Chambre à reserver</label>
+                                                                <InputNumber
+                                                                    inputId="minmax-buttons"
+                                                                    value={chambreQuantities[roomData.id] || 1}
+                                                                    onValueChange={(e) => handleQuantityChange(roomData.id, e.value)}
+                                                                    mode="decimal"
+                                                                    showButtons min={1}
+                                                                    max={roomData.disponible_chambre}
+                                                                    disabled={!chambreSelected.some(c => c.id === roomData.id)}
+                                                                />
+                                                            </div>
+                                                        </span>
                                                     </div>
                                                 </div>
                                                 <Button onClick={() => { setChambre_id(roomData.id), setAvailability(true) }} className="button-primary" label="Details" />
