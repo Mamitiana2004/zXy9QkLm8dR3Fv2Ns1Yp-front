@@ -34,11 +34,15 @@ export default function Security() {
     ]);
 
     const menu = 3;
-    function FetchProfil(id_responsable) {
+    async function FetchProfil(id_responsable) {
+        const access = await getResponsableAccessToken();
+
         fetch(`${UrlConfig.apiBaseUrl}/api/accounts/detail-responsable/${id_responsable}/`, {
             method: "GET",
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${access}`,
+
             }
         })
             .then(response => response.json())

@@ -21,8 +21,10 @@ export default function Commission() {
     const toast = useRef(null);
 
 
+
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
+        { label: "Info" },
         { label: "Commission" },
         { label: "Notification" },
         { label: "Security" },
@@ -30,7 +32,7 @@ export default function Commission() {
     ]);
 
 
-    const menu = 1;
+    const menu = 2;
     const [priceIntervalle, setPriceIntervalle] = useState([0, 100]);
     const [commission, setCommission] = useState(7);
     const [selectedCommission, setSelectedCommission] = useState(7);

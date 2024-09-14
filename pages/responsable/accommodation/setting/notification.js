@@ -15,15 +15,17 @@ export default function Notification() {
 
 
 
+
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
+        { label: "Info" },
         { label: "Commission" },
         { label: "Notification" },
         { label: "Security" },
         { label: "Help" }
     ]);
 
-    const menu = 2;
+    const menu = 3;
     useEffect(() => {
         const getNotifications = async () => {
             try {

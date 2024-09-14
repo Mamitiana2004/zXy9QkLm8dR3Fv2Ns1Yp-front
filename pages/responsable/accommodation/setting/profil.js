@@ -9,6 +9,7 @@ import { Divider } from "primereact/divider";
 import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
 import { getCsrfFromToken } from '@/util/csrf';
 import UrlConfig from "@/util/config";
+import { getResponsableAccessToken } from "@/util/Cookies";
 
 export default function Profil() {
 
@@ -36,7 +37,9 @@ export default function Profil() {
         }
     }, [id, user]);
 
-    function FetchProfil(id_hebergement, id_responsable) {
+    async function FetchProfil(id_hebergement, id_responsable) {
+        const access = await getResponsableAccessToken();
+
         getCsrfFromToken()
             .then(csrfToken => {
                 // Fetch hotel details
@@ -59,6 +62,7 @@ export default function Profil() {
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFTOKEN': csrfToken,
+                        'Authorization': `Bearer ${access}`,
                     }
                 })
                     .then(response => response.json())
@@ -161,8 +165,10 @@ export default function Profil() {
 
 
 
+
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
+        { label: "Info" },
         { label: "Commission" },
         { label: "Notification" },
         { label: "Security" },

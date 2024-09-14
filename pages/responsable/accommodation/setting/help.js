@@ -12,14 +12,15 @@ export default function Help() {
     const { user, setUser } = useContext(ResponsableLayoutContext);
 
 
+
     const [menuSidebar, setMenuSidebar] = useState([
         { label: "Profil" },
+        { label: "Info" },
         { label: "Commission" },
         { label: "Notification" },
         { label: "Security" },
         { label: "Help" }
     ]);
-
 
     const menu = 4;
     const policySections = [
