@@ -533,6 +533,7 @@ export default function BookingModal(props) {
                                             id_chambres={roomIds}
                                             days_total={total_days}
                                             guest={props.guest}
+                                            room_details={props.rooms}
                                             check_in={props.check_in != null ? new Date(props.check_in) : null}
                                             check_out={props.check_out != null ? new Date(props.check_out) : null}
                                         />
