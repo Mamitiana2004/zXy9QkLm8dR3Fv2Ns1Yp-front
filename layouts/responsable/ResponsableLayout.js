@@ -78,13 +78,13 @@ export default function ResponsableLayout(props) {
                 },
                 {
                     icon: "pi pi-shopping-bag",
-                    iconFill: "pi pi-shopping-bag-fill",
+                    iconFill: "pi pi-shopping-bag",
                     label: "Order",
                     link: "/responsable/handcraft/order"
                 },
                 {
                     icon: "pi pi-shop",
-                    iconFill: "pi pi-shop-fill",
+                    iconFill: "pi pi-shop",
                     label: "Product",
                     link: "/responsable/handcraft/product"
                 },
