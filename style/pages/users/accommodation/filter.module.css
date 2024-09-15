@@ -79,12 +79,12 @@
     .filter_container {
         flex-direction: column;
     }
-
     .filter_left {
         width: 100%;
         overflow-x: auto;
         flex-direction: row;
     }
+
 }
 
 @media (max-width:1520px) {
@@ -153,5 +153,16 @@
     .container {
         margin: 0;
         padding: 5%;
+    }
+    .filter_container{
+        flex-direction: column;
+    }
+    .filter_left{
+        margin-top: -1rem ;
+        width: 100%;
+        overflow-x: auto;
+        height:17rem ;
+        display: flex;
+        align-items: center;
     }
 }

@@ -860,10 +860,10 @@
     }
     .group_trip_detail{
         display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 30px;
-    margin-left: 50px;
+        align-items: center;
+        flex-direction: column;
+        gap: 30px;
+        margin-left: 0px;
 }
 
     .top_value_container{
