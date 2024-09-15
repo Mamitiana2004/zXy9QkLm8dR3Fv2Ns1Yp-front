@@ -42,8 +42,8 @@ export default function Customer() {
                     }
                 })
                     .then(response => response.json())
-                     .then(data => {
-                    const mappedCustomers = data.map((client) => ({
+                    .then(data => {
+                        const mappedCustomers = data.map((client) => ({
                             id: client.id,
                             name: client.username,
                             email: client.email,
@@ -59,7 +59,7 @@ export default function Customer() {
                     })
                     .catch(err => console.error('Erreur lors de la récupération des Liste des Customers:', err));
             })
-            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));   
+            .catch(err => console.error('Erreur lors de la récupération du token CSRF:', err));
     }
 
     const afficheDetail = (item) => {
@@ -96,7 +96,7 @@ export default function Customer() {
                         <Column sortable field="id" header="No" />
                         <Column sortable field="name" header="Name" />
                         <Column sortable field="email" header="Email" />
-                        <Column sortable field="phone" header="Phone number" />
+                        {/* <Column sortable field="phone" header="Phone number" /> */}
                         <Column sortable field="total_price" header="Total Price" />
                         <Column body={buttonTemplate} header="Actions" />
                     </DataTable>
@@ -119,10 +119,10 @@ export default function Customer() {
                                         <span className={style.detail_title}>Email</span>
                                         <span className={style.detail_label}>{customer.email}</span>
                                     </div>
-                                    <div className={style.detail}>
+                                    {/* <div className={style.detail}>
                                         <span className={style.detail_title}>Phone</span>
                                         <span className={style.detail_label}>{customer.phone}</span>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                             <div className={style.detail_customer}>

@@ -6,8 +6,6 @@ import { UrlConfig } from "@/util/config"; // Assurez-vous que le chemin est cor
 
 export default function PopularTripCard({ voyage }) {
     const router = useRouter();
-
-    // Vérifiez si voyage est défini et a la propriété couverture_images
     const imageUrl = voyage && voyage.couverture_images && voyage.couverture_images.length > 0
         ? `${UrlConfig.apiBaseUrl}${voyage.couverture_images[0].image}`
         : '/images/default-image.jpg';
@@ -20,12 +18,12 @@ export default function PopularTripCard({ voyage }) {
                     <div className={style.title_wrapper}>
                         <span className={style.title}>{voyage?.nom_voyage || 'Default Title'}</span>
                         <span className={style.subtitle}>
-                            <i style={{fontSize:"12px"}} className='pi pi-user'/>
+                            <i style={{ fontSize: "12px" }} className='pi pi-user' />
                             <span>{voyage?.nom_tour_operateur || 'Default Operator'}</span>
                         </span>
                     </div>
                     <div className={style.position}>
-                        <i style={{fontSize:"12px"}} className='pi pi-map-marker'/>
+                        <i style={{ fontSize: "12px" }} className='pi pi-map-marker' />
                         <span>{voyage?.ville_depart || 'Unknown City'} - {voyage?.destination_voyage || 'Unknown Destination'}</span>
                     </div>
                 </div>
@@ -38,11 +36,11 @@ export default function PopularTripCard({ voyage }) {
             </div>
 
             <div className={style.distance}>
-                <Image src={"/images/tours/road.svg"} alt='star' width={14} height={14}/>
+                <Image src={"/images/tours/road.svg"} alt='star' width={14} height={14} />
                 <span>{voyage?.prix_voyage || 'N/A'} km</span>
             </div>
             <div className={style.like}>
-                <Image src={"/images/heart.svg"} alt='star' width={14} height={14}/>
+                <Image src={"/images/heart.svg"} alt='star' width={14} height={14} />
                 <span>{voyage?.like_count || 0} </span>
             </div>
         </div>

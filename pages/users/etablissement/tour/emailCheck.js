@@ -13,6 +13,7 @@ import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import WaitSpinner from '@/components/WaitSpinner';
 
 
 export default function Verify() {
@@ -21,15 +22,14 @@ export default function Verify() {
     const toast = useRef(null);
     const [timer, setTimer] = useState(0);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [isSubmitDisabled, setSubmitDisabled] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
     const [locate, setLocate] = useState();
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
 
     const [email, setEmail] = useState("");
     const [code, setCode] = useState();
-    const [username, setUsername] = useState();
-    const [idEtablissement, setIdEtablissement] = useState();
-    const inputCode = useRef(null);
+
     useEffect(() => {
         if (typeof window !== "undefined") {
             const storedLocation = localStorage.getItem("info_location");
@@ -38,81 +38,6 @@ export default function Verify() {
             }
         }
     }, []);
-
-    const CreateResponsableUser = async (data) => {
-        try {
-            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/responsables/create/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data
-            } else {
-                console.error("Erreur lors de l'enregistrement:", response.statusText);
-            }
-        } catch (error) {
-            console.error("Erreur de requête:", error);
-        }
-    }
-    const CreateLocation = async (data) => {
-
-        fetch(`${UrlConfig.apiBaseUrl}/api/tour/localisation/create/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(() => {
-                // console.log('Success:', data);
-                CleanStorage();
-                return true;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                return false;
-
-            });
-    };
-
-    const CreateTour = async (data) => {
-        try {
-            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/tour/create/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-            if (!response.ok) {
-                throw new Error("Erreur lors de l'enregistrement: " + response.statusText);
-            }
-            const data_1 = await response.json();
-
-            toast.current.show({
-                severity: "success",
-                summary: "Success",
-                detail: "Etablissement created successfully",
-                life: 5000
-            });
-
-            return data_1;
-        } catch (error) {
-            console.error("Erreur de requête:", error);
-            return false;
-        }
-    }
     const CleanStorage = async () => {
 
         localStorage.setItem("email_responsable", localStorage.getItem("email_etablissement"));
@@ -125,10 +50,94 @@ export default function Verify() {
         localStorage.removeItem("email_etablissement");
 
         setTimeout(() => {
+            setIsSpinnerVisible(false);
             router.push('/users/etablissement/tour/addImage');
         }, 3000);
 
     }
+    const fetchWithRetry = async (url, options, retries = 3, delay = 1000) => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const response = await fetch(url, options);
+                if (response.ok) {
+                    return response;
+                }
+                if (attempt === retries) {
+                    throw new Error(`Failed after ${retries} attempts`);
+                }
+            } catch (error) {
+                if (attempt === retries) {
+                    throw error;
+                }
+                await new Promise(res => setTimeout(res, delay));
+            }
+        }
+    };
+    const CreateResponsableUser = async (data) => {
+        try {
+            const response = await fetchWithRetry(`${UrlConfig.apiBaseUrl}/api/accounts/responsables/create/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const responseData = await response.json();
+            return responseData;
+        } catch (error) {
+            console.error("Erreur lors de l'enregistrement:", error);
+            return null;
+        }
+    };
+    const CreateLocation = async (data) => {
+        try {
+            const response = await fetchWithRetry(`${UrlConfig.apiBaseUrl}/api/tour/localisation/create/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                CleanStorage();
+                return true;
+            } else {
+                throw new Error('Failed to create location');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            setIsSpinnerVisible(false);
+            return false;
+        }
+    };
+    const CreateTour = async (data) => {
+        try {
+            const response = await fetchWithRetry(`${UrlConfig.apiBaseUrl}/api/tour/create/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const responseData = await response.json();
+            toast.current.show({
+                severity: "success",
+                summary: "Success",
+                detail: "Etablissement created successfully",
+                life: 5000
+            });
+
+            return responseData;
+        } catch (error) {
+            console.error("Erreur de requête:", error);
+            setIsSpinnerVisible(false);
+            return false;
+        }
+    };
+
     const LoadData = async () => {
         if (locate) {
 
@@ -168,6 +177,8 @@ export default function Verify() {
                                     CreateLocation(locate_data);
 
                                 } else {
+                                    setIsSpinnerVisible(false);
+
                                     toast.current.show({
                                         severity: "error",
                                         summary: "Error",
@@ -183,39 +194,10 @@ export default function Verify() {
 
     };
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            if (localStorage.getItem("timer")) {
-                setTimer(localStorage.getItem("timer"));
-                setIsButtonDisabled(true);
-            }
-        }
-        setEmail(sessionStorage.getItem("email_in_signup"));
-    }, [])
-
-    useEffect(() => {
-        let interval;
-        if (isButtonDisabled) {
-            interval = setInterval(() => {
-                setTimer((prevTimer) => {
-                    localStorage.setItem("timer", prevTimer);
-                    if (prevTimer <= 1) {
-                        localStorage.removeItem("timer");
-                        clearInterval(interval);
-                        setIsButtonDisabled(false);
-                        return 0;
-                    }
-                    return prevTimer - 1;
-                });
-            }, 1000);
-        }
-        return () => clearInterval(interval);
-    }, [isButtonDisabled])
-
-
-
     const handleSubmit = async () => {
         setSubmitDisabled(true);
+        setIsInputDisabled(true);
+        setIsSpinnerVisible(true);
 
         const email = localStorage.getItem("email_etablissement");
 
@@ -246,11 +228,13 @@ export default function Verify() {
                     severity: 'error',
                     summary: 'Error',
                     detail: data.error || 'Verification code is incorrect',
-                    life: 3000
+                    life: 5000
                 });
                 setTimeout(() => {
+                    setIsInputDisabled(false);
+                    setIsSpinnerVisible(false);
                     setSubmitDisabled(false);
-                }, 3000);
+                }, 5000);
             }
         } catch (error) {
             toast.current.show({
@@ -260,9 +244,38 @@ export default function Verify() {
                 life: 3000
             }); setTimeout(() => {
                 setSubmitDisabled(false);
+                setIsInputDisabled(false);
             }, 3000);
         }
     };
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (localStorage.getItem("timer")) {
+                setTimer(localStorage.getItem("timer"));
+                setIsButtonDisabled(true);
+            }
+        }
+        setEmail(sessionStorage.getItem("email_in_signup"));
+    }, [])
+
+    useEffect(() => {
+        let interval;
+        if (isButtonDisabled) {
+            interval = setInterval(() => {
+                setTimer((prevTimer) => {
+                    localStorage.setItem("timer", prevTimer);
+                    if (prevTimer <= 1) {
+                        localStorage.removeItem("timer");
+                        clearInterval(interval);
+                        setIsButtonDisabled(false);
+                        return 0;
+                    }
+                    return prevTimer - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [isButtonDisabled])
 
     const sendNewCode = async (email) => {
         try {
@@ -305,20 +318,15 @@ export default function Verify() {
     }
 
 
-
     const tapeCode = (e) => {
         setCode(e.value);
-        if (code) {
-            if (code.length >= 6) {
-                const verify_code = handleSubmit();
-                if (verify_code) {
-                    setIsInputDisabled(true);
-                    // router.push("/users/register/create-account")
-                } else (console.error(verify_code))
-            }
+        if (e.value.length >= 6) {
+            setSubmitDisabled(false);
+        }
+        if (e.value.length < 6) {
+            setSubmitDisabled(true);
         }
     }
-
 
 
 
@@ -356,6 +364,8 @@ export default function Verify() {
                     <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
             </div>
+            <WaitSpinner visible={isSpinnerVisible} />
+
             <Toast ref={toast} />
         </>
 

@@ -13,6 +13,7 @@ import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import WaitSpinner from '@/components/WaitSpinner';
 
 
 export default function Verify() {
@@ -21,9 +22,10 @@ export default function Verify() {
     const toast = useRef(null);
     const [timer, setTimer] = useState(0);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [isSubmitDisabled, setSubmitDisabled] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
     const [locate, setLocate] = useState();
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
 
     const [email, setEmail] = useState("");
     const [code, setCode] = useState();
@@ -61,7 +63,7 @@ export default function Verify() {
     }
     const CreateLocation = async (data) => {
 
-        fetch(`${UrlConfig.apiBaseUrl}/api/tour/localisation/create/`, {
+        fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/localisation/create/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -80,6 +82,13 @@ export default function Verify() {
                 return true;
             })
             .catch(error => {
+                setIsSpinnerVisible(false);
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: "Localisation can't be set",
+                    life: 5000
+                });
                 console.error('Error:', error);
                 return false;
 
@@ -125,12 +134,62 @@ export default function Verify() {
         localStorage.removeItem("email_etablissement");
 
         setTimeout(() => {
+            setIsSpinnerVisible(false);
             router.push('/users/etablissement/we');
-        }, 3000);
+        }, 1000);
 
     }
+    const handleSave = async () => {
+        if (locate) {
+            console.log(locate.adress);
+            const etablissement_info = JSON.parse(localStorage.getItem("formData"));
+            const userInfo = JSON.parse(localStorage.getItem("_dfqaccess404"));
+            const addressParts = locate.adress.split(',');
+            const city = addressParts[addressParts.length - 2].trim();
+
+            const responsable = await CreateResponsableUser(userInfo);
+            if (responsable) {
+                etablissement_info.responsable = responsable.id;
+            }
+
+
+            const handcraft = await CreateHandcraft(etablissement_info);
+
+            if (handcraft) {
+                const type_etablissement = localStorage.getItem("type_etablissement");
+
+                const responsable_info = {
+                    username: responsable.username,
+                    job_post: "Manager",
+                    id_etablissement: handcraft.id,
+                    type_etablissement: type_etablissement
+                }
+                localStorage.setItem("responsable_info", JSON.stringify(responsable_info));
+                const locate_data = {
+                    "adresse": locate.adress,
+                    "ville": city,
+                    "latitude": locate.location.lat,
+                    "longitude": locate.location.lng,
+                    "artisanat": handcraft.id
+                }
+                console.log(locate_data);
+                const location = await CreateLocation(locate_data);
+                console.log(location);
+            } else {
+                setIsSpinnerVisible(false);
+
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: "Please try again later",
+                    life: 5000
+                });
+            }
+
+        }
+    }
     const LoadData = async () => {
-        setLocate();
+        // setLocate();
         if (locate) {
 
             const etablissement_info = JSON.parse(localStorage.getItem("formData"));
@@ -170,6 +229,8 @@ export default function Verify() {
                                     CreateLocation(locate_data);
 
                                 } else {
+                                    setIsSpinnerVisible(false);
+
                                     toast.current.show({
                                         severity: "error",
                                         summary: "Error",
@@ -218,10 +279,11 @@ export default function Verify() {
 
     const handleSubmit = async () => {
         setSubmitDisabled(true);
+        setIsInputDisabled(true);
+        setIsSpinnerVisible(true);
 
         const email = localStorage.getItem("email_etablissement");
 
-        console.log(code, email);
         try {
             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/verify-code/`, {
                 method: 'POST',
@@ -232,7 +294,7 @@ export default function Verify() {
             });
 
             const data = await response.json();
-            console.log(data);
+
             if (response.ok) {
                 toast.current.show({
                     severity: 'success',
@@ -241,18 +303,21 @@ export default function Verify() {
                     life: 3000
                 });
 
-                LoadData();
+                // LoadData();
+                handleSave();
             } else {
 
                 toast.current.show({
                     severity: 'error',
                     summary: 'Error',
                     detail: data.error || 'Verification code is incorrect',
-                    life: 3000
+                    life: 5000
                 });
                 setTimeout(() => {
+                    setIsInputDisabled(false);
+                    setIsSpinnerVisible(false);
                     setSubmitDisabled(false);
-                }, 3000);
+                }, 5000);
             }
         } catch (error) {
             toast.current.show({
@@ -261,8 +326,10 @@ export default function Verify() {
                 detail: 'An error occurred: ' + error.message,
                 life: 3000
             }); setTimeout(() => {
+                setIsInputDisabled(false);
+                setIsSpinnerVisible(false);
                 setSubmitDisabled(false);
-            }, 3000);
+            }, 10000);
         }
     };
 
@@ -290,6 +357,8 @@ export default function Verify() {
             });
 
         } catch (error) {
+            setIsSpinnerVisible(false);
+
             toast.current.show({
                 severity: 'error',
                 summary: 'Error',
@@ -306,21 +375,15 @@ export default function Verify() {
         setTimer(30);
     }
 
-
-
     const tapeCode = (e) => {
         setCode(e.value);
-        if (code) {
-            if (code.length >= 6) {
-                const verify_code = handleSubmit();
-                if (verify_code) {
-                    setIsInputDisabled(true);
-                    // router.push("/users/register/create-account")
-                } else (console.error(verify_code))
-            }
+        if (e.value.length >= 6) {
+            setSubmitDisabled(false);
+        }
+        if (e.value.length < 6) {
+            setSubmitDisabled(true);
         }
     }
-
 
 
 
@@ -358,6 +421,7 @@ export default function Verify() {
                     <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
             </div>
+            <WaitSpinner visible={isSpinnerVisible} />
             <Toast ref={toast} />
         </>
 

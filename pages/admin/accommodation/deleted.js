@@ -78,7 +78,7 @@ export default function Accommodation() {
         if (!accessToken) {
             accessToken = getNewAdminAccess();
         }
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/list/`, {
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/deleted/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ export default function Accommodation() {
     };
 
     const imageBodyTemplate = (item) => {
-        return <Image imageClassName={style.image_data} src={item.images[0].image} alt={item.name} />
+        return <Image imageClassName={style.image_data} src={item.images[0] ? item.images[0].image : null} alt={item.name} />
     }
 
     const typeBodyTemplate = (item) => {
@@ -280,23 +280,23 @@ export default function Accommodation() {
         return (
             <div className={style.actionBodyTemplate}>
                 <Button onClick={() => { update(item) }} icon="pi pi-pencil" rounded outlined severity="success" />
-                {(statusAcc ?
+                {/* {(statusAcc ?
                     <Button onClick={() => { statusChange(item.id) }} icon="pi pi-play" rounded outlined severity="success" />
                     :
                     <Button onClick={() => { statusChange(item.id) }} icon="pi pi-pause" rounded outlined severity="danger" />
-                )}
-                <Button onClick={() => confirmDelete(item)} icon="pi pi-trash" rounded outlined severity="danger" />
+                )} */}
+                <Button onClick={() => confirmDelete(item)} icon="pi pi-trash" rounded outlined severity="info" />
             </div>
         )
     }
 
     const confirmDelete = (item) => {
         confirmDialog({
-            message: 'Do you want to delete this accommodation?',
-            header: 'Delete Confirmation',
+            message: 'Do you undelete this accommodation?',
+            header: 'Activaction Confirmation',
             icon: 'pi pi-info-circle',
             defaultFocus: 'reject',
-            acceptClassName: 'p-button-danger',
+            acceptClassName: 'p-button-info',
             accept: () => deleteAccommodation(item)
         });
     }
@@ -328,7 +328,7 @@ export default function Accommodation() {
         await deleteChange(item.id);
         let _accommodations = accommodations.filter((val) => val.id !== item.id);
         setAccommodations(_accommodations);
-        toast.current.show({ severity: 'success', summary: 'Success', detail: 'Accommodation deleted', life: 3000 });
+        toast.current.show({ severity: 'success', summary: 'Success', detail: 'Accommodation activated', life: 3000 });
     }
 
     const header = (
@@ -400,7 +400,7 @@ export default function Accommodation() {
                     onSelectionChange={(e) => setAccommodationSelected(e.value)}
                 >
                     <Column selectionMode="multiple" exportable={false} />
-                    <Column sortable field="id" header="ID" exportable={false} />
+                    {/* <Column sortable field="id" header="ID" exportable={false} /> */}
                     <Column sortable filter filterPlaceholder="Search by name" field="nom_hebergement" header="Name" />
                     <Column body={imageBodyTemplate} header="Image" />
                     <Column body={typeBodyTemplate} header="Type" />

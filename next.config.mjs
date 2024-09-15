@@ -2,6 +2,14 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/dashboard/:path*',
+  //       destination: '/admin/:path*',
+  //     },
+  //   ];
+  // },
   images: {
     remotePatterns: [
       {
@@ -12,18 +20,12 @@ const nextConfig = {
         protocol: 'http',
         hostname: '192.168.88.57',
       },
-      {
-        protocol: 'http',
-        hostname: '192.168.88.23',
-      },
+
       {
         protocol: 'http',
         hostname: '34.122.163.41',
       },
-      {
-        protocol: 'http',
-        hostname: '192.168.88.13',
-      },
+
       {
         protocol: 'https',
         hostname: 'admin-server.craft-aftrip.com',

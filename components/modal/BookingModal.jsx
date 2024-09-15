@@ -11,23 +11,25 @@ import stylePassword from '@/style/components/PasswordInput.module.css';
 import { Divider } from '@mui/material';
 import { Password } from 'primereact/password';
 import Cookies from 'js-cookie';
-import { getNewAccess } from '@/util/Cookies';
+import { customLogin, getClientAccess, getNewAccess } from '@/util/Cookies';
 import UrlConfig from '@/util/config';
 
 export default function BookingModal(props) {
 
     const [paystep, setPaystep] = useState(0);
     const [isFirstOutlined, setIsFirstOutlined] = useState(true);
+    const [noCurrentAccounts, setNoCurrentAccounts] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
+    const [accId, setId] = useState("");
+    const [editOrCreate, setEditOrCreate] = useState("Create & Continue");
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
     const [adresse, setAdresse] = useState("");
-    const [accId, setId] = useState("");
+
     const [email, setEmail] = useState("");
     const [numero, setNumero] = useState("");
     const [pass, setPass] = useState("");
     const [confPass, setConfPass] = useState("");
-    const [confPassword, setConfPassword] = useState("");
     const [confPasswordErreur, setConfPasswordErreur] = useState(null);
     const confPasswordInput = useRef(null);
     const [passwordErreur, setPasswordErreur] = useState(null);
@@ -44,6 +46,13 @@ export default function BookingModal(props) {
 
 
     useEffect(() => {
+        if (user) {
+            setEditOrCreate("Edit Profil");
+        } else {
+            setEditOrCreate("Create Profil");
+        }
+    }, [user])
+    useEffect(() => {
         const getNombreJour = (date1, date2) => {
             if (props.check_in && props.check_out) {
                 let dateMin = date1 < date2 ? date1 : date2;
@@ -56,8 +65,16 @@ export default function BookingModal(props) {
 
         const total = getNombreJour(props.check_in, props.check_out)
         setTotalDays(total);
-        console.log("total : ", total);
     }, [props.check_in, props.check_out]);
+
+    useEffect(() => {
+        if (!user) {
+            setNoCurrentAccounts(true);
+            setIsFirstOutlined(false);
+        } else {
+            setNoCurrentAccounts(false);
+        }
+    }, [user]);
 
     const checkChacun = (password) => {
         setCheckLenght(password.length > 8);
@@ -70,7 +87,137 @@ export default function BookingModal(props) {
     const toggleOutlined = (things) => {
         setIsFirstOutlined(things);
     };
+    const createClient = async () => {
+        const clientData = {
+            first_name: firstname,
+            username: firstname + ' ' + lastname,
+            last_name: lastname,
+            adresse,
+            email,
+            ville: city,
+            numero_client: numero,
+            password: pass
+        };
 
+        fetch(`${UrlConfig.apiBaseUrl}/api/accounts/pay-create-client/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(clientData),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to create client');
+                }
+
+                return response.json();
+
+            })
+            .then(async () => {
+                const data = await customLogin(email, pass);
+                if (data) {
+
+                    toast.current.show({
+                        severity: "success",
+                        summary: "Success",
+                        detail: "Profil created",
+                        life: 5000
+                    });
+                    setUser({
+                        id: data.id,
+                        username: data.username,
+                        userImage: data.emailPhotoUrl
+                    });
+                    setPaystep(1);
+                }
+            })
+            .then(() => {
+                fetch(`${UrlConfig.apiBaseUrl}/api/accounts/welcome-mail/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Failed to send welcome email');
+                        }
+                        return res.json();
+                    })
+
+                    .catch(error => {
+                        console.log('Error sending welcome email:', error);
+                    });
+            })
+            .catch(error => {
+                toast.current.show({
+                    severity: "info",
+                    summary: "Error",
+                    detail: 'You are already have an accounts',
+                    life: 5000
+                });
+            });
+
+    };
+    const editClient = async () => {
+        const clientData = {
+            first_name: firstname,
+            username: firstname + ' ' + lastname,
+            last_name: lastname,
+            adresse,
+            email,
+            numero_client: numero,
+            ville: city,
+        };
+        getClientAccess().then((accessToken) => {
+            fetch(`${UrlConfig.apiBaseUrl}/api/accounts/client/edit/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(clientData),
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to create client');
+                    }
+
+                    return response.json();
+
+                })
+                .then((data) => {
+
+                    if (data) {
+
+                        toast.current.show({
+                            severity: "success",
+                            summary: "Success",
+                            detail: "Profil edited succefully",
+                            life: 5000
+                        });
+                        setUser({
+                            id: data.id,
+                            username: data.username,
+                            userImage: data.emailPhotoUrl
+                        });
+                        setPaystep(1);
+                    }
+                })
+
+                .catch(error => {
+                    toast.current.show({
+                        severity: "info",
+                        summary: "Error",
+                        detail: 'You are already have an accounts',
+                        life: 5000
+                    });
+                });
+        });
+
+    };
     const FetchUser = () => {
         let access = Cookies.get('accessToken');
 
@@ -115,21 +262,23 @@ export default function BookingModal(props) {
         return handleFetch(access);
     };
     useEffect(() => {
-        FetchUser()
-            .then((data) => {
-                setUserInfo(data);
-                setId(data.id)
-                setFirstname(data.first_name);
-                setLastname(data.last_name);
-                setEmail(data.email);
-                setAdresse(data.adresse);
-                setCity(data.ville);
-                setNumero(data.numero_client);
-            })
-            .catch((error) => {
-                console.error('Error fetching user info:', error);
-            });
-    }, []);
+        if (user) {
+            FetchUser()
+                .then((data) => {
+                    setUserInfo(data);
+                    setId(data.id)
+                    setFirstname(data.first_name);
+                    setLastname(data.last_name);
+                    setEmail(data.email);
+                    setAdresse(data.adresse);
+                    setCity(data.ville);
+                    setNumero(data.numero_client);
+                })
+                .catch((error) => {
+                    console.error('Error fetching user info:', error);
+                });
+        }
+    }, [user]);
     const roomIds = props.rooms.map(room => room.id);
 
     const headerTemplate = () => {
@@ -170,25 +319,26 @@ export default function BookingModal(props) {
     )
 
     const handleSubmit = async () => {
-        let canSendData = true;
-        if (pass.length < 8 || pass.trim() == "") {
-            passwordInput.current.className = style.form_input_erreur;
-            setPasswordErreur("Password required");
-            canSendData = false;
-        }
-        if (confPass != pass) {
-            confPasswordInput.current.className = style.form_input_erreur;
-            setConfPasswordErreur("Password does not match");
-            canSendData = false;
-        }
-        if (canSendData) {
-            toast.current.show({
-                severity: "success",
-                summary: "Success",
-                detail: "Profil updated successfully",
-                life: 5000
-            });
-            setPaystep(1);
+        if (!user) {
+            let canSendData = true;
+            if (pass.length < 8 || pass.trim() == "") {
+                passwordInput.current.className = style.form_input_erreur;
+                setPasswordErreur("Password required");
+                canSendData = false;
+            }
+            if (confPass != pass) {
+                confPasswordInput.current.className = style.form_input_erreur;
+                setConfPasswordErreur("Password does not match");
+                canSendData = false;
+            }
+            if (canSendData) {
+
+                createClient();
+
+
+            }
+        } else {
+            editClient();
         }
 
     }
@@ -219,11 +369,12 @@ export default function BookingModal(props) {
                                         outlined={isFirstOutlined}
                                         rounded
                                         icon="pi pi-user"
+                                        disabled={noCurrentAccounts}
                                         onClick={() => toggleOutlined(true)}
                                     />
                                     <hr />
                                     <Button
-                                        label="New Account"
+                                        label={editOrCreate}
                                         outlined={!isFirstOutlined}
                                         rounded
                                         icon="pi pi-user"
@@ -232,7 +383,7 @@ export default function BookingModal(props) {
                                 </div>
 
                                 {!isFirstOutlined ? (
-                                    <div className={style.centered_div_info}>
+                                    <><div className={style.centered_div_info}>
 
                                         <div className={style.profil_detail}>
                                             <div className={style.profil}>
@@ -242,8 +393,7 @@ export default function BookingModal(props) {
                                                         type="text"
                                                         value={firstname || ''}
                                                         onChange={(e) => setFirstname(e.target.value)}
-                                                        className={style.inputField}
-                                                    />
+                                                        className={style.inputField} />
                                                 </div>
                                                 <div className={style.detail}>
                                                     <span className={style.label}>Last name</span>
@@ -251,8 +401,7 @@ export default function BookingModal(props) {
                                                         type="text"
                                                         value={lastname || ''}
                                                         onChange={(e) => setLastname(e.target.value)}
-                                                        className={style.inputField}
-                                                    />
+                                                        className={style.inputField} />
                                                 </div>
                                                 <div className={style.detail}>
                                                     <span className={style.label}>Email</span>
@@ -260,8 +409,7 @@ export default function BookingModal(props) {
                                                         type="text"
                                                         value={email || ''}
                                                         onChange={(e) => setEmail(e.target.value)}
-                                                        className={style.inputField}
-                                                    />
+                                                        className={style.inputField} />
                                                 </div>
                                                 <div className={style.detail}>
                                                     <span className={style.label}>Contact</span>
@@ -269,8 +417,7 @@ export default function BookingModal(props) {
                                                         type="text"
                                                         value={numero || ''}
                                                         onChange={(e) => setNumero(e.target.value)}
-                                                        className={style.inputField}
-                                                    />
+                                                        className={style.inputField} />
                                                 </div>
                                                 <div className={style.detail}>
                                                     <span className={style.label}>Adresse</span>
@@ -278,8 +425,7 @@ export default function BookingModal(props) {
                                                         type="text"
                                                         value={adresse || ''}
                                                         onChange={(e) => setAdresse(e.target.value)}
-                                                        className={style.inputField}
-                                                    />
+                                                        className={style.inputField} />
                                                 </div>
                                                 <div className={style.detail}>
                                                     <span className={style.label}>City</span>
@@ -287,50 +433,51 @@ export default function BookingModal(props) {
                                                         type="text"
                                                         value={city || ''}
                                                         onChange={(e) => setCity(e.target.value)}
-                                                        className={style.inputField}
-                                                    />
+                                                        className={style.inputField} />
                                                 </div>
-                                                <div className={style.detail}>
-                                                    <span className={style.label}>New Password</span>
-                                                    <Password
-                                                        ref={passwordInput}
-                                                        inputClassName={style.form_input_password}
-                                                        className={style.form_input_password_container}
-                                                        placeholder="Enter your pasword"
-                                                        value={pass || ''}
-                                                        toggleMask
-                                                        header={passwordInputHeader}
-                                                        footer={passwordInputFooter}
-                                                        onChange={(e) => {
-                                                            passwordInput.current.className = style.form_input;
-                                                            setPass(e.target.value)
-                                                            setPasswordErreur(null);
-                                                            checkChacun(e.target.value);
-                                                        }}
-                                                    />
+                                                {!user ?
+                                                    <><div className={style.detail}>
+                                                        <span className={style.label}>New Password</span>
+                                                        <Password
+                                                            ref={passwordInput}
+                                                            inputClassName={style.form_input_password}
+                                                            className={style.form_input_password_container}
+                                                            placeholder="Enter your pasword"
+                                                            value={pass || ''}
+                                                            toggleMask
+                                                            header={passwordInputHeader}
+                                                            footer={passwordInputFooter}
+                                                            onChange={(e) => {
+                                                                passwordInput.current.className = style.form_input;
+                                                                setPass(e.target.value);
+                                                                setPasswordErreur(null);
+                                                                checkChacun(e.target.value);
+                                                            }} />
 
 
-                                                    <span style={passwordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{passwordErreur}</span>
-                                                </div>
-                                                <div className={style.detail}>
-                                                    <span className={style.label}>Confirm Password</span>
-                                                    <Password
-                                                        ref={confPasswordInput}
-                                                        inputClassName={style.form_input_password}
-                                                        className={style.form_input_password_container}
-                                                        type="password"
-                                                        value={confPass || ''}
-                                                        onChange={(e) => setConfPass(e.target.value)}
-                                                    />
-                                                    <Image style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!" />
+                                                        <span style={passwordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur}>{passwordErreur}</span>
+                                                    </div><div className={style.detail}>
+                                                            <span className={style.label}>Confirm Password</span>
+                                                            <Password
+                                                                ref={confPasswordInput}
+                                                                inputClassName={style.form_input_password}
+                                                                className={style.form_input_password_container}
+                                                                type="password"
+                                                                value={confPass || ''}
+                                                                onChange={(e) => setConfPass(e.target.value)} />
+                                                            <Image style={confPasswordErreur != null ? { display: "block" } : { display: "none" }} className={style.form_erreur_image} src="/images/auth/alert_circle.svg" alt="!" />
 
-                                                </div>
-
+                                                        </div></>
+                                                    : <></>}
                                             </div>
                                         </div>
                                     </div>
+                                        <div className={style.bottom}>
+                                            <Button label='Continue' onClick={() => handleSubmit()} className='button-primary' style={{ width: "30%" }} />
+                                        </div>
+                                    </>
                                 ) : (
-                                    <div className={style.centered_div_info}>
+                                    <><div className={style.centered_div_info}>
 
                                         <div className={style.profil_detail}>
 
@@ -361,12 +508,12 @@ export default function BookingModal(props) {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div><div className={style.bottom}>
+                                            <Button label='Continue' onClick={() => handleStep()} className='button-primary' style={{ width: "30%" }} />
+                                        </div></>
                                 )}
 
-                                <div className={style.bottom}>
-                                    <Button label='Continue' onClick={() => handleStep()} className='button-primary' style={{ width: "30%" }} />
-                                </div>
+
                                 <div className={style.body_title_container}>
                                     <span className={style.body_title_numero}>2</span>
                                     <span className={style.body_title_label}>Payement method</span>
@@ -386,6 +533,7 @@ export default function BookingModal(props) {
                                             id_chambres={roomIds}
                                             days_total={total_days}
                                             guest={props.guest}
+                                            room_details={props.rooms}
                                             check_in={props.check_in != null ? new Date(props.check_in) : null}
                                             check_out={props.check_out != null ? new Date(props.check_out) : null}
                                         />

@@ -11,10 +11,11 @@ import { Toast } from "primereact/toast"; // Import Toast
 import RoomAmenities from "@/components/RoomAmenities";
 import { UrlConfig } from "@/util/config";
 import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
+import { getResponsableAccessToken } from "@/util/Cookies";
+import imageCompression from 'browser-image-compression';
 
 export default function AddNewRoom() {
     const [typeChambre, setTypeChambre] = useState([]);
-    const [imageFile, setImageFile] = useState();
     const inputRef = useRef(null);
     const [selectedType, setSelectedType] = useState();
     const [selectedStatus, setSelectedStatus] = useState();
@@ -22,7 +23,7 @@ export default function AddNewRoom() {
     const [fileImages, setFileImages] = useState([]);
     const [amenities, setAmenities] = useState([]);
     const [listImage, setListImage] = useState([]);
-    const [description, setDescription] = useState();
+    const [description, setDescription] = useState("");
     const { user } = useContext(ResponsableLayoutContext);
     const id = user ? user.id_etablissement : 0;
     const toast = useRef(null); // Create reference for Toast
@@ -32,32 +33,72 @@ export default function AddNewRoom() {
         inputRef.current.click();
     };
 
-    const statusOptions = [
-        { id: 1, name: 'Available' },
-        { id: 2, name: 'Not Available' }
-    ];
+    const handleImageClick = (index) => {
+        setListImage(prevList => prevList.filter((_, i) => i !== index));
+        setFileImages(prevFiles => prevFiles.filter((_, i) => i !== index));
+    };
+    const handleFileUpload = async () => {
+        const files = Array.from(inputRef.current.files);
 
-    const handleFileUpload = () => {
-        const files = inputRef.current.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-            const fileUrl = URL.createObjectURL(files[0]);
-            const listImageCopy = [...listImage];
-            listImageCopy.push(fileUrl);
-            setListImage(listImageCopy);
-            const filesCopy = [...fileImages];
-            filesCopy.push(files[0]);
-            setFileImages(filesCopy);
-        }
+        // Filtrer les fichiers pour ne garder que les images
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+
+        // Fonction pour compresser les images
+        const compressImage = async (file) => {
+            try {
+                const compressedFile = await imageCompression(file, {
+                    maxSizeMB: 1,
+                    maxWidthOrHeight: 1920
+                });
+
+                // Ajouter l'extension du fichier d'origine au fichier compressé
+                const extension = file.name.split('.').pop();
+                const newFile = new File([compressedFile], `${file.name}.${extension}`, {
+                    type: file.type,
+                });
+
+                return newFile;
+            } catch (error) {
+                console.error('Error compressing file:', file.name, error);
+                return null;
+            }
+        };
+
+        // Compresser toutes les images et filtrer les erreurs
+        const compressedFiles = await Promise.all(validFiles.map(file => compressImage(file)));
+        const validCompressedFiles = compressedFiles.filter(file => file !== null);
+
+        // Créer les URL d'images uniquement pour les fichiers valides et compressés
+        const newImageUrls = validCompressedFiles.map(file => URL.createObjectURL(file));
+
+        // Mettre à jour les états avec les nouvelles images
+        setListImage(prevList => [...prevList, ...newImageUrls]);
+        setFileImages(prevFiles => [...prevFiles, ...validCompressedFiles]);
     };
 
+
+
     useEffect(() => {
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`)
+        // getResponsableAccessToken().then((access) => {
+        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/type-chambres/`, {
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Authorization': `Bearer ${access}`,
+            },
+        })
             .then(response => response.json())
-            .then(data => setTypeChambre(data))
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setTypeChambre(data);
+                } else {
+                    console.error('Expected an array but got:', data);
+                }
+            })
             .catch(error => console.error('Erreur lors de la récupération des données :', error));
+        // });
     }, []);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Collecting missing fields
@@ -66,7 +107,7 @@ export default function AddNewRoom() {
             type: !selectedType,
             capacity: !document.getElementById('capacity_input').value,
             price: !price,
-            status: !selectedStatus,
+            avalaible: !selectedStatus,
             description: !description,
         };
 
@@ -84,7 +125,7 @@ export default function AddNewRoom() {
         formData.append('chambre', selectedType.id);
         formData.append('capacite', document.getElementById('capacity_input').value);
         formData.append('prix_nuit_chambre', price);
-        formData.append('status', selectedStatus.id);
+        formData.append('disponible_chambre', selectedStatus);
         formData.append('description', description);
 
         fileImages.forEach((file, index) => {
@@ -94,35 +135,60 @@ export default function AddNewRoom() {
         amenities.forEach((accessory, index) => {
             formData.append(`accessories[${index}]`, accessory.id);
         });
+        await handleAddRoom(formData);
 
-        fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                toast.current.show({ severity: 'success', summary: 'Success', detail: 'Room added successfully', life: 2000 });
+    };
+    const handleAddRoom = async (formData) => {
+        try {
+            // Attendre l'access token
+            const access = await getResponsableAccessToken();
 
+            // Faire l'appel à l'API pour ajouter la chambre
+            const response = await fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/add-hebergement-chambre/`, {
+                method: 'POST',
+                headers: {
+                    // 'Authorization': `Bearer ${access}`,
+                },
+                body: formData
+            });
+            console.log(formData);
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Room added successfully',
+                    life: 2000
+                });
+
+                // Réinitialiser les champs après un délai
                 setTimeout(() => {
                     setTypeChambre([]);
-                    setImageFile();
-                    setSelectedType();
-                    setSelectedStatus();
-                    setPrice();
+                    setSelectedType(null);
+                    setSelectedStatus(null);
+                    setPrice(null);
                     setFileImages([]);
                     setAmenities([]);
                     setListImage([]);
                     setDescription("");
 
+                    // Recharger la page
                     window.location.reload();
                 }, 2000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                toast.current.show({ severity: 'error', summary: 'Error', detail: 'Failed to add room', life: 3000 });
+            } else {
+                throw new Error(data.message || 'Failed to add room');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to add room',
+                life: 3000
             });
+        }
     };
-
 
     return (
         <>
@@ -135,7 +201,7 @@ export default function AddNewRoom() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Room</span>
-                    <span className={style.top_container_subtitle}>Brajas Hotel</span>
+                    <span className={style.top_container_subtitle}>{user ? user.nom_hebergement : null}</span>
                 </div>
             </div>
 
@@ -144,15 +210,19 @@ export default function AddNewRoom() {
                     <div onClick={handleClick} className={style.button_image}>
                         <i className="pi pi-plus" />
                         <span>Add image</span>
-                        <input value={imageFile} ref={inputRef} onChange={handleFileUpload} type="file" accept="image/*" style={{ display: "none" }} />
+                        <input ref={inputRef} onChange={handleFileUpload} type="file" accept="image/*" style={{ display: "none" }} />
                     </div>
-                    {listImage.map((image, index) => {
-                        return (
-                            <div key={index} className={style.image_add_container}>
-                                <Image imageClassName={style.image} src={image} alt="image" />
-                            </div>
-                        );
-                    })}
+                    {listImage.map((image, index) => (
+                        <div key={index} className={style.image_add_container}>
+                            <Image imageClassName={style.image} src={image} alt="image" />
+                            <Button
+                                icon="pi pi-trash"
+                                className={style.delete_icon}
+                                onClick={() => handleImageClick(index)}
+                                aria-label="Delete"
+                            />
+                        </div>
+                    ))}
                 </div>
                 <div className={style.room_detail_container}>
                     <span className={style.room_detail_title}>Room details</span>
@@ -163,7 +233,6 @@ export default function AddNewRoom() {
                         </FloatLabel>
                         <FloatLabel>
                             <Dropdown
-                                id="id"
                                 value={selectedType}
                                 onChange={(e) => setSelectedType(e.value)}
                                 options={typeChambre}
@@ -182,21 +251,25 @@ export default function AddNewRoom() {
                             <label htmlFor="price_input">Price per night</label>
                         </FloatLabel>
                         <FloatLabel>
-                            <Dropdown
-                                id="status_select"
+                            <InputNumber className={`${style.input_text} ${missingFields.avalaible ? style.input_missing : ''}`}
+                                id="status_select" value={selectedStatus}
+                                onChange={(e) => setSelectedStatus(e.value)} />
+                            {/* <Dropdown
                                 value={selectedStatus}
                                 onChange={(e) => setSelectedStatus(e.value)}
                                 options={statusOptions}
                                 optionLabel="name"
                                 className={`${style.dropdown} ${missingFields.status ? style.input_missing : ''}`}
-                            />
-                            <label htmlFor="status_select">Add status</label>
+                            /> */}
+                            <label htmlFor="status_select">Avalaible rooms
+
+                            </label>
                         </FloatLabel>
                     </div>
                 </div>
                 <div className={style.room_ammenties_container}>
                     <span className={style.room_ammenties_title}>Room amenities</span>
-                    <RoomAmenities setAmenities={setAmenities} />
+                    <RoomAmenities setAmenities={setAmenities} selectedAmenities={amenities} />
                 </div>
                 <div className={style.room_description_container}>
                     <span className={style.room_description_title}>Room description</span>
@@ -206,9 +279,21 @@ export default function AddNewRoom() {
                         onChange={(e) => setDescription(e.target.value)}
                     />
                 </div>
-                <div className={style.button_list}>
-                    <Button className="button-secondary" raised label="Cancel" />
-                    <Button className="button-primary" label="+ Add room" onClick={handleSubmit} />
+                <div className={style.button_submit}>
+                    <Button className={style.button_add} label="Add Room" onClick={handleSubmit} />
+                    <Button className={style.button_reset} label="Reset" onClick={() => {
+
+                        setSelectedType(null);
+                        setSelectedStatus(null);
+                        setPrice(null);
+                        setFileImages([]);
+                        setAmenities([]);
+                        setListImage([]);
+                        setDescription("");
+
+                        // Recharger la page
+
+                    }} />
                 </div>
             </div>
         </>

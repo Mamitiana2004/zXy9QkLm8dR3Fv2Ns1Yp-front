@@ -1,5 +1,5 @@
 import Head from "next/head";
-import style from './../../../style/pages/responsable/handcraft/product.module.css';
+import style from '@/style/pages/responsable/handcraft/product.module.css';
 import { Button } from "primereact/button";
 import { useEffect, useState, useContext, useRef } from "react";
 import { DataTable } from "primereact/datatable";
@@ -22,7 +22,7 @@ export default function Product() {
 
     const buttonTemplate = (item) => (
         <>
-            <Button icon="pi pi-pen-to-square" text severity="success" />
+            <Button icon="pi pi-pen-to-square" onClick={() => { router.push(`/responsable/handcraft/product/${item.id}`) }} text severity="success" />
             <Button onClick={(e) => confirm(e, item.id)} icon="pi pi-trash" text severity="danger" />
         </>
     );
@@ -48,20 +48,20 @@ export default function Product() {
                     'Content-Type': 'application/json',
                 },
             })
-            .then(response => {
-                if (response.ok) {
-                    // Remove the deleted product from the state
-                    const updatedProducts = products.filter(product => product.id !== selectedProductId);
-                    setProducts(updatedProducts);
-                    setAllProducts(updatedProducts);
+                .then(response => {
+                    if (response.ok) {
+                        // Remove the deleted product from the state
+                        const updatedProducts = products.filter(product => product.id !== selectedProductId);
+                        setProducts(updatedProducts);
+                        setAllProducts(updatedProducts);
 
-                    // Show success message
-                    toast.current.show({ severity: 'success', summary: 'Success', detail: 'Product deleted successfully', life: 3000 });
-                } else {
-                    console.error('Failed to delete the product');
-                }
-            })
-            .catch(err => console.error('Error during product deletion:', err));
+                        // Show success message
+                        toast.current.show({ severity: 'success', summary: 'Success', detail: 'Product deleted successfully', life: 3000 });
+                    } else {
+                        console.error('Failed to delete the product');
+                    }
+                })
+                .catch(err => console.error('Error during product deletion:', err));
         }
     };
 
@@ -109,20 +109,20 @@ export default function Product() {
                 'Content-Type': 'application/json',
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            const formattedData = data.map(item => ({
-                id: item.id || 'N/A',
-                name: item.nom_produit_artisanal || 'N/A',
-                category: Array.isArray(item.specifications) ? item.specifications : [],
-                quantity: item.nb_produit_dispo || 'N/A',
-                price: item.prix_artisanat || 'N/A'
-            }));
+            .then(response => response.json())
+            .then(data => {
+                const formattedData = data.map(item => ({
+                    id: item.id || 'N/A',
+                    name: item.nom_produit_artisanal || 'N/A',
+                    category: Array.isArray(item.specifications) ? item.specifications : [],
+                    quantity: item.nb_produit_dispo || 'N/A',
+                    price: item.prix_artisanat || 'N/A'
+                }));
 
-            setProducts(formattedData);
-            setAllProducts(formattedData);
-        })
-        .catch(err => console.error('Erreur lors de la récupération des produits:', err));
+                setProducts(formattedData);
+                setAllProducts(formattedData);
+            })
+            .catch(err => console.error('Erreur lors de la récupération des produits:', err));
 
         fetch(`${UrlConfig.apiBaseUrl}/api/artisanat/specifications/`, {
             method: "GET",
@@ -130,15 +130,15 @@ export default function Product() {
                 'Content-Type': 'application/json',
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            const formattedData = data.map(item => ({
-                id: item.id || 'N/A',
-                name: item.type_specification || 'N/A',
-            }));
-            setCategories(formattedData);
-        })
-        .catch(err => console.error('Erreur lors de la récupération des catégories:', err));
+            .then(response => response.json())
+            .then(data => {
+                const formattedData = data.map(item => ({
+                    id: item.id || 'N/A',
+                    name: item.type_specification || 'N/A',
+                }));
+                setCategories(formattedData);
+            })
+            .catch(err => console.error('Erreur lors de la récupération des catégories:', err));
     };
 
     return (

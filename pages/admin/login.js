@@ -1,9 +1,6 @@
 import AdminLayoutContext from '@/layouts/context/adminLayoutContext';
-import LayoutContext from '@/layouts/context/layoutContext';
 import style from '@/style/pages/login.module.css'
 import { UrlConfig } from '@/util/config';
-
-import { getCsrfTokenDirect } from '@/util/csrf';
 import { emailValid } from '@/util/verify';
 import Cookies from 'js-cookie';
 import Head from 'next/head'

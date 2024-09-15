@@ -9,12 +9,13 @@ import { Rating } from "primereact/rating";
 import { InputText } from "primereact/inputtext";
 import { FloatLabel } from "primereact/floatlabel";
 import { Dropdown } from "primereact/dropdown";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import { Dialog } from "primereact/dialog";
 import { Chip } from 'primereact/chip';
 import { Tooltip } from "primereact/tooltip";
 import UrlConfig from "@/util/config";
+import { Toast } from "primereact/toast";
 
 
 export default function Accommodation() {
@@ -49,7 +50,7 @@ export default function Accommodation() {
     const [socialLabel, setSocialLabel] = useState();
     const [socialSelected, setSocialSelected] = useState();
     const [allSocial, setAllSocial] = useState([]);
-
+    const toast = useRef(null);
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [phone, setPhone] = useState('');
@@ -59,6 +60,7 @@ export default function Accommodation() {
     const [country, setCountry] = useState('Madagascar');
     const [stat, setStat] = useState('');
     const [options, setOptions] = useState([]);
+
 
     const informationAccommodationFini = () => {
         const accommodationInfo = {
@@ -71,16 +73,30 @@ export default function Accommodation() {
             accommodationType: accommodationType,
             phone: `${countryCode}${phone}`,
             rate: rateValue,
-            // socialLink: socialLink
         };
 
+        if (!accommodationInfo.name ||
+            !accommodationInfo.address ||
+            // !accommodationInfo.nif ||
+            // !accommodationInfo.stat ||
+            !accommodationInfo.country ||
+            !accommodationInfo.city ||
+            !accommodationInfo.accommodationType ||
+            !accommodationInfo.phone ||
+            !accommodationInfo.rate) {
+            toast.current.show({
+                severity: 'error',
+                summary: 'Erreur',
+                detail: 'Veuillez remplir tous les champs',
+                life: 3000
+            });
+            return;
+        }
 
         localStorage.setItem('accommodationInfo', JSON.stringify(accommodationInfo));
-        if (accommodationInfo) {
-            router.push("/users/etablissement/addInfoUser");
-        }
-        // console.log('Accommodation information saved:', accommodationInfo);
+        router.push("/users/etablissement/addInfoUser");
     }
+
 
     const getAllSocial = () => {
         fetch("/api/social")
@@ -440,6 +456,8 @@ export default function Accommodation() {
                     </Dialog>
                 )
             })}
+            <Toast ref={toast} />
+
         </>
     )
 }

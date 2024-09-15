@@ -5,8 +5,6 @@ import { getClientAccess } from "@/util/Cookies";
 
 export default function Paypal(props) {
   const paypal = useRef();
-  console.log(props);
-  const [infoChambre, setInfoChambre] = useState(null)
   const toast = useRef(null);
 
   const createTransaction = (order, reservation) => {
@@ -57,9 +55,13 @@ export default function Paypal(props) {
     const handleFetch = () => {
       const formatted_check_in = new Date(props.check_in).toISOString().split('T')[0];
       const formatted_check_out = new Date(props.check_out).toISOString().split('T')[0];
-
+      const chambre_details = props.room_details.map((room) => ({
+        id: room.id,
+        quantity: room.quantity
+      }));
       const booking_info = {
         "chambre_ids": props.id_chambres,
+        "chambres": chambre_details,
         "check_in": formatted_check_in,
         "check_out": formatted_check_out,
         "guests": props.guest
@@ -78,7 +80,7 @@ export default function Paypal(props) {
           }
           return response.json();
         }).then((data) => {
-          console.log(data)
+
           return data;
         })
         .catch((error) => {
@@ -87,7 +89,7 @@ export default function Paypal(props) {
         });
     };
     handleFetch().then((infoChambre) => {
-      if (infoChambre.total_price) {
+      if (infoChambre) {
 
         window.paypal
           .Buttons({
@@ -116,12 +118,8 @@ export default function Paypal(props) {
               const order = await actions.order.capture();
 
               if (order.status === "COMPLETED") {
-                createTransaction(order, infoChambre.reservation_details)
-                  .then((data) => {
-
-                    console.log(data)
-                  })
-
+                const data = await createTransaction(order, infoChambre.reservation_details)
+                console.log(data);
               }
             },
             onError: (err) => {

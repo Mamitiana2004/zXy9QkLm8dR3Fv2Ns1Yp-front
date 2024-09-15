@@ -2,23 +2,25 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import style from './../../../style/pages/responsable/accommodation/message.module.css';
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import ResponsableLayoutContext from "@/layouts/context/responsableLayoutContext";
 export default function Message() {
     const router = useRouter();
+    const { user } = useContext(ResponsableLayoutContext);
 
 
     const [messages, setMessages] = useState([
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
-        { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." }
-
+        /*  { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." },
+         { id: 1, sender: "jean@gmail.com", text: "Lorem ipsum dolor sit amet takimata vero dolore. Lorem minim ullamcorper in aliquyam molestie diam diam." }
+  */
     ]);
 
 
@@ -31,7 +33,8 @@ export default function Message() {
             <div className={style.top_container}>
                 <div className={style.top_container_title_container}>
                     <span className={style.top_container_title}>Message</span>
-                    <span className={style.top_container_subtitle}>Carlton Hotel</span>
+                    <span className={style.top_container_subtitle}>{user ? user.nom_hebergement : null}</span>
+
                 </div>
             </div>
 
@@ -44,7 +47,7 @@ export default function Message() {
                 <div className={style.right_container}>
                     <div className={style.right_top_container}>
                         <span className={style.right_top_title}>Inbox</span>
-                        <span className={style.right_top_subtitle}>112 messages</span>
+                        <span className={style.right_top_subtitle}>0 messages</span>
                     </div>
                     <div className={style.separateur}></div>
                     {messages.map((message, index) => {

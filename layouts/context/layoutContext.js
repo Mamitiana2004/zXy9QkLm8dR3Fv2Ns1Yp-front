@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import '../../util/i18n';
 import i18n from "../../util/i18n";
 import Cookies from "js-cookie";
+import { getClientAccess } from "@/util/Cookies";
 
 const LayoutContext = createContext();
 
@@ -36,6 +37,23 @@ export const LayoutProvider = ({ children }) => {
         }
     }, [user]);
 
+    useEffect(() => {
+        const checkAccessToken = async () => {
+            try {
+                const token = await getClientAccess();
+                if (!token) {
+                    localStorage.removeItem('user');
+                    setUser(null);
+                }
+            } catch (error) {
+
+                localStorage.removeItem('user');
+                setUser(null);
+            }
+        };
+
+        checkAccessToken();
+    }, []);
     useEffect(() => {
         if (lang) {
             localStorage.setItem('lang', lang);

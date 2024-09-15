@@ -13,6 +13,7 @@ import { Image } from "primereact/image";
 import { StepperPanel } from "primereact/stepperpanel";
 import { Button } from "primereact/button";
 import { useRouter } from "next/router";
+import WaitSpinner from '@/components/WaitSpinner';
 
 
 export default function Verify() {
@@ -21,7 +22,7 @@ export default function Verify() {
     const toast = useRef(null);
     const [timer, setTimer] = useState(0);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-    const [isSubmitDisabled, setSubmitDisabled] = useState(false);
+    const [isSubmitDisabled, setSubmitDisabled] = useState(true);
     const [isInputDisabled, setIsInputDisabled] = useState(false);
 
 
@@ -163,10 +164,11 @@ export default function Verify() {
 
     const handleSubmit = async () => {
         setSubmitDisabled(true);
+        setIsInputDisabled(true);
 
         const email = localStorage.getItem("email_etablissement");
 
-        console.log(code, email);
+
         try {
             const response = await fetch(`${UrlConfig.apiBaseUrl}/api/accounts/verify-code/`, {
                 method: 'POST',
@@ -259,14 +261,11 @@ export default function Verify() {
 
     const tapeCode = (e) => {
         setCode(e.value);
-        if (code) {
-            if (code.length >= 6) {
-                const verify_code = handleSubmit();
-                if (verify_code) {
-                    setIsInputDisabled(true);
-                    // router.push("/users/register/create-account")
-                } else (console.error(verify_code))
-            }
+        if (e.value.length >= 6) {
+            setSubmitDisabled(false);
+        }
+        if (e.value.length < 6) {
+            setSubmitDisabled(true);
         }
     }
 
@@ -277,7 +276,7 @@ export default function Verify() {
         <>
             <div className={style.container}>
                 <div className={style.left_container}>
-                    <Image alt="logo" src="/images/logo-aftrip.png" width={100} height={50} />
+                    <Image alt="logo" src="/images/logo-aftrip.png" width={100} />
                     <Stepper activeStep={3} linear className={style.stepper}>
                         <StepperPanel></StepperPanel>
                         <StepperPanel></StepperPanel>
@@ -303,7 +302,7 @@ export default function Verify() {
                     </div>
 
                     <span className={style.timer}>{timer == 0 ? "" : `Please wait ${timer} seconds before resending.`}</span>
-
+                    <WaitSpinner visible={false} />
                     <Button onClick={handleSubmit} className="button-primary" disabled={isSubmitDisabled} label="Continue" />
                 </div>
             </div>

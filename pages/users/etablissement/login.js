@@ -1,3 +1,4 @@
+import WaitSpinner from '@/components/WaitSpinner';
 import LayoutContext from '@/layouts/context/layoutContext';
 import ResponsableLayoutContext from '@/layouts/context/responsableLayoutContext';
 import style from '@/style/pages/users/etablissement/login.module.css';
@@ -17,37 +18,40 @@ export default function Login() {
     const router = useRouter();
     const toast = useRef(null);
 
-    const { setUser } = useContext(ResponsableLayoutContext);
-
-
-
+    const { user, setUser } = useContext(ResponsableLayoutContext);
 
     const [email, setEmail] = useState("");
     const emailInput = useRef(null);
     const [password, setPassword] = useState("");
     const passwordInput = useRef(null);
-
+    const [isSpinnerVisible, setIsSpinnerVisible] = useState(false);
     const [emailErreur, setEmailErreur] = useState(null);
     const [passwordErreur, setPasswordErreur] = useState(null);
 
-    // useEffect(()=>{
-    //     let user =JSON.parse(localStorage.getItem("responsable_user"));
-    //     if (user) {
-    //         if (user.type_etablissement == 1) {
-    //             router.push("/responsable/accommodation");
-    //         } else if (user.type_etablissement == 2) {
-    //             router.push("/responsable/handcraft");
-    //         } else if (user.type_etablissement == 3) {
-    //             router.push("/responsable/tour");
-    //         } else {
-    //             router.push("/users/etablissement/login");
-    //         }
-    //     }
-    // },[router])
+    useEffect(() => {
+        let user = JSON.parse(localStorage.getItem("responsable_user"));
+        if (user) {
+            if (user.type_etablissement == 1) {
+                router.push("/responsable/accommodation");
+            } else if (user.type_etablissement == 2) {
+                router.push("/responsable/handcraft");
+            } else if (user.type_etablissement == 3) {
+                router.push("/responsable/tour");
+            } else {
+                router.push("/users/etablissement/login");
+            }
+        }
+    }, [router])
 
     const login = async (e) => {
+        setIsSpinnerVisible(true);
+
         e.preventDefault();
         let canSendData = true;
+        if (!password) {
+            canSendData = false;
+            setEmailErreur("Email required");
+        }
         if (email.trim() == "" || !emailValid(email)) {
             emailInput.current.className = style.form_input_erreur;
             setEmailErreur("Email required");
@@ -60,103 +64,141 @@ export default function Login() {
         }
 
         if (canSendData) {
-            // const csrfToken =  await getCsrfTokenDirect();
-            fetch(`${UrlConfig.apiBaseUrl}/api/accounts/responsable/login/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
+            sendData();
+        } else {
+            setIsSpinnerVisible(false);
+        }
+    }
+
+    const sendData = () => {
+        let message = "Erreur de connexion";
+
+        fetch(`${UrlConfig.apiBaseUrl}/api/accounts/responsable/login/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+        })
+            .then((res) => {
+                if (!res.ok) {
+                    if (res.status == 404) {
+                        setIsSpinnerVisible(false);
+
+                        message = "Email unknow";
+                    }
+                    if (res.status == 401) {
+                        message = "Wrong password\n Please wait"
+
+                        setTimeout(() => {
+                            setIsSpinnerVisible(false);
+                        }, 4000);
+                    } else {
+                        setIsSpinnerVisible(false);
+                    }
+                }
+                else {
+                    return res.json();
+                }
             })
-                .then((res) => {
-                    if (!res.ok) {
-                        let message;
-                        if (res.status == 404) {
-                            message = "Email unknow";
-                        }
-                        if (res.status == 401) {
-                            message = "Wrong password"
-                        }
-                        toast.current.show({
-                            severity: "error",
-                            summary: "Error",
-                            detail: message,
-                            life: 5000
-                        })
-                    }
-                    else {
-                        return res.json();
-                    }
-                })
-                .then((data) => {
-                    if (data.access) {
-                        Cookies.set('responsable_access_token', data.access, {
-                            expires: 5 / (24 * 60),
-                            secure: true,
-                            sameSite: 'strict'
-                        });
-                    }
-                    if (data.refresh) {
-                        Cookies.set('responsable_refresh_token', data.refresh, {
-                            expires: 1,
-                            secure: true,
-                            sameSite: 'strict'
-                        });
-                    }
-                    const type_etablissement = data.type_etablissement
+            .then((data) => {
+                if (data.access) {
+                    Cookies.set('responsable_access_token', data.access, {
+                        expires: 5 / (24 * 60),
+                        secure: true,
+                        sameSite: 'strict'
+                    });
+                }
+                if (data.refresh) {
+                    Cookies.set('responsable_refresh_token', data.refresh, {
+                        expires: 1,
+                        secure: true,
+                        sameSite: 'strict'
+                    });
+                }
+
+                if (data.type_etablissement == 1) {
                     setUser({
                         username: data.user.username,
                         id: data.user.id,
                         email: data.user.email,
-                        type_etablissement: type_etablissement,
+                        type_etablissement: data.type_etablissement,
                         job_post: "Manager",
                         id_etablissement: data.etablissement_info.id,
+                        nom_hebergement: data.etablissement_info.nom_hebergement,
                     })
 
-                    toast.current.show({
-                        severity: "info",
-                        summary: "Info",
-                        detail: "Connexion Réussi",
-                        life: 5000
-                    });
+                    PushUrl(data.type_etablissement);
 
-                    setTimeout(() => {
-                        if (type_etablissement == 1) {
-                            router.push("/responsable/accommodation");
-                        } else if (type_etablissement == 2) {
-                            router.push("/responsable/handcraft");
-                        } else if (type_etablissement == 3) {
-                            router.push("/responsable/tour");
-                        } else {
-                            // Optionnel 
-                        }
-                    }, 4000);
+                } else if (data.type_etablissement == 2) {
+                    // router.push("/responsable/handcraft");
+                    setUser({
+                        username: data.user.username,
+                        id: data.user.id,
+                        email: data.user.email,
+                        type_etablissement: data.type_etablissement,
+                        job_post: "Manager",
+                        id_etablissement: data.etablissement_info.id,
+                        handcraft_name: data.etablissement_info.nom_hebergement,
+                    })
+                    PushUrl(data.type_etablissement);
 
-                })
-                .catch((error) => {
-                    toast.current.show({
-                        severity: "error",
-                        summary: "Error",
-                        detail: "Erreur de connexion",
-                        life: 5000
-                    });
-                    console.log(error);
-                })
-        }
-        if (!canSendData) {
-            setUser({
-                username: "Faneva",
-                id: 4,
-                email: "mamitianafaneva@gmail.com",
-                type_etablissement: 1,
-                job_post: "Manager",
-                id_etablissement: 1
+                } else if (data.type_etablissement == 3) {
+                    // router.push("/responsable/tour");
+                    setUser({
+                        username: data.user.username,
+                        id: data.user.id,
+                        email: data.user.email,
+                        type_etablissement: data.type_etablissement,
+                        job_post: "Manager",
+                        id_etablissement: data.etablissement_info.id,
+                        operator_name: data.etablissement_info.nom_hebergement,
+                    })
+                    PushUrl(data.type_etablissement);
+                }
+
+
+
+
             })
-            router.push("/responsable");
-        }
-    }
+            .catch((error) => {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: message,
+                    life: 5000
+                });
+                console.log(error);
 
+            })
+    }
+    const PushUrl = (type_etablissement) => {
+        toast.current.show({
+            severity: "info",
+            summary: "Info",
+            detail: "Connexion Réussi",
+            life: 3000
+        });
+        setTimeout(() => {
+            setIsSpinnerVisible(false);
+
+            if (type_etablissement == 1) {
+                router.push("/responsable/accommodation");
+            } else if (type_etablissement == 2) {
+                router.push("/responsable/handcraft");
+            } else if (type_etablissement == 3) {
+                router.push("/responsable/tour");
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: "You do not have an etablishment",
+                    life: 5000
+                });
+            }
+        }, 2000);
+    }
 
     return (
         <>
@@ -226,6 +268,11 @@ export default function Login() {
                             <div className={style.button_group}>
                                 <button type='submit' className={style.login_button}>Sign in</button>
                             </div>
+                            <div className={style.button_group}>
+                                <Link href={"/users/login"} className={style.etablissment_button}>
+                                    <span> Log in as an user? </span><i className='pi pi-arrow-right' />
+                                </Link>
+                            </div>
                         </form>
                         <div className={style.register_component}>
                             <span className={style.register_label}>Don&apos;t have an account ?</span>
@@ -243,6 +290,7 @@ export default function Login() {
                 </div>
 
             </div>
+            <WaitSpinner visible={isSpinnerVisible} />
             <Toast ref={toast} />
         </>
     )

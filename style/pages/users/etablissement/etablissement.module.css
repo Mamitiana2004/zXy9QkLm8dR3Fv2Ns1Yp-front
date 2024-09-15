@@ -1,4 +1,4 @@
-.container{
+.container {
     margin: 200px 40px 100px 40px;
     background-color: #fff;
     box-shadow: 0 2px 6px #0000002c;
@@ -7,7 +7,67 @@
 
 }
 
-.left_container{
+.card {
+    padding: 1.25rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    transition: box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+    margin: 0;
+
+    .imageContainerPrime {
+        max-width: '640px';
+    }
+
+
+}
+
+.selectedItem img {
+    max-height: 25rem;
+    max-width: 100%;
+}
+
+.listItems img {
+    max-height: 40px;
+}
+
+.selectedItem {
+    width: 100%;
+}
+
+.p-card-header {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.p-card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.p-card-subtitle {
+    margin: 0.25rem 0 1.5rem;
+    color: #6c757d;
+    font-size: 1.25rem;
+}
+
+.p-card-content {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333333;
+}
+
+.p-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.left_container {
     width: 40%;
     background-color: #305555;
     display: flex;
@@ -18,11 +78,11 @@
     gap: 40px;
 }
 
-.stepper{
+.stepper {
     width: 100%;
 }
 
-.right_container{
+.right_container {
     display: flex;
     flex-direction: column;
     width: 60%;
@@ -30,14 +90,15 @@
     gap: 100px;
 }
 
-.top_container{
+.top_container {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
 }
-.center{
+
+.center {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,7 +106,7 @@
     flex-direction: column;
 }
 
-.top_title{
+.top_title {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     font-style: oblique;
     font-size: 32px;
@@ -53,20 +114,20 @@
     color: #305555;
 }
 
-.welcome{
+.welcome {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     font-style: normal;
     font-size: 55px;
     letter-spacing: -2px;
 }
 
-.top_subtitle{
+.top_subtitle {
     font-size: 16px;
     font-weight: 600;
 }
 
 
-.email_formulaire_container{
+.email_formulaire_container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -75,14 +136,14 @@
 }
 
 
-.form_group{
+.form_group {
     display: flex;
     flex-direction: column;
     gap: 8px;
     width: 60%;
 }
 
-.form_group_input{
+.form_group_input {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -90,7 +151,7 @@
 }
 
 
-.form_label{
+.form_label {
     position: relative;
     line-height: 20px;
     font-weight: 700;
@@ -98,7 +159,7 @@
 }
 
 
-.form_input{
+.form_input {
     width: 100%;
     background-color: #fff;
     box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
@@ -107,11 +168,11 @@
     gap: 8px;
     cursor: pointer;
     font-size: 14px;
-    padding: 10px 14px; 
+    padding: 10px 14px;
     font-weight: 500;
 }
 
-.list_button{
+.list_button {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -119,7 +180,7 @@
     width: 100%;
 }
 
-.button_container{
+.button_container {
     width: 60%;
     height: 128px;
     background-color: #fff;
@@ -131,26 +192,27 @@
     cursor: pointer;
     padding: 15px;
     text-decoration: none;
-    
-    .button_text{
+
+    .button_text {
         display: flex;
         flex-direction: column;
         gap: 10px;
         color: #000;
     }
 
-    .button_text_title{
+    .button_text_title {
         font-size: 18px;
         font-family: 'Montserrat Bold';
     }
-    .button_text_subtitle{
+
+    .button_text_subtitle {
         color: #202020;
         font-weight: 600;
         font-size: 16px;
     }
 }
 
-.button_container_active{
+.button_container_active {
     width: 60%;
     height: 128px;
     background-color: #305555;
@@ -163,18 +225,19 @@
     padding: 15px;
     text-decoration: none;
 
-    .button_text{
+    .button_text {
         display: flex;
         flex-direction: column;
         gap: 10px;
-        color: #fff ;
+        color: #fff;
     }
 
-    .button_text_title{
+    .button_text_title {
         font-size: 18px;
         font-family: 'Montserrat Bold';
     }
-    .button_text_subtitle{
+
+    .button_text_subtitle {
         color: #e3e3e3;
         font-weight: 600;
         font-size: 16px;
@@ -182,45 +245,46 @@
 }
 
 
-.image_icon{
-    min-width: 30px!important;
+.image_icon {
+    min-width: 30px !important;
     min-height: 10px;
 }
 
 
-.icon{
+.icon {
     width: 50%;
     height: 100%;
 }
 
-.button_text{
+.button_text {
     display: flex;
     flex-direction: column;
     gap: 10px;
     color: #000;
 }
 
-.button_text_title{
+.button_text_title {
     font-size: 18px;
     font-family: 'Montserrat Bold';
 }
-.button_text_subtitle{
+
+.button_text_subtitle {
     color: #202020;
     font-weight: 600;
     font-size: 16px;
 }
 
 
-.accommodation_1_parent{
+.accommodation_1_parent {
     display: flex;
     flex-direction: column;
     gap: 50px;
     align-items: center;
     width: 100%;
-    padding:0 50px;
+    padding: 0 50px;
 }
 
-.accommodation_1_container{
+.accommodation_1_container {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -229,20 +293,20 @@
 }
 
 
-.left_accommodation_1{
+.left_accommodation_1 {
     display: flex;
     flex-direction: column;
     gap: 50px;
 }
 
-.right_accommodation_1{
+.right_accommodation_1 {
     display: flex;
     flex-direction: column;
     gap: 50px;
 }
 
 
-.rate{
+.rate {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -251,17 +315,17 @@
     width: 60%;
 }
 
-.rate_input{
+.rate_input {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.rate_input_label{
+.rate_input_label {
     font-size: 11px;
 }
 
-.addSocial{
+.addSocial {
     width: 250px;
     background-color: transparent;
     border: 2.5px solid #000;
@@ -272,7 +336,7 @@
 
 
 
-.chip_container{
+.chip_container {
     width: 100%;
     display: flex;
     gap: 20px;
@@ -280,7 +344,7 @@
 }
 
 
-.image_parent{
+.image_parent {
     width: 100%;
     display: flex;
     align-items: center;
@@ -319,13 +383,13 @@
 }
 
 .image_add_container {
-    flex: 0 0 auto; 
+    flex: 0 0 auto;
 }
 
 
 .image_added {
-    width: 100px !important;  
-    height: auto;  
+    width: 100px !important;
+    height: auto;
     border-radius: 5px;
     object-fit: cover;
 }
@@ -340,34 +404,37 @@
 } */
 
 
-.addInfo_parent{
+.addInfo_parent {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 40px;
-    .input{
+
+    .input {
         width: 400px;
     }
 }
 
 
-.addInfoConnexion_parent{
+.addInfoConnexion_parent {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
     align-items: center;
     gap: 40px;
-    .input{
+
+    .input {
         width: 400px;
     }
 }
-.button_image{
-    width: 250px;
-    min-width: 250px;
-    height: 200px;
-    min-height: 200px;
+
+.button_image {
+    min-width: 80px;
+    height: 4rem;
+    margin: 1rem 0;
+    min-height: 50px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -380,12 +447,14 @@
     font-family: 'Montserrat Bold';
     cursor: pointer;
 }
-@media screen and (max-width: 1400px) {
-}
-.button_container{
+
+@media screen and (max-width: 1400px) {}
+
+.button_container {
     width: 80%;
 }
-.button_container_active{
+
+.button_container_active {
     width: 80%;
     height: 128px;
     background-color: #305555;
@@ -397,8 +466,9 @@
     cursor: pointer;
     padding: 15px;
     text-decoration: none;
-    margin-left: 0px;  
-    .button_text_subtitle{
+    margin-left: 0px;
+
+    .button_text_subtitle {
         color: #fff;
         font-weight: 500;
         font-size: 14px;
@@ -437,10 +507,12 @@
     .list_button{
         margin-right: -1500px;
     }
-    .button_container{
+
+    .button_container {
         width: 80%;
     }
-    .button_container_active{
+
+    .button_container_active {
         width: 80%;
         height: 128px;
         background-color: #305555;
@@ -452,17 +524,20 @@
         cursor: pointer;
         padding: 15px;
         text-decoration: none;
-        margin-left: 0px;  
-        .button_text_subtitle{
+        margin-left: 0px;
+
+        .button_text_subtitle {
             color: #fff;
             font-weight: 500;
             font-size: 14px;
         }
     }
-    .accommodation_1_container{
+
+    .accommodation_1_container {
         display: inline;
     }
-    .left_accommodation_1{
+
+    .left_accommodation_1 {
         margin-bottom: 50px;
     }
 }
@@ -472,55 +547,63 @@
     .addSocial{
         margin-left: 30px;
     }
+
     /*type etablisement*/
-    .list_button{
+    .list_button {
         margin-right: -1500px;
     }
-    .stepper{
+
+    .stepper {
         display: none;
     }
-    .button_container{
+
+    .button_container {
         width: 100%;
     }
-    .left_container{
+
+    .left_container {
         display: flex;
         flex-direction: column;
         width: 30%;
         margin-right: 50px;
     }
-    
 
-    .accommodation_1_container{
+
+    .accommodation_1_container {
         display: inline;
         margin-left: 50px;
     }
-    
 
-    .button_text{
+
+    .button_text {
         display: flex;
         flex-direction: column;
         gap: 10px;
         color: #000;
     }
 
-    .button_text_title{
+    .button_text_title {
         font-size: 18px;
         font-family: 'Montserrat Bold';
     }
+
     /*Le text dans carré*/
-    .button_text_subtitle{
+    .button_text_subtitle {
         color: #202020;
         font-weight: 400;
         font-size: 15px;
     }
-    .rate{
+
+    .rate {
         width: 100%;
     }
-    .button_container{
+
+    .button_container {
         height: 110%;
         width: 100%;
     }
-    .button_container_active{
+
+    .button_container_active {
         width: 100%;
         height: 128px;
         background-color: #305555;
@@ -532,8 +615,9 @@
         cursor: pointer;
         padding: 15px;
         text-decoration: none;
-        margin-left: 0px;  
-        .button_text_subtitle{
+        margin-left: 0px;
+
+        .button_text_subtitle {
             color: #fff;
             font-weight: 500;
             font-size: 14px;
@@ -551,130 +635,153 @@
 }
 
 @media screen and (max-width: 800px) {
-    .rate{
+    .rate {
         width: 100%;
     }
-   /*Information etablisement*/
-   .accommodation_1_parent{
-    margin-left: 0px;
-   }
-    .accommodation_1_container{
+
+    /*Information etablisement*/
+    .accommodation_1_parent {
+        margin-left: 0px;
+    }
+
+    .accommodation_1_container {
         display: inline;
         margin-left: 10px;
     }
     .addSocial{
         margin-left: 0px;
     }
-        .rate_input_label{
+
+    .rate_input_label {
         font-size: 11px;
     }
-/*Dans le choix du type*/
-.button_container{
-    width: 100%;
-    height: 128px;
-    background-color: #fff;
-    box-shadow: 0 2px 6px #0000007e;
-    border-radius: 5px;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    cursor: pointer;
-    padding: 15px;
-    text-decoration: none;
-    margin-left: 0px;
-    .button_text{
+
+    /*Dans le choix du type*/
+    .button_container {
+        width: 100%;
+        height: 128px;
+        background-color: #fff;
+        box-shadow: 0 2px 6px #0000007e;
+        border-radius: 5px;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        cursor: pointer;
+        padding: 15px;
+        text-decoration: none;
+        margin-left: 0px;
+
+        .button_text {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            color: #000;
+        }
+
+        .button_text_title {
+            font-size: 18px;
+            font-family: 'Montserrat Bold';
+        }
+
+        /*Le text dans carré*/
+        .button_text_subtitle {
+            color: #202020;
+            font-weight: 500;
+            font-size: 12px;
+        }
+    }
+
+    /*apres click*/
+    .button_container_active {
+        width: 100%;
+        height: 128px;
+        background-color: #305555;
+        box-shadow: 0 2px 6px #0000007e;
+        border-radius: 5px;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        cursor: pointer;
+        padding: 15px;
+        text-decoration: none;
+        margin-left: 0px;
+
+        .button_text {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            color: #fff;
+        }
+
+        .button_text_title {
+            font-size: 18px;
+            font-family: 'Montserrat Bold';
+        }
+
+        /*Le text dans carré*/
+        .button_text_subtitle {
+            color: #fff;
+            font-weight: 500;
+            font-size: 12px;
+        }
+    }
+
+    .right_container {
+        margin-left: 50px;
+    }
+
+    .top_title {
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        font-style: oblique;
+        font-size: 25px;
+        letter-spacing: -1px;
+        color: #305555;
+        font-weight: 500;
+    }
+
+    .top_subtitle {
+        font-size: 19px;
+        font-weight: 650;
+        letter-spacing: -1px;
+    }
+
+    .form_label {
+        position: relative;
+        line-height: 25px;
+        font-weight: 650;
+        font-size: 15px;
+    }
+
+    .form_input {
+        width: 100%;
+    }
+
+    .left_container {
+        display: none;
+    }
+
+    .right_container {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        color: #000;
+        width: 80%;
+        padding: 50px;
+
+        gap: 95px;
     }
 
-    .button_text_title{
-        font-size: 18px;
-        font-family: 'Montserrat Bold';
-    }
-    /*Le text dans carré*/
-    .button_text_subtitle{
-        color: #202020;
-        font-weight: 500;
-        font-size: 12px;
-    }
-}
-/*apres click*/
-.button_container_active{
-    width: 100%;
-    height: 128px;
-    background-color: #305555;
-    box-shadow: 0 2px 6px #0000007e;
-    border-radius: 5px;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    cursor: pointer;
-    padding: 15px;
-    text-decoration: none;
-    margin-left: 0px;  
-
-    .button_text{
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        color: #fff;
+    .stepper {
+        width: 100%;
     }
 
-    .button_text_title{
-        font-size: 18px;
-        font-family: 'Montserrat Bold';
-    }
-    /*Le text dans carré*/
-    .button_text_subtitle{
-        color: #fff;
-        font-weight: 500;
-        font-size: 12px;
+    .container {
+        width: 80%;
+        margin-top: 100px;
     }
 }
-.right_container{
-    margin-left: 50px;
- }
-.top_title{
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    font-style: oblique;
-    font-size: 25px;
-    letter-spacing: -1px;
-    color: #305555;
-    font-weight: 500;
-}
-.top_subtitle{
-    font-size: 19px;
-    font-weight: 650;
-    letter-spacing: -1px;
-}
-.form_label{
-    position: relative;
-    line-height: 25px;
-    font-weight: 650;
-    font-size: 15px;
-}
-.form_input{
-    width: 100%;
-}
-.left_container{
-    display: none;
-}
-.right_container{
-    display: flex;
-    flex-direction: column;
-    width: 80%;
-    padding: 50px;
 
-    gap: 95px;
-}
-.stepper{
-    width: 100%;
-}
-.container{
-    width: 80%;
-    margin-top: 100px;
+@media screen and (max-width: 700px) {
+    .accommodation_1_parent {
+        margin-left: 0px;
     }
     .infoContact{
         display: flex;
@@ -758,15 +865,19 @@
     .addSocial{
         margin-left: -25px;
     }
-    .rate_input_label{
+
+    .rate_input_label {
         font-size: 11px;
     }
-    .rate_input{
+
+    .rate_input {
         margin-left: -25px;
     }
-    .addInfo_parent{
+
+    .addInfo_parent {
         margin-left: 0px;
-        .input{
+
+        .input {
             width: 300px;
         }
     }
@@ -814,33 +925,37 @@
         margin-left: -10px;
     }
     /*Information etablisement*/
-    .accommodation_1_parent{
+    .accommodation_1_parent {
         margin-left: -30px;
     }
-    
-    .accommodation_1_container{
+
+    .accommodation_1_container {
         display: inline;
         margin-left: -100px;
     }
-    .addSocial{
+
+    .addSocial {
         margin-left: -25px;
     }
-    .rate_input_label{
+
+    .rate_input_label {
         font-size: 18px;
     }
-    .addInfo_parent{
+
+    .addInfo_parent {
         margin-left: 0px;
-        .input{
+
+        .input {
             width: 250px;
         }
     }
 
-    .rate_input_label{
+    .rate_input_label {
         font-size: 11px;
     }
 
-/*Dans le choix du type*/
-    .button_container{
+    /*Dans le choix du type*/
+    .button_container {
         width: 130%;
         height: 128%;
         background-color: #fff;
@@ -853,27 +968,29 @@
         padding: 15px;
         text-decoration: none;
         margin-left: 0px;
-        
-        .button_text{
+
+        .button_text {
             display: flex;
             flex-direction: column;
             gap: 10px;
             color: #000;
         }
-    
-        .button_text_title{
+
+        .button_text_title {
             font-size: 18px;
             font-family: 'Montserrat Bold';
         }
+
         /*Le text dans carré*/
-        .button_text_subtitle{
+        .button_text_subtitle {
             color: #202020;
             font-weight: 500;
             font-size: 12px;
         }
     }
-/*apres click*/
-    .button_container_active{
+
+    /*apres click*/
+    .button_container_active {
         width: 130%;
         height: 128%;
         background-color: #305555;
@@ -885,27 +1002,29 @@
         cursor: pointer;
         padding: 15px;
         text-decoration: none;
-        margin-left: 0px;  
+        margin-left: 0px;
 
-        .button_text{
+        .button_text {
             display: flex;
             flex-direction: column;
             gap: 10px;
             color: #fff;
         }
-        .button_text_title{
+
+        .button_text_title {
             font-size: 18px;
             font-family: 'Montserrat Bold';
         }
+
         /*Le text dans carré*/
-        .button_text_subtitle{
+        .button_text_subtitle {
             color: #fff;
             font-weight: 500;
             font-size: 12px;
         }
     }
 
-    .top_title{
+    .top_title {
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
         font-style: oblique;
         font-size: 25px;
@@ -913,28 +1032,34 @@
         color: #305555;
         font-weight: 500;
     }
-    .top_subtitle{
+
+    .top_subtitle {
         font-size: 19px;
         font-weight: 650;
         letter-spacing: -1px;
     }
-    .form_label{
+
+    .form_label {
         position: relative;
         line-height: 25px;
         font-weight: 650;
         font-size: 15px;
     }
-    .form_input{
+
+    .form_input {
         width: 100%;
     }
-    .top_container{
+
+    .top_container {
         margin-left: 25px;
         gap: 5px;
     }
-    .left_container{
+
+    .left_container {
         display: none;
     }
-    .right_container{
+
+    .right_container {
         display: flex;
         flex-direction: column;
         width: 80%;
@@ -942,10 +1067,12 @@
         margin-left: 50px;
         gap: 95px;
     }
-    .stepper{
+
+    .stepper {
         width: 100%;
     }
-    .container{
+
+    .container {
         width: 85%;
         margin-top: 100px;
     }
@@ -992,8 +1119,8 @@
     .accommodation_1_parent{
         margin-left: -50px;
     }
-    
-    .accommodation_1_container{
+
+    .accommodation_1_container {
         display: inline;
         margin-left: -150px;
     }
@@ -1019,10 +1146,10 @@
     }
 }
 @media screen and (max-width: 500px) {
-    
+
     /*Dans le choix du type*/
 
-    .button_container{
+    .button_container {
         width: 130%;
         height: 120%;
         background-color: #fff;
@@ -1035,27 +1162,29 @@
         padding: 15px;
         text-decoration: none;
         margin-left: 0px;
-        
-        .button_text{
+
+        .button_text {
             display: flex;
             flex-direction: column;
             gap: 10px;
             color: #000;
         }
-    
-        .button_text_title{
+
+        .button_text_title {
             font-size: 15px;
             font-family: 'Montserrat Bold';
         }
+
         /*Le text dans carré*/
-        .button_text_subtitle{
+        .button_text_subtitle {
             color: #202020;
             font-weight: 500;
             font-size: 12px;
         }
     }
+
     /*apres click*/
-    .button_container_active{
+    .button_container_active {
         width: 130%;
         height: 120%;
         background-color: #305555;
@@ -1067,49 +1196,54 @@
         cursor: pointer;
         padding: 15px;
         text-decoration: none;
-        margin-left: -0px; 
+        margin-left: -0px;
 
-        .button_text{
+        .button_text {
             display: flex;
             flex-direction: column;
             gap: 10px;
             color: #fff;
         }
-    
-        .button_text_title{
+
+        .button_text_title {
             font-size: 18px;
             font-family: 'Montserrat Bold';
         }
+
         /*Le text dans carré*/
-        .button_text_subtitle{
+        .button_text_subtitle {
             color: #fff;
             font-weight: 500;
             font-size: 12px;
         }
     }
 
-    .top_container{
+    .top_container {
         margin-left: 5px;
     }
-    .top_title{
+
+    .top_title {
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
         font-style: oblique;
         font-size: 18px;
         letter-spacing: -1px;
         color: #305555;
     }
-    .top_subtitle{
+
+    .top_subtitle {
         font-size: 16px;
         font-weight: 700;
         letter-spacing: -1px;
     }
-    .form_label{
+
+    .form_label {
         position: relative;
         line-height: 20px;
         font-weight: 700;
         font-size: 14px;
     }
-    .form_input{
+
+    .form_input {
         width: 100%;
         background-color: #fff;
         box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
@@ -1118,10 +1252,11 @@
         gap: 5px;
         cursor: pointer;
         font-size: 10px;
-        padding: 10px 15px; 
+        padding: 10px 15px;
         font-weight: 300;
     }
-    .right_container{
+
+    .right_container {
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -1129,12 +1264,15 @@
         gap: 95px;
         margin-left: 0px;
     }
+
     .left_container {
         display: none;
     }
-    .addInfo_parent{
+
+    .addInfo_parent {
         margin-left: 0px;
-        .input{
+
+        .input {
             width: 200px;
         }
     }
@@ -1143,10 +1281,10 @@
 
         margin-left: -50px;
     }
-  }
+}
 
 @media screen and (max-width: 400px) {
-    .top_title{
+    .top_title {
         font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
         font-style: oblique;
         font-size: 15px;
@@ -1154,20 +1292,22 @@
         color: #305555;
     }
 
-    .top_subtitle{
+    .top_subtitle {
         font-size: 14px;
         font-weight: 500;
         letter-spacing: -1px;
         margin-left: 15px;
         margin-left: 15px;
     }
-    .form_label{
+
+    .form_label {
         position: relative;
         line-height: 20px;
         font-weight: 600;
         font-size: 10px;
     }
-    .form_input{
+
+    .form_input {
         width: 100%;
         background-color: #fff;
         box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
@@ -1176,12 +1316,12 @@
         gap: 5px;
         cursor: pointer;
         font-size: 8px;
-        padding: 8px 10px; 
+        padding: 8px 10px;
         font-weight: 300;
     }
-    
+
     /*Dans le choix du type*/
-    .button_container{
+    .button_container {
         width: 130%;
         height: 200px;
         background-color: #fff;
@@ -1193,29 +1333,31 @@
         cursor: pointer;
         padding: 15px;
         text-decoration: none;
-        margin-left: 20px; 
-        
-        .button_text{
+        margin-left: 20px;
+
+        .button_text {
             display: flex;
             flex-direction: column;
             gap: 10px;
             color: #000;
         }
-    
-        .button_text_title{
+
+        .button_text_title {
             font-size: 15px;
             font-family: 'Montserrat Bold';
         }
+
         /*Le text dans carré*/
-        .button_text_subtitle{
+        .button_text_subtitle {
             color: #202020;
             font-weight: 500;
             font-size: 12px;
             margin-left: -20px;
         }
     }
+
     /*apres click*/
-    .button_container_active{
+    .button_container_active {
         width: 130%;
         height: 210px;
         background-color: #305555;
@@ -1227,21 +1369,22 @@
         cursor: pointer;
         padding: 15px;
         text-decoration: none;
-        margin-left: 20px; 
+        margin-left: 20px;
 
-        .button_text{
+        .button_text {
             display: flex;
             flex-direction: column;
             gap: 10px;
             color: #fff;
         }
-    
-        .button_text_title{
+
+        .button_text_title {
             font-size: 18px;
             font-family: 'Montserrat Bold';
         }
+
         /*Le text dans carré*/
-        .button_text_subtitle{
+        .button_text_subtitle {
             color: #fff;
             font-weight: 500;
             font-size: 12px;
@@ -1249,32 +1392,37 @@
         }
     }
 
-    .right_container{
+    .right_container {
         display: flex;
         flex-direction: column;
         width: 100%;
         padding: 70px;
         gap: 95px;
     }
-    .accommodation_1_container{
+
+    .accommodation_1_container {
         display: inline;
         margin-left: -100px;
     }
-.addSocial{
-    margin-left: -50px;
-}
-    .right_accommodation_1{
+
+    .addSocial {
+        margin-left: -50px;
+    }
+
+    .right_accommodation_1 {
         margin-right: 0px;
         margin-left: 0px;
     }
-    .addInfo_parent{
+
+    .addInfo_parent {
         margin-left: 0px;
-        .input{
+
+        .input {
             width: 200px;
         }
     }
 
-    
+
 }
 
 @media screen and (max-width:399px ) {
