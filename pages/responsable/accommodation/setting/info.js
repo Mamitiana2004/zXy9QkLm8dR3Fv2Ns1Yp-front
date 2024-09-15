@@ -12,15 +12,18 @@ import { Image } from "primereact/image";
 import imageCompression from 'browser-image-compression';
 import { Menubar } from "primereact/menubar";
 import style_profile from "./../../../../style/pages/responsable/accommodation/setting/profil.module.css";
+import { InputTextarea } from "primereact/inputtextarea";
 
 export default function Info() {
     const { user, setUser } = useContext(ResponsableLayoutContext);
     const router = useRouter();
     const inputRef = useRef(null);
     const [fileImages, setFileImages] = useState([]);
+    const [description, setDescription] = useState([]);
     const [amenities, setAmenities] = useState([]);
     const [fetchedImages, setFetchedImages] = useState([]);
     const [isEditingImage, setIsEditingImage] = useState(false);
+    const [isEditDescription, setIsEditDescription] = useState(false);
     const [listImage, setListImage] = useState([]);
     const [visibleEdit, setVisibleEdit] = useState(1);
     const [deletedImageIds, setDeletedImageIds] = useState([]);
@@ -39,6 +42,39 @@ export default function Info() {
     ]);
 
     const menu = 1;
+    // Amenities Part
+    useEffect(() => {
+        const getDes = async () => {
+            try {
+                const access = await getResponsableAccessToken();
+
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${user.id_etablissement}/description/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access}`,
+                    },
+
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la fetch');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+
+                        setDescription(data.description_hebergement);
+                    })
+                    .catch(err => console.error('Erreur lors de la mise à jour des informations personnelles:', err));
+
+            } catch (error) {
+                console.error('Erreur lors de la récupération du token:', error);
+            }
+        }
+
+        getDes();
+    }, [user]);
 
     // Image Part
     useEffect(() => {
@@ -89,8 +125,67 @@ export default function Info() {
         // Mettre à jour la liste d'images avec les images uniques
         setListImage(prevList => [...prevList, ...uniqueNewImageUrls]);
     };
+    const handleCancelDescription = () => {
+        const getDes = async () => {
+            try {
+                const access = await getResponsableAccessToken();
 
+                fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${user.id_etablissement}/description/`, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access}`,
+                    },
 
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la fetch');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+
+                        setDescription(data.description_hebergement);
+                    })
+                    .catch(err => console.error('Erreur lors de la mise à jour des informations personnelles:', err));
+
+            } catch (error) {
+                console.error('Erreur lors de la récupération du token:', error);
+            }
+        }
+        getDes();
+    };
+
+    const handleChangeDescription = async () => {
+        try {
+            const access = await getResponsableAccessToken();
+
+            fetch(`${UrlConfig.apiBaseUrl}/api/hebergement/${user.id_etablissement}/description/`, {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access}`,
+                },
+                body: JSON.stringify({ description_hebergement: description })
+
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur lors de la fetch');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setIsEditDescription(false);
+                })
+                .catch(err => console.error('Erreur lors de la mise à jour des informations personnelles:', err));
+
+        } catch (error) {
+            console.error('Erreur lors de la récupération du token:', error);
+        }
+
+    }
     const handleSubmit = async () => {
         try {
             const access = await getResponsableAccessToken();
@@ -127,18 +222,31 @@ export default function Info() {
             console.error('Erreur lors de l\'ajout des images:', error);
         }
     };
-
+    const normalizedFetchedImages = fetchedImages.map(img => ({
+        ...img,
+        image: `${UrlConfig.apiBaseUrl}${img.image}`
+    }));
 
     const handleImageClick = (index) => {
-        const imageToRemove = fetchedImages[index];
+        if (index < 0 || index >= listImage.length) {
+            console.error("Index invalide pour l'image.");
+            return;
+        }
+
+        const imageUrl = listImage[index];
+        const imageToRemove = normalizedFetchedImages.find(img => img.image === imageUrl);
+
+        console.log("Image to Remove:", imageToRemove);
 
         setListImage(prevList => prevList.filter((_, i) => i !== index));
         setFileImages(prevFiles => prevFiles.filter((_, i) => i !== index));
 
-        if (imageToRemove) {
+        if (imageToRemove && imageToRemove.id) {
             setDeletedImageIds(prevDeletedIds => [...prevDeletedIds, imageToRemove.id]);
         }
     };
+
+
     const handleDelete = async () => {
         try {
             if (deletedImageIds.length > 0) {
@@ -210,7 +318,8 @@ export default function Info() {
     };
     const items = [
         {
-            label: 'Description & Amenities',
+            // label: 'Description & Amenities',
+            label: 'Description',
             icon: 'pi pi-home',
             command: () => {
                 setVisibleEdit(1);
@@ -260,8 +369,36 @@ export default function Info() {
                     </div>
                     {visibleEdit == 1 ? (
                         <div className={style_image.container}>
-
-                            hi
+                            <InputTextarea disabled={!isEditDescription} value={description} onChange={(e) => setDescription(e.target.value)} rows={5} cols={30} />
+                            {isEditDescription ? (
+                                <>
+                                    <Button
+                                        text
+                                        className={style_profile.button_edit}
+                                        icon="pi pi-save"
+                                        raised
+                                        label="Save"
+                                        onClick={() => handleChangeDescription()}
+                                    />
+                                    <Button
+                                        text
+                                        className={style_profile.button_cancel}
+                                        icon="pi pi-cancel"
+                                        raised
+                                        label="Cancel"
+                                        onClick={() => { handleCancelDescription(); setIsEditDescription(false); }}
+                                    />
+                                </>
+                            ) : (
+                                <Button
+                                    text
+                                    className={style_profile.button_edit}
+                                    icon="pi pi-pen-to-square"
+                                    raised
+                                    label="Edit"
+                                    onClick={() => { setIsEditDescription(!isEditDescription); }}
+                                />
+                            )}
                         </div>
                     ) : visibleEdit == 2 ? (
                         <div className={style_image.container}>
@@ -303,7 +440,9 @@ export default function Info() {
                                 )}{isEditingImage ? (
                                     <div onClick={handleClick} className={style_image.button_image}>
 
-                                        <><i className="pi pi-plus" /><span>Add image</span><input ref={inputRef} onChange={handleFileUpload} type="file" accept="image/*" style={{ display: "none" }} /></>
+                                        <><i className="pi pi-plus" /><span>Add image</span>
+                                            <input ref={inputRef} onChange={handleFileUpload} type="file" accept="image/*" style={{ display: "none" }} multiple />
+                                        </>
 
                                     </div>) : null}
                                 {listImage.map((image, index) => (
