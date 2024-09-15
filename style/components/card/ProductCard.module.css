@@ -148,4 +148,18 @@
     cursor: pointer;
 }
 
+@media screen and (max-width: 768px) {
+    .container{
+        position: relative;
+        width: 345px;
+        height: 350px;
+        background-color: #fff;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 6px #0000002c;
+        gap: 20px;
+    }
+    
+}
 
